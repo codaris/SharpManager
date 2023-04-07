@@ -1,0 +1,7 @@
+{
+    "configuration": "cpu=atmega328old",
+    "board": "arduino:avr:nano",
+    "port": "COM4",
+    "sketch": "Loader.ino",
+    "output": "../build"
+}
