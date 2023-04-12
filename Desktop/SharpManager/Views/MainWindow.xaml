@@ -1,0 +1,60 @@
+﻿<Window x:Class="SharpManager.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SharpManager.ViewModels"          
+        xmlns:local="clr-namespace:SharpManager"
+        mc:Ignorable="d"
+        Title="Sharp Manager" Height="450" Width="800" 
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <Menu DockPanel.Dock="Top" >
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open File..." Click="OpenFile_Click" Icon="{StaticResource OpenFileIcon}" />
+                    <Separator />
+                    <MenuItem Header="E_xit" Click="Exit_Click" />
+                </MenuItem>
+                <MenuItem Header="_Edit">
+                    <MenuItem Command="ApplicationCommands.Copy" Icon="{StaticResource CopyIcon}" />
+                    <MenuItem Command="ApplicationCommands.Cut" Icon="{StaticResource CutIcon}" />
+                    <MenuItem Command="ApplicationCommands.Paste" Icon="{StaticResource PasteIcon}" />
+                    <Separator />
+                    <MenuItem Command="ApplicationCommands.Undo" Icon="{StaticResource UndoIcon}" />
+                    <MenuItem Command="ApplicationCommands.Redo" Icon="{StaticResource RedoIcon}" />
+                    <Separator />
+                    <MenuItem Command="ApplicationCommands.SelectAll" Icon="{StaticResource SelectAllIcon}" />
+                </MenuItem>
+            </Menu>
+            <Border DockPanel.Dock="Top" BorderThickness="0,1,0,0">
+                <Border.BorderBrush>
+                    <SolidColorBrush Color="#FFCCCCCC"/>
+                </Border.BorderBrush>
+                <StackPanel Orientation="Horizontal" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}">
+                    <TextBlock VerticalAlignment="Center" Margin="5,4,0,4">Serial Port:</TextBlock>
+                    <ComboBox Margin="4,4,10,4" ItemsSource="{Binding SerialPorts}" SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}" />
+                    <Button Margin="4,4,10,4">
+                        <StackPanel Orientation="Horizontal">
+                            <ContentControl Content="{StaticResource OpenFileIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Connect" VerticalAlignment="Center" Margin="0,0,5,2" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem Content="{Binding SelectedSerialPort}" />
+                <StatusBarItem Content="Connected" />
+                <StatusBarItem Content="Test" HorizontalAlignment="Right" />
+            </StatusBar>
+            <TextBox x:Name="Log" Text="" IsReadOnly="True" IsReadOnlyCaretVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+        </DockPanel>
+    </Grid>
+</Window>

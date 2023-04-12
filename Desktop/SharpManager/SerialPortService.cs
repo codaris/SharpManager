@@ -50,7 +50,7 @@ namespace SharpManager
         /// <summary>
         /// Occurs when the ports changed.
         /// </summary>
-        public static event EventHandler<PortsChangedArgs> PortsChanged;
+        public static event EventHandler<PortsChangedArgs>? PortsChanged;
 
         /// <summary>
         /// Monitors the device changes.
@@ -89,7 +89,7 @@ namespace SharpManager
                 if (!_serialPorts.SequenceEqual(availableSerialPorts))
                 {
                     _serialPorts = availableSerialPorts;
-                    PortsChanged.Raise(null, new PortsChangedArgs(eventType, _serialPorts));
+                    PortsChanged?.Raise(null, new PortsChangedArgs(eventType, _serialPorts));
                 }
             }
         }
