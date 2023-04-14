@@ -49,9 +49,11 @@ namespace SharpManager
             cancellationTokenSource = new();
             serialPort = new SerialPort(portName, 115200);
             serialPort.DtrEnable = false;
-            serialPort.DataReceived += SerialPort_DataReceived;
-            serialPort.ErrorReceived += SerialPort_ErrorReceived;
             serialPort.Open();
+            serialPortByteStream = new SerialPortByteStream(serialPort);
+
+            // Begin the main loop
+            await Mainloop();
         }
 
         /// <summary>
@@ -59,19 +61,19 @@ namespace SharpManager
         /// </summary>
         public void Disconnect()
         {
-            if (serialPort == null) return;
-            serialPort.Close();
-            serialPort.DataReceived -= SerialPort_DataReceived;
-            serialPort.ErrorReceived -= SerialPort_ErrorReceived;
+            serialPortByteStream?.Dispose();
+            serialPortByteStream = null;
+            serialPort?.Close();
+            serialPort?.Dispose();
             serialPort = null;
         }
 
         private async Task Mainloop()
         {
-            while (true)
+            while (serialPortByteStream != null)
             {
-                if (inCommand) continue;
-                if (serialPortByteStream.DataAvailable)
+                // If data is available and not processing a command, check incoming packet
+                if (!inCommand && serialPortByteStream.DataAvailable)
                 {
                     var data = serialPortByteStream.ReadByte();
                     // If sync then ack
@@ -80,6 +82,7 @@ namespace SharpManager
                     serialPortByteStream.WriteByte(Ascii.NAK);
                     serialPortByteStream.WriteByte((byte)ErrorCode.Unexpected);
                 }
+                await Task.Yield();
             }
         }
 
@@ -106,7 +109,7 @@ namespace SharpManager
 
         public async Task SendPacket(IWriteByteStream baseStream, byte type, byte num, byte size, byte[] data)
         {
-            var stream = new ChecksumByteStream(baseStream);
+            var stream = new ChecksumWriteByteStream(baseStream);
             baseStream.WriteByte(Ascii.SOH);    // Start of packet (not in checksum)
             stream.WriteByte(type);
             stream.WriteByte(num);

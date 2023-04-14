@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace SharpManager
 {
-    internal class ChecksumByteStream : IWriteByteStream
+    internal class ChecksumWriteByteStream : IWriteByteStream
     {
         /// <summary>The CRC16 checksum </summary>
         private ushort checksum = Checksum.InitialCRC16;
 
         /// <summary>The byte stream</summary>
-        private IWriteByteStream byteStream;
+        private readonly IWriteByteStream byteStream;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChecksumByteStream"/> class.
+        /// Initializes a new instance of the <see cref="ChecksumWriteByteStream"/> class.
         /// </summary>
         /// <param name="byteStream">The byte stream.</param>
-        public ChecksumByteStream(IWriteByteStream byteStream)
+        public ChecksumWriteByteStream(IWriteByteStream byteStream)
         {
             this.byteStream = byteStream; 
         }

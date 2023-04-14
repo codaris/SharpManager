@@ -41,11 +41,11 @@ namespace SharpManager
         /// <param name="stream">The stream.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static async Task<int> ReadWord(this IReadByteStream stream)
+        public static async Task<ushort> ReadWordAsync(this IReadByteStream stream)
         {
             int result = await stream.ReadByteAsync();
             result += await stream.ReadByteAsync() << 8;
-            return result;
+            return (ushort)result;
         }
 
         /// <summary>
