@@ -30,6 +30,7 @@ const int TEST_BUFFER_SIZE = 256;
 byte testBuffer[TEST_BUFFER_SIZE];
 int testBufferIndex = 0;
 
+
 /**
  * @brief Setup the Arduino for connection to Sharp Pocket Computer
  */
@@ -398,47 +399,84 @@ int WaitReadWord()
     return Serial.read() | (Serial.read() << 8);
 }
 
-int ReadTapeByte()
+/**
+ * @brief Synchronize and return the timestamp of the start of the tape data
+ * @return unsigned long 
+ */
+bool TapeReadSync2()
 {
-    int result = 0;
     while (true) {
+        // Wait for HIGH of XOUT and return zero if timed out
         unsigned long startTimeout = millis();
-        while (!digitalRead(SHARP_XOUT)) {      // While low
-            if ((millis() - startTimeout) > 1000) return -2;       
+        while (!digitalRead(SHARP_XOUT)) {      
+            if ((millis() - startTimeout) > 1000) return false;       
         }  
-        // High now
+        // Potential start time of the data
         unsigned long startTime = micros();
-        while (digitalRead(SHARP_XOUT));       // While high
+        // Wait for low transition
+        while (digitalRead(SHARP_XOUT));       
+
+        // Wait for HIGH of XOUT and return zero if timed out
         startTimeout = millis();
-        while (!digitalRead(SHARP_XOUT)) {      // While low
-            if ((millis() - startTimeout) > 1000) return -2;       
+        while (!digitalRead(SHARP_XOUT)) {    
+            if ((millis() - startTimeout) > 1000) return false;       
         }  
+
+        // Calculate the duration of the pulse
         unsigned long duration = micros() - startTime;
-        //Serial.println(duration);
-
-        if (duration < 270) {
-            // If less than 150 consider to be a 1 bit
-            continue;
-        }
-
-        // Serial.print(duration);
-
-        if (ReadTapeBit(startTime)) continue;
-        for (int j = 4; j < 8; j++) bitWrite(result, j, ReadTapeBit(micros()));
-        if (!ReadTapeBit(micros())) return -3;      // Stop bit
-        if (ReadTapeBit(micros())) return -4;       // Start bit
-        for (int j = 0; j < 4; j++) bitWrite(result, j, ReadTapeBit(micros()));
-        if (!ReadTapeBit(micros())) return -5;      // Stop bit      
-        return result;  
+        // If duration is greater than 270 then sync over and return start time
+        if (duration >= 270) return true;
     }
 }
 
 
-bool ReadTapeBit(unsigned long startTime)
+unsigned long TapeReadSync()
+{
+    while (true) {
+        // Wait for HIGH of XOUT and return zero if timed out
+        unsigned long startTimeout = millis();
+        while (!digitalRead(SHARP_XOUT)) {      
+            if ((millis() - startTimeout) > 1000) return 0;       
+        }  
+        // Potential start time of the data
+        unsigned long startTime = micros();
+        // Wait for low transition
+        while (digitalRead(SHARP_XOUT));       
+
+        // Wait for HIGH of XOUT and return zero if timed out
+        startTimeout = millis();
+        while (!digitalRead(SHARP_XOUT)) {    
+            if ((millis() - startTimeout) > 1000) return 0;       
+        }  
+
+        // Calculate the duration of the pulse
+        unsigned long duration = micros() - startTime;
+        // If duration is greater than 270 then sync over and return start time
+        if (duration >= 270) return startTime;
+    }
+}
+
+bool ReadTapeBit(unsigned long startTime = micros());
+bool ReadStopBit(unsigned long startTime = micros());
+bool ReadStartBit(unsigned long startTime = micros());
+
+int ReadTapeByte()
+{
+    int result = 0;
+    for (int j = 4; j < 8; j++) bitWrite(result, j, ReadTapeBit());
+    if (!ReadStopBit()) return -1;      // Stop bit
+    if (!ReadStartBit()) return -2;       // Start bit
+    for (int j = 0; j < 4; j++) bitWrite(result, j, ReadTapeBit());
+    if (!ReadStopBit()) return -3;      // Stop bit      
+    return result;  
+}
+
+
+bool ReadTapeBit(unsigned long startTime = micros())
 {
     const int samplePeriod = 2000;
-    int pulseCount = 0;
     int previousState = 0;
+    int pulseCount = 0;
     while (micros() - startTime < samplePeriod)
     {
         int currentState = digitalRead(SHARP_XOUT);
@@ -453,43 +491,64 @@ bool ReadTapeBit(unsigned long startTime)
 }
 
 
+inline bool ReadStartBit(unsigned long startTime = micros()) { return !ReadTapeBit(startTime); }
+inline bool ReadStopBit(unsigned long startTime = micros()) { return ReadTapeBit(startTime); }
+
+
 void ReadTape()
 {
     Serial.println("Waiting for CSAVE...");
 
+    // Wait for xout to go high
     unsigned long startTimeout = millis();
-    while (!digitalRead(SHARP_XOUT)) {      // While low
+    while (!digitalRead(SHARP_XOUT)) {      
         if ((millis() - startTimeout) > 10000) {
             Serial.println("Timeout");
             return;
         }
     }  
 
+    // Read the device select
     int device = ReadDeviceSelect(); 
     Serial.print("Device select: 0x");
     Serial.println(device, HEX);
 
-    testBufferIndex = 0;
+    Serial.println("Starting sync...");
+    unsigned long startTime = TapeReadSync();
+    if (startTime == 0) {
+        Serial.println("Timeout");
+        return;
+    }
 
-    Serial.println("Starting read...");
-    int termCount = 0;
+    // Serial.println("Reading tape data...");
+    bool headerMarker = false;                      // Have we see the end of header byte
+    bool header = true;                             // Are we in the header portion
+    int value = 0;
 
     while (true) {
-        int value = ReadTapeByte();
-        if (value >= 0) {
-            Serial.print(value, HEX);
-            Serial.print(" ");
-            if (termCount == 2) {
-                Serial.println("Done.");
+        // Start bit
+        if (ReadStartBit(startTime)) {
+            value = ReadTapeByte();
+            if (headerMarker) header = false;           // Read one byte past header marker
+            if (value == 0x5F) headerMarker = true;     // Read the header marker
+            if (value >= 0) {
+                Serial.print(value, HEX);
+                Serial.print(" ");
+            } else {
+                if (value == -2) Serial.println("Timeout");
+                else if (value == -1) Serial.println("error");
+                Serial.println(value);
                 break;
             }
-            if (value == 0xFF) termCount++;
-            else termCount = 0;
-            continue;
         }
-        if (value == -2) Serial.println("Timeout");
-        else if (value == -1) Serial.println("error");
-        Serial.println(value);
-        break;
-    }    
+        // Resync
+        unsigned long syncTime = micros();
+        startTime = TapeReadSync();
+        if ((micros() - syncTime) > 10000) {
+            Serial.println();
+            Serial.println("Done.");
+            return;
+        }
+    }
 }
+
