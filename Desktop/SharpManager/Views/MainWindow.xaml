@@ -19,7 +19,7 @@
         <DockPanel LastChildFill="True">
             <Menu DockPanel.Dock="Top" >
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open File..." Click="OpenFile_Click" Icon="{StaticResource OpenFileIcon}" />
+                    <MenuItem Header="_Send File..." Click="OpenFile_Click" Icon="{StaticResource OpenFileIcon}" IsEnabled="{Binding IsConnected}" />
                     <Separator />
                     <MenuItem Header="E_xit" Click="Exit_Click" />
                 </MenuItem>
@@ -53,10 +53,10 @@
                             <TextBlock Text="Disconnect" VerticalAlignment="Center" Margin="0,0,5,2" />
                         </StackPanel>
                     </Button>
-                    <Button Margin="4,4,10,4" Click="Test_Click" Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button Margin="4,4,10,4" Click="Ping_Click" Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Horizontal">
                             <ContentControl Content="{StaticResource TriggerInterruptIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
-                            <TextBlock Text="Test" VerticalAlignment="Center" Margin="0,0,5,2" />
+                            <TextBlock Text="Ping" VerticalAlignment="Center" Margin="0,0,5,2" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

@@ -17,6 +17,8 @@ namespace SharpManager
 
         /// <summary>The read task completion source</summary>
         private TaskCompletionSource<bool>? readTaskCompletionSource = null;
+
+        /// <summary>The disposed value</summary>
         private bool disposedValue;
 
         /// <summary>
@@ -102,8 +104,6 @@ namespace SharpManager
                     serialPort.DataReceived -= SerialPort_DataReceived;
                     serialPort.ErrorReceived -= SerialPort_ErrorReceived;
                 }
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }

@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
-namespace SharpManager.ViewModels
+namespace SharpManager
 {
-    public abstract class BaseViewModel : INotifyPropertyChanged
+    public abstract class NotifyObject : INotifyPropertyChanged
     {
         /// <summary>
         /// Occurs when a property value changes.
@@ -21,12 +16,6 @@ namespace SharpManager.ViewModels
         /// <returns></returns>
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        /// <summary>
-        /// The propagated properties
-        /// </summary>
-        private readonly ConditionalWeakTable<INotifyPropertyChanged, Dictionary<string, List<string>>> propagatedProperties = new();
-
-        /// <summary>The properties values</summary>
         private readonly Dictionary<string, object> properties = new();
 
         /// <summary>
@@ -68,10 +57,10 @@ namespace SharpManager.ViewModels
         /// <param name="name">The name.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        protected bool SetProperty<T>(T value, [CallerMemberName] string? name = null) 
+        protected bool SetProperty<T>(T value, [CallerMemberName] string? name = null)
         {
             if (name == null) throw new ArgumentNullException(name);
-            if (!properties.ContainsKey(name)) 
+            if (!properties.ContainsKey(name))
             {
                 if (value == null || value.Equals(default)) return false;
             }
@@ -126,39 +115,6 @@ namespace SharpManager.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        /// <summary>
-        /// Propagates the property changed event of another object
-        /// </summary>
-        /// <param name="instance">The instance.</param>
-        /// <param name="instancePropertyName">Name of the instance property.</param>
-        /// <param name="localProperties">The local properties.</param>
-        internal protected void PropagatePropertyChanged(INotifyPropertyChanged instance, string instancePropertyName, params string[] localProperties)
-        {
-            if (instance == null) throw new ArgumentNullException(nameof(instance));
-            var instanceProperties = propagatedProperties.GetOrCreateValue(instance);
-            if (!instanceProperties.TryGetValue(instancePropertyName, out var thisProperties))
-            {
-                thisProperties = new List<string>();
-                instanceProperties.Add(instancePropertyName, thisProperties);
-            }
-            thisProperties.AddRange(localProperties);
-            instance.PropertyChanged -= PropagatePropertyChangeEventHandler;
-            instance.PropertyChanged += PropagatePropertyChangeEventHandler;
-        }
-
-        /// <summary>
-        /// Propagating property change event handler.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void PropagatePropertyChangeEventHandler(object? sender, PropertyChangedEventArgs e)
-        {
-            if (sender == null) throw new ArgumentNullException(nameof(sender));
-            if (!propagatedProperties.TryGetValue((INotifyPropertyChanged)sender, out var fields)) return;
-            if (e.PropertyName == null || !fields.ContainsKey(e.PropertyName)) return;
-            foreach (var propertyName in fields[e.PropertyName]) OnPropertyChanged(propertyName);
         }
     }
 }
