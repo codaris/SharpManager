@@ -17,7 +17,6 @@ const int BUTTON = 14;
 /** The disk read timeout */
 const long IN_DATAREADY_TIMEOUT = 50000;
 
-
 /** The serial and tape buffers */
 const int TAPE_BUFFER_SIZE = 64;        // The size of the serial and tape buffers
 byte serialBuffer[TAPE_BUFFER_SIZE];    // Serial receive buffer
@@ -27,6 +26,9 @@ int serialBufferIndex = 0;              // The index of the next position to rea
 int tapeBufferCount = 0;                // The number of items in the tape buffer
 int tapeBufferIndex = 0;                // The next byte to process in the tape buffer
 
+const int TEST_BUFFER_SIZE = 256;
+byte testBuffer[TEST_BUFFER_SIZE];
+int testBufferIndex = 0;
 
 /**
  * @brief Setup the Arduino for connection to Sharp Pocket Computer
@@ -44,9 +46,6 @@ void setup()
     pinMode(SHARP_SEL1, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(BUTTON, INPUT_PULLUP);
-    Serial.println();
-    Serial.println("Ready:");
-    Serial.println();
 }
 
 const int x = SERIAL_RX_BUFFER_SIZE;
@@ -59,20 +58,26 @@ void loop()
     // Process a packet from the serial port
     if (Serial.available()) ProcessSerialPacket();
 
+    // If button is pressed send tape data
+    if (digitalRead(BUTTON) == LOW) ReadTape();
+
     // Read the Xout PIN
     bool xout = digitalRead(SHARP_XOUT);
     
     // if Xout is high, read device select
     if (xout) {
-        int device = ReadDeviceSelect();
-        Serial.print(device, HEX);
-        Serial.println();
+        int device = ReadDeviceSelect();       
         if (device == 0x0F || device == 0x10 || device == 0x45 || device == 0x41) {
             digitalWrite(SHARP_ACK, 1);
             delayMicroseconds(9000);
             digitalWrite(SHARP_ACK, 0);
+
+            Serial.write(Ascii::SOH);
+            Serial.write(Command::DeviceSelect);
+            Serial.write(device);
+
             // if (device == 0x10) SendRawData();
-            if (device == 0x41) ReadDisk();
+            // if (device == 0x41) ReadDisk();
         }
     }
 
@@ -175,19 +180,11 @@ int ReadPrintByte()
  */
 void OutputPrintByte(int data)
 {
-    switch (data) {
-        case 13:
-            Serial.println();
-            break;
-        case 48:
-            Serial.print("O"); // Letter "O"
-            break;
-        case 240:
-            Serial.print("0"); // Digital zero
-            break;
-        default:
-            if (data > 31 && data < 127) Serial.print(char(data));
-    }
+    if (data == 48) data = 'O'; // Letter "O"
+    else if (data == 240) data = '0'; // Digital zero
+    Serial.write(Ascii::SOH);
+    Serial.write(Command::Print);
+    Serial.write(data);
 }
 
 
@@ -229,9 +226,22 @@ void ReadDisk()
 void LoadFromTape()
 {
     // Read the load tape packet information
-    int length = WaitReadWord();          // 2 bytes, total length of program
+    int length = WaitReadWord();            // 2 bytes, total length of program
+    if (length == -1) {
+        Serial.write(Ascii::NAK);
+        Serial.write(ErrorCode::Timeout);
+        return;
+    }
+
     int remaining = length;                 // Number of bytes remaining to be read from PC
-    int headerCount = WaitReadByte();     // Number of bytes that make up the header
+
+    int headerCount = WaitReadByte();       // Number of bytes that make up the header
+    if (length == -1) {
+        Serial.write(Ascii::NAK);
+        Serial.write(ErrorCode::Timeout);
+        return;
+    }
+
     Serial.write(Ascii::ACK);               // Acknowledge the packet
 
     // Reset the buffers
@@ -386,4 +396,100 @@ int WaitReadWord()
         if ((millis() - startTime) > 1000) return -1;
     }
     return Serial.read() | (Serial.read() << 8);
+}
+
+int ReadTapeByte()
+{
+    int result = 0;
+    while (true) {
+        unsigned long startTimeout = millis();
+        while (!digitalRead(SHARP_XOUT)) {      // While low
+            if ((millis() - startTimeout) > 1000) return -2;       
+        }  
+        // High now
+        unsigned long startTime = micros();
+        while (digitalRead(SHARP_XOUT));       // While high
+        startTimeout = millis();
+        while (!digitalRead(SHARP_XOUT)) {      // While low
+            if ((millis() - startTimeout) > 1000) return -2;       
+        }  
+        unsigned long duration = micros() - startTime;
+        //Serial.println(duration);
+
+        if (duration < 270) {
+            // If less than 150 consider to be a 1 bit
+            continue;
+        }
+
+        // Serial.print(duration);
+
+        if (ReadTapeBit(startTime)) continue;
+        for (int j = 4; j < 8; j++) bitWrite(result, j, ReadTapeBit(micros()));
+        if (!ReadTapeBit(micros())) return -3;      // Stop bit
+        if (ReadTapeBit(micros())) return -4;       // Start bit
+        for (int j = 0; j < 4; j++) bitWrite(result, j, ReadTapeBit(micros()));
+        if (!ReadTapeBit(micros())) return -5;      // Stop bit      
+        return result;  
+    }
+}
+
+
+bool ReadTapeBit(unsigned long startTime)
+{
+    const int samplePeriod = 2000;
+    int pulseCount = 0;
+    int previousState = 0;
+    while (micros() - startTime < samplePeriod)
+    {
+        int currentState = digitalRead(SHARP_XOUT);
+        if (previousState != currentState) {
+            pulseCount++;
+            previousState = currentState;
+        }        
+    }
+
+    pulseCount /= 2; // Divide by 2 to get the number of cycles (full square waves)
+    return pulseCount >= 6 ? 1 : 0; // If 6 or more cycles are detected, it's a 1 bit, otherwise it's a 0 bit
+}
+
+
+void ReadTape()
+{
+    Serial.println("Waiting for CSAVE...");
+
+    unsigned long startTimeout = millis();
+    while (!digitalRead(SHARP_XOUT)) {      // While low
+        if ((millis() - startTimeout) > 10000) {
+            Serial.println("Timeout");
+            return;
+        }
+    }  
+
+    int device = ReadDeviceSelect(); 
+    Serial.print("Device select: 0x");
+    Serial.println(device, HEX);
+
+    testBufferIndex = 0;
+
+    Serial.println("Starting read...");
+    int termCount = 0;
+
+    while (true) {
+        int value = ReadTapeByte();
+        if (value >= 0) {
+            Serial.print(value, HEX);
+            Serial.print(" ");
+            if (termCount == 2) {
+                Serial.println("Done.");
+                break;
+            }
+            if (value == 0xFF) termCount++;
+            else termCount = 0;
+            continue;
+        }
+        if (value == -2) Serial.println("Timeout");
+        else if (value == -1) Serial.println("error");
+        Serial.println(value);
+        break;
+    }    
 }

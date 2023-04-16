@@ -12,25 +12,27 @@ using System.Xml.Linq;
 
 namespace SharpManager
 {
+    /// <summary>
+    /// The error codes
+    /// </summary>
     public enum ErrorCode
     {
         Unknown = 0,
-        BadPacketNum = 1,
-        BadChecksum = 2,
-        Overflow = 3,
-        InvalidData = 4,
-        Cancelled = 5,
-        Unexpected = 6
+        Timeout = 1,
+        InvalidData = 2,
+        Cancelled = 3,
+        Unexpected = 4
     }
 
-    public enum PacketType
+    /// <summary>
+    /// The packet types
+    /// </summary>
+    public enum Command
     {
         Ping = 1,
-        StartTape = 2,
-        TapeHeaderBlock = 3,
-        TapeDataBlock = 4,
-        EndType = 5,
-        StartTapeStream = 6
+        DeviceSelect = 2,
+        LoadTape = 3,
+        Print = 4
     }
 
     public class Arduino : NotifyObject, IDisposable
@@ -117,7 +119,7 @@ namespace SharpManager
                     var data = serialStream.ReadByte();
                     // If sync then ack
                     if (data == Ascii.SYN) serialStream.WriteByte(Ascii.SYN);
-                    //if (data == Ascii.SOH) await ReadPacket(serialPortByteStream);
+                    if (data == Ascii.SOH) await ProcessPacket();
                     serialStream.WriteByte(Ascii.NAK);
                     serialStream.WriteByte((byte)ErrorCode.Unexpected);
                 }
@@ -150,7 +152,7 @@ namespace SharpManager
 
             messageLog.WriteLine("Ping...");
             serialStream.WriteByte(Ascii.SOH);
-            serialStream.WriteByte((byte)PacketType.Ping);
+            serialStream.WriteByte((byte)Command.Ping);
             var response = await serialStream.TryReadByteAsync(2500);       // Wait for response
             if (response == Ascii.ACK)
             {
@@ -193,7 +195,7 @@ namespace SharpManager
             messageLog.WriteLine($"Start new tape...  Length: {fileStream.Length}");
 
             serialStream.WriteByte(Ascii.SOH);    // Start of packet 
-            serialStream.WriteByte((byte)PacketType.StartTapeStream);
+            serialStream.WriteByte((byte)Command.LoadTape);
             serialStream.WriteWord((ushort)fileStream.Length);
             serialStream.WriteByte(HeaderSize);
             await ReadResponse();
@@ -253,6 +255,35 @@ namespace SharpManager
                 if (tryCount > 5) return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Processes the incoming packet.
+        /// </summary>
+        private async Task ProcessPacket()
+        {
+            if (serialStream == null) throw new InvalidOperationException("Not Connected");
+            var command = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
+            if (!command.HasValue) return;
+            switch ((Command)command.Value)
+            {
+                case Command.Ping:
+                    serialStream.WriteByte(Ascii.ACK);
+                    break;
+                case Command.DeviceSelect:
+                    var device = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
+                    if (!device.HasValue) return;
+                    messageLog.WriteLine($"Device Select: 0x{device.Value:X}");
+                    break;
+                case Command.Print:
+                    var character = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
+                    if (!character.HasValue) return;
+                    if (character.Value == 13) messageLog.WriteLine();
+                    else messageLog.Write(((char)character.Value).ToString());
+                    break;
+                default:
+                    return;
+            }
         }
 
         /// <summary>
