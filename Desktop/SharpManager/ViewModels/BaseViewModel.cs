@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
@@ -27,6 +28,14 @@ namespace SharpManager.ViewModels
 
         private readonly Dictionary<string, object> properties = new();
 
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="defaultValue">The default value.</param>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         protected T GetProperty<T>(T defaultValue = default, [CallerMemberName] string? name = null)
         {
             if (name == null) throw new ArgumentNullException(name);
@@ -34,6 +43,14 @@ namespace SharpManager.ViewModels
             return (T)properties[name];
         }
 
+        /// <summary>
+        /// Sets the property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
         protected bool SetProperty<T>(T value, [CallerMemberName] string? name = null) 
         {
             if (name == null) throw new ArgumentNullException(name);
@@ -47,9 +64,26 @@ namespace SharpManager.ViewModels
                 if (currentValue == null && value == null) return false;
                 if (currentValue != null && currentValue.Equals(value)) return false;
             }
+            #pragma warning disable CS8601 // Possible null reference assignment.
             properties[name] = value;
+            #pragma warning restore CS8601 // Possible null reference assignment.
             OnPropertyChanged(name);
             return true;
+        }
+
+        /// <summary>
+        /// Sets the property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        protected bool SetProperty<T>(T value, Action action, [CallerMemberName] string? name = null)
+        {
+            bool result = SetProperty(value, name);
+            if (result) action?.Invoke();
+            return result;
         }
 
         /// <summary>

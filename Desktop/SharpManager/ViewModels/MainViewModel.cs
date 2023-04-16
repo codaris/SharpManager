@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,11 +15,21 @@ namespace SharpManager.ViewModels
 
         public ObservableCollection<string> SerialPorts { get; } = new();
 
+        private Connection connection = new Connection();
+
         public string? SelectedSerialPort
         {
             get => GetProperty<string?>();
             set => SetProperty(value);
         }
+
+        public bool IsConnected
+        {
+            get => GetProperty<bool>(false);
+            set => SetProperty(value, () => OnPropertyChanged(nameof(IsDisconnected)));
+        }
+
+        public bool IsDisconnected => !IsConnected;
 
         /*
         public SerialPortViewModel? SelectedSerialPort
@@ -40,6 +51,39 @@ namespace SharpManager.ViewModels
             UpdateSerialPorts(SerialPortService.GetAvailableSerialPorts());
         }
 
+        /// <summary>
+        /// Connects this instance.
+        /// </summary>
+        /// <returns></returns>
+        public bool Connect()
+        {
+            if (SelectedSerialPort == null) return false;
+            connection.Connect(SelectedSerialPort);
+            IsConnected = true;
+            return true;
+        }
+
+        /// <summary>
+        /// Disconnects this instance.
+        /// </summary>
+        public void Disconnect()
+        {
+            connection.Disconnect();
+            IsConnected = false;    
+        }
+
+        public async Task Test(Action<string> logger)
+        {
+            await connection.Test(logger);
+        }
+
+        public async Task<bool> SendFile(string fileName, Action<string> logger)
+        {
+            using var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            await connection.SendFileStream(fileStream, logger);
+            return true;
+        }
+
         private void SerialPortService_PortsChanged(object? sender, PortsChangedArgs e)
         {
             _ = App.RunOnUIThread(() => UpdateSerialPorts(e.SerialPorts));
@@ -50,6 +94,8 @@ namespace SharpManager.ViewModels
             foreach (var serialPort in SerialPorts.ToList())
             {
                 if (ports.Contains(serialPort)) continue;
+                if (IsConnected) connection.Disconnect();
+                IsConnected = false;
                 SerialPorts.Remove(serialPort);
             }
 

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.IO.Pipes;
 using System.IO.Ports;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -20,6 +23,16 @@ namespace SharpManager
         Unexpected = 6
     }
 
+    public enum PacketType
+    {
+        Ping = 1,
+        StartTape = 2,
+        TapeHeaderBlock = 3,
+        TapeDataBlock = 4,
+        EndType = 5,
+        StartTapeStream = 6
+    }
+
     public class Connection : IDisposable
     {
         /// <summary>The serial port</summary>
@@ -31,6 +44,10 @@ namespace SharpManager
         CancellationTokenSource? cancellationTokenSource = null;
 
         private bool inCommand = false;
+
+        private const int PacketSize = 8;
+
+        private const int HeaderSize = 10;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Connection"/> class.
@@ -44,7 +61,7 @@ namespace SharpManager
         /// </summary>
         /// <param name="portName">Name of the port.</param>
         /// <returns></returns>
-        public async Task Connect(string portName)
+        public void Connect(string portName)
         {
             cancellationTokenSource = new();
             serialPort = new SerialPort(portName, 115200);
@@ -53,7 +70,7 @@ namespace SharpManager
             serialPortByteStream = new SerialPortByteStream(serialPort);
 
             // Begin the main loop
-            await Mainloop();
+            _ = Task.Run(async () => { await Mainloop(); });
         }
 
         /// <summary>
@@ -77,8 +94,8 @@ namespace SharpManager
                 {
                     var data = serialPortByteStream.ReadByte();
                     // If sync then ack
-                    if (data == Ascii.SYN) serialPortByteStream.WriteByte(Ascii.ACK);
-                    if (data == Ascii.SOH) await ReadPacket(serialPortByteStream);
+                    if (data == Ascii.SYN) serialPortByteStream.WriteByte(Ascii.SYN);
+                    //if (data == Ascii.SOH) await ReadPacket(serialPortByteStream);
                     serialPortByteStream.WriteByte(Ascii.NAK);
                     serialPortByteStream.WriteByte((byte)ErrorCode.Unexpected);
                 }
@@ -86,31 +103,234 @@ namespace SharpManager
             }
         }
 
-        private async Task ReadPacket(IReadByteStream stream)
+        public async Task Test(Action<string> logger)
         {
-            var packetType = await stream.ReadByteAsync(1000);
-            var packetTypeInv = await stream.ReadByteAsync(1000);
-            var packetNum = await stream.ReadByteAsync(1000);
-            var packetNumInv = await stream.ReadByteAsync(1000);
-            var packetSize = await stream.ReadByteAsync(1000);
-            var packetSizeInv = await stream.ReadByteAsync(1000);
-        }
+            if (serialPortByteStream == null) throw new InvalidOperationException("Cannot test if not connected");
 
-        public async Task SendFile(Stream dataStream, IByteStream byteStream)
-        {
+            using var _ = StartCommand();
+
+            logger("Clearing stream...\r\n");
+
             // Empty the read buffer
-            while (byteStream.DataAvailable) await byteStream.ReadByteAsync();
+            while (serialPortByteStream.DataAvailable) await serialPortByteStream.ReadByteAsync().ConfigureAwait(false);
 
-            // Send Syn character and wait for ack
-            if (!await Synchronize(byteStream)) throw new Exception("Unable to start file transfer");
+            logger("Synchronizing...\r\n");
 
+            // Try synchronizing
+            if (!await Synchronize(serialPortByteStream).ConfigureAwait(false))
+            {
+                logger("Synchronize failed.\r\n");
+            }
 
+            logger("Ping...\r\n");
+            serialPortByteStream.WriteByte(Ascii.SOH);
+            serialPortByteStream.WriteByte((byte)PacketType.Ping);
+            var response = await serialPortByteStream.TryReadByteAsync(2500);       // Wait for response
+            if (response == Ascii.ACK)
+            {
+                logger("Success.\r\n");
+            }
+            else if (response == Ascii.NAK)
+            {
+                response = await serialPortByteStream.TryReadByteAsync(2000);
+                //var errorCode = ErrorCode.Unknown;
+                //if (response.HasValue) errorCode = (ErrorCode)response.Value;
+                logger($"Fail: {response}\r\n");
+            }
+            else
+            {
+                logger($"No response.\r\n");
+            }
         }
 
+        public async Task<bool> Ping()
+        {
+            if (serialPortByteStream == null) throw new InvalidOperationException("Cannot send file if not connected");
+
+            try
+            {
+                // Start processing a command
+                inCommand = true;
+
+                // Empty the read buffer
+                while (serialPortByteStream.DataAvailable) await serialPortByteStream.ReadByteAsync().ConfigureAwait(false);
+
+                // Send Syn character and wait for ack
+                // if (!await Synchronize(serialPortByteStream).ConfigureAwait(false)) throw new Exception("Synchronization failed");
+
+                SendPacket(serialPortByteStream, PacketType.Ping);
+
+                var response = await serialPortByteStream.TryReadByteAsync(2500);       // Wait for response
+                if (response == Ascii.ACK) return true;
+                if (response == Ascii.NAK)
+                {
+                    response = await serialPortByteStream.TryReadByteAsync(2000);
+                    var errorCode = ErrorCode.Unknown;
+                    if (response.HasValue) errorCode = (ErrorCode)response.Value;
+                    throw new Exception($"Error {response.Value}");
+                }
+                return false;
+            }
+            finally
+            {
+                inCommand = false;
+            }
+        }
+
+        public async Task SendFile(Stream fileStream, Action<string> logger)
+        {
+            if (serialPortByteStream == null) throw new InvalidOperationException("Cannot send file if not connected");
+
+            using var _ = StartCommand();
+
+            // Empty the read buffer
+            logger("Clearing stream...\r\n");
+            while (serialPortByteStream.DataAvailable) await serialPortByteStream.ReadByteAsync().ConfigureAwait(false);
+
+            // Send Syn character and wait for syn
+            logger("Synchronizing...\r\n");
+            if (!await Synchronize(serialPortByteStream)) throw new Exception("Unable to start file transfer");
+
+            var packet = new byte[8];
+            logger($"Start tape\r\n");
+            SendPacket(serialPortByteStream, PacketType.StartTape);
+            await ReadResponse(serialPortByteStream);
+
+            int headerBytes = HeaderSize;
+
+            while (true)
+            {
+                int packetSize = fileStream.Read(packet, 0, (headerBytes > 0) ? Math.Min(headerBytes, packet.Length) : packet.Length);
+                if (packetSize == 0) break;
+                logger($"Sendng packet {packetSize} {((headerBytes > 0) ? PacketType.TapeHeaderBlock : PacketType.TapeDataBlock)} bytes...\r\n");
+                SendPacket(serialPortByteStream, (headerBytes > 0) ? PacketType.TapeHeaderBlock : PacketType.TapeDataBlock, packet, (byte)packetSize);
+                headerBytes -= packetSize;
+                await ReadResponse(serialPortByteStream);
+            }
+
+            logger($"End tape\r\n");
+            SendPacket(serialPortByteStream, PacketType.EndType);
+            await ReadResponse(serialPortByteStream);
+
+            /*
+            try
+            {
+                // Start processing a command
+                inCommand = true;
+
+                // Empty the read buffer
+                while (serialPortByteStream.DataAvailable) await serialPortByteStream.ReadByteAsync().ConfigureAwait(false);
+
+                // Send Syn character and wait for ack
+                // if (!await Synchronize(serialPortByteStream)) throw new Exception("Unable to start file transfer");
+
+                var packet = new byte[256];
+
+                while (true)
+                {
+                    int packetSize = fileStream.Read(packet, 0, packet.Length);
+                    if (packetSize == 0) break;
+                    SendPacket(serialPortByteStream, PacketType.SendFile, packet, (byte)packetSize);
+
+                    var response = await serialPortByteStream.TryReadByteAsync(2500);       // Wait for response
+
+                    if (response == Ascii.ACK)
+                    {
+                        continue;
+                    }
+
+                    if (response == Ascii.NAK)
+                    {
+                        response = await serialPortByteStream.TryReadByteAsync(2000);
+                        var errorCode = ErrorCode.Unknown;
+                        if (response.HasValue) errorCode = (ErrorCode)response.Value;
+                        throw new Exception($"File transfer error {response.Value}");
+                    }
+                }
+            }
+            catch
+            {
+                // Ensure cancelled
+                for (int i = 0; i < 5; i++) serialPortByteStream.WriteByte(Ascii.CAN);
+                throw;
+            }
+            finally
+            {
+                inCommand = false;
+            }
+            */
+        }
+
+        public async Task SendFileStream(Stream fileStream, Action<string> logger)
+        {
+            if (serialPortByteStream == null) throw new InvalidOperationException("Cannot send file if not connected");
+
+            using var _ = StartCommand();
+
+            // Empty the read buffer
+            logger("Clearing stream...\r\n");
+            while (serialPortByteStream.DataAvailable) await serialPortByteStream.ReadByteAsync().ConfigureAwait(false);
+
+            // Send Syn character and wait for syn
+            logger("Synchronizing...\r\n");
+            if (!await Synchronize(serialPortByteStream)) throw new Exception("Unable to start file transfer");
+
+            var packet = new byte[64];
+            logger($"Start new tape...  Length: {fileStream.Length}\r\n");
+
+            serialPortByteStream.WriteByte(Ascii.SOH);    // Start of packet 
+            serialPortByteStream.WriteByte((byte)PacketType.StartTapeStream);
+            serialPortByteStream.WriteWord((ushort)fileStream.Length);
+            serialPortByteStream.WriteByte(HeaderSize);
+            await ReadResponse(serialPortByteStream);
+
+            while (true)
+            {
+                int packetSize = fileStream.Read(packet, 0, packet.Length);
+                if (packetSize == 0) break;
+                logger($"Sendng packet {packetSize} bytes...\r\n");
+                for (int i = 0; i < packetSize; i++) serialPortByteStream.WriteByte(packet[i]);
+                await ReadResponse(serialPortByteStream);
+            }
+
+            logger($"Done.\r\n");
+        }
+
+
+        private void SendPacket(IWriteByteStream stream, PacketType type)
+        {
+            stream.WriteByte(Ascii.SOH);    // Start of packet 
+            stream.WriteByte((byte)type);
+        }
+
+        private void SendPacket(IWriteByteStream stream, PacketType type, byte[] data)
+        {
+            SendPacket(stream, type, data, (byte)data.Length);
+        }
+
+        private void SendPacket(IWriteByteStream stream, PacketType type, byte[] data, byte length)
+        {
+            stream.WriteByte(Ascii.SOH);    // Start of packet 
+            stream.WriteByte((byte)type);
+            stream.WriteByte(length);
+            for (int i = 0; i < length; i++) stream.WriteByte(data[i]);
+        }
+
+        private async Task ReadResponse(IReadByteStream stream)
+        {
+            var response = await stream.TryReadByteAsync(2500);    // Wait for response
+            if (response == Ascii.ACK) return;
+            response = await stream.TryReadByteAsync(2000);         // Wait for error code
+            var errorCode = ErrorCode.Unknown;
+            if (response.HasValue) errorCode = (ErrorCode)response.Value;
+            throw new Exception($"Transmission Error {errorCode}");
+        }
+
+        /*
         public async Task SendPacket(IWriteByteStream baseStream, byte type, byte num, byte size, byte[] data)
         {
             var stream = new ChecksumWriteByteStream(baseStream);
-            baseStream.WriteByte(Ascii.SOH);    // Start of packet (not in checksum)
+            baseStream.WriteByte(Ascii.SOH);    // Start of packet 
             stream.WriteByte(type);
             stream.WriteByte(num);
             stream.WriteByte(size);
@@ -134,6 +354,7 @@ namespace SharpManager
             }
             stream.WriteChecksum();
         }
+        */
 
         /// <summary>
         /// Synchronizes the specified byte stream.
@@ -146,39 +367,18 @@ namespace SharpManager
             while (true)
             {
                 byteStream.WriteByte(Ascii.SYN);
-                var startAck = await byteStream.TryReadByteAsync(1000);       // Wait one second for response
+                var startAck = await byteStream.TryReadByteAsync(1000).ConfigureAwait(false);       // Wait one second for response
                 if (startAck == Ascii.SYN) break;
                 if (startAck == Ascii.NAK)
                 {
                     // Ignore error code
-                    await byteStream.TryReadByteAsync(1000);
+                    await byteStream.TryReadByteAsync(1000).ConfigureAwait(false);
                     continue;
                 }
                 tryCount++;
                 if (tryCount > 5) return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Handles the ErrorReceived event of the SerialPort control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SerialErrorReceivedEventArgs"/> instance containing the event data.</param>
-        /// <exception cref="System.Exception">Serial port error: {e.EventType}</exception>
-        private void SerialPort_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
-        {
-            throw new Exception($"Serial port error: {e.EventType}");
-        }
-
-        /// <summary>
-        /// Handles the DataReceived event of the SerialPort control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SerialDataReceivedEventArgs"/> instance containing the event data.</param>
-        private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            // throw new NotImplementedException();
         }
 
         /// <summary>
@@ -213,6 +413,15 @@ namespace SharpManager
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Starts the command.
+        /// </summary>
+        internal ScopeGuard StartCommand()
+        {
+            inCommand = true;
+            return new ScopeGuard(() => inCommand = false);
         }
     }
 }

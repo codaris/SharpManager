@@ -18,6 +18,8 @@ using Microsoft.Win32;
 
 using SharpManager.ViewModels;
 
+using static System.Net.Mime.MediaTypeNames;
+
 namespace SharpManager.Views
 {
     /// <summary>
@@ -37,7 +39,7 @@ namespace SharpManager.Views
         {
             InitializeComponent();
 
-            Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
+            System.Windows.Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             viewModel = new MainViewModel();
@@ -83,14 +85,18 @@ namespace SharpManager.Views
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        private async void OpenFile_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "WAV files (*.wav)|*.wav|Tape files (*.tap)|*.tap|All files (*.*)|*.*";
+            // openFileDialog.Filter = "WAV files (*.wav)|*.wav|Tape files (*.tap)|*.tap|All files (*.*)|*.*";
+            openFileDialog.Filter = "Tape files (*.tap)|*.tap|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                Log.AppendText($"File selected: {openFileDialog.FileName}\r\n");
+                Log.AppendText($"Sending file: {openFileDialog.FileName}\r\n");
+                await viewModel.SendFile(openFileDialog.FileName, AppendMessage);
             }
+
+            /*
             var data = ParseWAVFile(openFileDialog.FileName);
             for (int i = 0; i < data.Length; i++) 
             {
@@ -98,6 +104,7 @@ namespace SharpManager.Views
                 if (i % 40 == 39) Log.AppendText("\r\n");
             }
             Log.AppendText("\r\n");
+            */
         }
 
         /// <summary>
@@ -107,7 +114,7 @@ namespace SharpManager.Views
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private const int SampleRate = 16000;
@@ -158,7 +165,7 @@ namespace SharpManager.Views
 
                 bool foundDataChunk = false;
                 int dataSize = 0;
-                byte[] buffer = null;
+                byte[]? buffer = null;
 
                 while (!foundDataChunk)
                 {
@@ -201,12 +208,11 @@ namespace SharpManager.Views
                 int sampleCount = 0;
                 bool currentState = false;
                 bool previousState = false;
-                int cycleCount = 0;
 
                 int highCycleCount = 0;
                 int lowCycleCount = 0;
 
-                for (int i = 0; i < buffer.Length; i++)
+                for (int i = 0; buffer != null && i < buffer.Length; i++)
                 {
                     currentState = buffer[i] > 127;
                     sampleCount++;
@@ -246,6 +252,26 @@ namespace SharpManager.Views
 
             return result;
             */
+        }
+
+        private void Connect_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Connect();
+        }
+
+        private void Disconnect_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Disconnect();
+        }
+
+        private async void Test_Click(object sender, RoutedEventArgs e)
+        {
+            await viewModel.Test(AppendMessage);
+        }
+
+        private void AppendMessage(string message)
+        {
+            Dispatcher.InvokeAsync(() => Log.AppendText(message));
         }
     }
 }

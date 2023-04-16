@@ -14,6 +14,55 @@ const int BUTTON = 14;
 
 const long IN_DATAREADY_TIMEOUT = 50000;
 
+namespace Ascii {
+    const byte NUL = 0;   // Null char
+    const byte SOH = 1;   // Start of Heading
+    const byte STX = 2;   // Start of Text
+    const byte ETX = 3;   // End of Text
+    const byte EOT = 4;   // End of Transmission
+    const byte ENQ = 5;   // Enquiry
+    const byte ACK = 6;   // Acknowledgment
+    const byte BEL = 7;   // Bell
+    const byte BS = 8;   // Back Space
+    const byte HT = 9;   // Horizontal Tab
+    const byte LF = 10;  // Line Feed
+    const byte VT = 11;  // Vertical Tab
+    const byte FF = 12;  // Form Feed
+    const byte CR = 13;  // Carriage Return
+    const byte SO = 14;  // Shift Out / X-On
+    const byte SI = 15;  // Shift In / X-Off
+    const byte DLE = 16;  // Data Line Escape
+    const byte DC1 = 17;  // Device Control 1 (oft. XON)
+    const byte DC2 = 18;  // Device Control 2
+    const byte DC3 = 19;  // Device Control 3 (oft. XOFF)
+    const byte DC4 = 20;  // Device Control 4
+    const byte NAK = 21;  // Negative Acknowledgement
+    const byte SYN = 22;  // Synchronous Idle
+    const byte ETB = 23;  // End of Transmit Block
+    const byte CAN = 24;  // Cancel
+    const byte EM = 25;  // End of Medium
+    const byte SUB = 26;  // Substitute
+    const byte ESC = 27;  // Escape
+    const byte FS = 28;  // File Separator
+    const byte GS = 29;  // Group Separator
+    const byte RS = 30;  // Record Separator
+    const byte US = 31;  // Unit Separator
+    const byte ENTER = CR;
+    const byte SPACE = 32;
+    const byte DELETE = 127;
+    const byte SINGLEQUOTE = 39;
+}
+
+namespace Command
+{
+    const int Ping = 1;
+    const int StartTape = 2;
+    const int TapeHeaderBlock = 3;
+    const int TapeDataBlock = 4;
+    const int EndType = 5;
+    const int StartTapeStream = 6;
+}
+
 // For CLOAD test
 //------------------
 const int pulse8 = 125;  // μs, short pulse bei CSAVE/CLOAD (8 x pulse8 = HIGH)
@@ -56,6 +105,25 @@ const byte RAW[] = {
 };
 const int rawsize = sizeof(RAW);
 
+const int PACKET_BUFFER_SIZE = 8;        // Size of the serial receive buffer
+byte serialBuffer[PACKET_BUFFER_SIZE];      // Serial receive buffer
+
+const int TAPE_BUFFER_SIZE = 32;
+byte tapeBuffer[TAPE_BUFFER_SIZE];      // Serial receive buffer
+int tapeCount = 0;
+int tapeHeaderCount = 0;
+
+
+const int BUFFER_SIZE = 64;
+byte readBuffer[BUFFER_SIZE];      // Serial receive buffer
+byte writeBuffer[BUFFER_SIZE];
+int readBufferCount = 0;
+int readBufferIndex = 0;
+int writeBufferCount = 0;
+int writeBufferIndex = 0;
+
+
+
 /**
  * @brief Setup the Arduino for connection to Sharp Pocket Computer
  */
@@ -77,18 +145,18 @@ void setup()
     Serial.println();
 }
 
+const int x = SERIAL_RX_BUFFER_SIZE;
+
 /**
  * @brief The main loop
  */
 void loop() 
 {   
     // Read value from the serial port
-    if (Serial.available()) {
-        if (Serial.read() == 'A') SendRawData();
-    }
+    if (Serial.available()) ProcessSerialPacket();
 
     // If button is pressed send tape data
-    if (digitalRead(BUTTON) == LOW) SendRawData();
+    if (digitalRead(BUTTON) == LOW) SendTapeDataOld(TAPE, tapesize); //SendRawData();
 
     // Read the Xout PIN
     bool xout = digitalRead(SHARP_XOUT);
@@ -102,7 +170,7 @@ void loop()
             digitalWrite(SHARP_ACK, 1);
             delayMicroseconds(9000);
             digitalWrite(SHARP_ACK, 0);
-            if (device == 0x10) SendRawData();
+            // if (device == 0x10) SendRawData();
             if (device == 0x41) ReadDisk();
         }
     }
@@ -112,6 +180,36 @@ void loop()
         OutputPrintByte(ReadPrintByte());
     }
 } 
+
+void ProcessSerialPacket()
+{
+    int data = Serial.read();
+    if (data == Ascii::SOH) {
+        int command = ReadSerialByte();
+        if (command == Command::Ping) { /* Success */}
+        else if (command == Command::StartTapeStream) StartTapeStream();
+        else if (command == Command::StartTape) StartTapeBuffer(); 
+        else if (command == Command::EndType) EndTapeBuffer();
+        else if (command == Command::TapeHeaderBlock || command == Command::TapeDataBlock)
+        {
+            int count = ReadSerialByte();
+            count = Serial.readBytes(serialBuffer, count);
+            SendTapeDataBuffer(serialBuffer, count, command == Command::TapeHeaderBlock);
+        }       
+        else 
+        {
+            Serial.write(Ascii::NAK);
+            Serial.write(command);
+            return;
+        }
+        Serial.write(Ascii::ACK);
+        return;
+    }
+    if (data == Ascii::SYN) {
+        Serial.write(Ascii::SYN);
+        return;
+    }
+}
 
 /**
  * @brief Reads the device select 
@@ -210,27 +308,168 @@ void ReadDisk()
     }
 }
 
-/**
- * @brief Sends the tape data to the pocket computer
- */
-void SendTapeData()
+void StartTapeStream()
 {
-    Serial.println("Sending tape data...");  
+    // Read an acknowledge the header
+    int length = ReadSerialWord();
+    int remaining = length;
+    int headerCount = ReadSerialByte();
+    Serial.write(Ascii::ACK);
+
+    // Reset the buffers
+    writeBufferCount = 0;
+    writeBufferIndex = 0;
+    readBufferCount = min(BUFFER_SIZE, remaining);
+    readBufferIndex = 0;
+
+    // Has the tape prefix been sent
+    bool sentPrefix = false;
+
+    while (true) 
+    {
+        // If the write buffer contains unsent bytes
+        if (writeBufferIndex < writeBufferCount) {
+            // Send the prefix if it isn't already sent
+            if (!sentPrefix) {
+                StartTape();
+                sentPrefix = true;
+            }
+            // Send a single byte to the pocket computer
+            SendTapeByte(writeBuffer[writeBufferIndex++], headerCount > 0);
+            // Decrement the header count
+            if (headerCount > 0) headerCount--;
+        }
+        else
+        {
+            // If write buffer empty and no remaining bytes, leave
+            if (remaining == 0) break;
+        }
+
+        // If a byte is available, add to read buffer
+        if (Serial.available() > 0 && readBufferIndex < readBufferCount) {
+            readBuffer[readBufferIndex++] = Serial.read();
+        }    
+
+        // If the read buffer is full and the write buffer is full
+        // Copy the read buffer into the write buffer and receive another packet
+        if (readBufferIndex == readBufferCount && writeBufferIndex == writeBufferCount) {
+            remaining -= readBufferCount;
+            memcpy(writeBuffer, readBuffer, readBufferCount);
+            writeBufferCount = readBufferCount;
+            writeBufferIndex = 0;
+            readBufferCount = min(BUFFER_SIZE, remaining);
+            readBufferIndex = 0;
+            // Acknowledge the read buffer
+            Serial.write(Ascii::ACK);
+        }
+    }
+
+    // End the tape after buffer completely sent
+    EndTape();
+}
+
+/**
+ * @brief Delay for microseconds but keep filling 
+ * @param microseconds 
+ */
+void DelayAndFillBuffer(unsigned int microseconds)
+{
+    unsigned long startTime = micros();
+
+    while ((micros() - startTime) < microseconds) {
+        if (Serial.available() > 0 && readBufferIndex < readBufferCount) {
+            readBuffer[readBufferIndex++] = Serial.read();
+        }
+    }    
+}
+
+void StartTapeBuffer()
+{
+    tapeCount = 0;
+    tapeHeaderCount = 0;
+}
+
+void StartTape()
+{
     digitalWrite(LED_BUILTIN, HIGH);  
-    delay(500);
-    for (int i = 0; i < 250; i++) SendBit(1);
-    for (int i = 0; i < tapesize; i++)
+    for (int i = 0; i < 250; i++) SendTapeBit(1);    
+}
+
+void SendTapeDataBuffer(byte data[], int count, bool header)
+{
+    for (int i = 0; i < count; i++) {
+        tapeBuffer[tapeCount++] = data[i];
+        if (header) tapeHeaderCount++;
+    }
+}
+
+void SendTapeData(const byte data[], int count, bool header)
+{
+    for (int i = 0; i < count; i++)
     {
         SendBit(0);
         for (int j = 4; j < 8; j++)
         {
-            SendBit(bitRead(TAPE[i], j));
+            SendBit(bitRead(data[i], j));
         }
         SendBit(1);
         SendBit(0);
         for (int j = 0; j < 4; j++)
         {
-            SendBit(bitRead(TAPE[i], j));
+            SendBit(bitRead(data[i], j));
+        }
+        if (header)
+        {
+            // In header send 5 stop bits
+            for (int sb = 0; sb < 5; sb++) SendBit(1);
+        }
+        else
+        {
+            // Otherwise send 2 stop bits
+            for (int sb = 0; sb < 2; sb++) SendBit(1);
+        }
+    }
+}
+
+void EndTape()
+{
+    // End with 2 stop bits
+    for (int sb = 0; sb < 2; sb++) SendBit(1);
+    digitalWrite(LED_BUILTIN, LOW);      
+}
+
+void EndTapeBuffer()
+{
+    SendTapeDataOld(tapeBuffer, tapeCount);
+}
+
+/**
+ * @brief Sends the tape data to the pocket computer
+ */
+void SendTapeDataOld(const byte data[], int count)
+{
+    StartTape();
+    SendTapeData(data, tapeHeaderCount, true);
+    SendTapeData(data+tapeHeaderCount, count-tapeHeaderCount, false);
+    EndTape();
+
+    /*
+    //Serial.println("Sending tape data...");  
+    digitalWrite(LED_BUILTIN, HIGH);  
+    delay(500);
+    for (int i = 0; i < 250; i++) SendBit(1);
+    for (int i = 0; i < count; i++)
+    {
+        SendBit(0);
+        for (int j = 4; j < 8; j++)
+        {
+            SendBit(bitRead(data[i], j));
+        }
+        SendBit(1);
+        SendBit(0);
+        for (int j = 0; j < 4; j++)
+        {
+            SendBit(bitRead(data[i], j));
         }
         if (i <= 9)
         {
@@ -247,8 +486,9 @@ void SendTapeData()
     // End with 2 stop bits
     for (int sb = 0; sb < 2; sb++) SendBit(1);
     digitalWrite(LED_BUILTIN, LOW);  
-    Serial.println("Send Complete.");
-    Serial.println();  
+    //Serial.println("Send Complete.");
+    //Serial.println();  
+    */
 }
 
 
@@ -263,6 +503,39 @@ void SendRawData()
         SendBit(RAW[i]);    
     }    
     Serial.println("Send Complete.");
+}
+
+
+void SendTapeByte(byte value, bool header)
+{
+    SendTapeBit(0);
+    for (int j = 4; j < 8; j++) SendTapeBit(bitRead(value, j));
+    SendTapeBit(1);
+    SendTapeBit(0);
+    for (int j = 0; j < 4; j++) SendTapeBit(bitRead(value, j));
+    // Send 5 or 2 stop bits
+    for (int sb = 0; sb < (header ? 5 : 2); sb++) SendTapeBit(1);
+}
+
+void SendTapeBit(bool bit)
+{
+    // For every bit, attempt to read one byte from the buffer
+    if (Serial.available() > 0 && readBufferIndex < readBufferCount) readBuffer[readBufferIndex++] = Serial.read();
+
+    if (bit) { // Bit = 1
+        for (int z = 0; z < 8; z++) PulseOut(pulse8); // 8 short pulses = HIGH
+    }
+    if (!bit) { // Bit = 0
+        for (int z = 0; z < 4; z++) PulseOut(pulse4); // 4 long pulses = LOW
+    }    
+}
+
+void TapePulseOut(int duration)
+{
+    digitalWrite(SHARP_XIN, HIGH);
+    DelayAndFillBuffer(duration);
+    digitalWrite(SHARP_XIN, LOW);
+    DelayAndFillBuffer(duration);    
 }
 
 
@@ -293,3 +566,22 @@ void PulseOut(int duration)
     delayMicroseconds(duration);
 }
 
+int ReadSerialByte()
+{
+    unsigned long startTime = millis();
+    while (Serial.available() == 0) {
+        // Wait for a byte to become available or until the timeout
+        if ((millis() - startTime) > 1000) return -1;
+    }
+    return Serial.read();
+}    
+
+int ReadSerialWord()
+{
+    unsigned long startTime = millis();
+    while (Serial.available() < 2) {
+        // Wait for a byte to become available or until the timeout
+        if ((millis() - startTime) > 1000) return -1;
+    }
+    return Serial.read() | (Serial.read() << 8);
+}
