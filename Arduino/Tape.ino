@@ -147,6 +147,13 @@ void TapePulseOut(int duration)
     delayMicroseconds(duration);
 }
 
+
+
+bool WaitForXoutHigh(int timeout = 1000);
+bool ReadStartBit(unsigned long startTime = micros());
+bool ReadBit(unsigned long startTime = micros());
+
+
 /**
  * @brief Saves data from the pocket computer to the serial port
  */
@@ -155,13 +162,10 @@ void Tape::Save()
     Serial.println("Waiting for CSAVE...");
 
     // Wait for xout to go high
-    unsigned long startTimeout = millis();
-    while (!digitalRead(SHARP_XOUT)) {      
-        if ((millis() - startTimeout) > 10000) {
-            Serial.println("Timeout");
-            return;
-        }
-    }  
+    if (!WaitForXoutHigh(10000)) {
+        Serial.println("Timeout");
+        return;
+    }
 
     // Read the device select
     int device = Sharp::ReadDeviceSelect(); 
@@ -169,8 +173,9 @@ void Tape::Save()
     Serial.println(device, HEX);
 
     Serial.println("Starting sync...");
-    unsigned long startTime = TapeReadSync();
-    if (startTime == 0) {
+
+    unsigned long startTime = 0;
+    if (!ReadSync(startTime)) {
         Serial.println("Timeout");
         return;
     }
@@ -178,12 +183,11 @@ void Tape::Save()
     // Serial.println("Reading tape data...");
     bool headerMarker = false;                      // Have we see the end of header byte
     bool header = true;                             // Are we in the header portion
-    int value = 0;
 
     while (true) {
         // Start bit
         if (ReadStartBit(startTime)) {
-            value = ReadTapeByte();
+            int value = ReadByte();
             if (headerMarker) header = false;           // Read one byte past header marker
             if (value == 0x5F) headerMarker = true;     // Read the header marker
             if (value >= 0) {
@@ -197,9 +201,12 @@ void Tape::Save()
             }
         }
         // Resync
-        unsigned long syncTime = micros();
-        startTime = TapeReadSync();
-        if ((micros() - syncTime) > 10000) {
+        unsigned long syncTotal = 0;
+        if (!ReadSync(startTime, syncTotal)) {
+            Serial.println("Timeout");
+            return;
+        }
+        if (syncTotal > 10000) {
             Serial.println();
             Serial.println("Done.");
             return;
@@ -207,33 +214,38 @@ void Tape::Save()
     }
 }
 
-bool TapeReadSync(unsigned long &startTime, int &totalSync)
+
+/**
+ * @brief Reads the synchronization 
+ * @param startTime The start of the next bit
+ * @param totalSync The amount of time the sync took
+ * @returns True if successful; false if timed out
+*/
+bool ReadSync(unsigned long &startTime, unsigned long &totalSync)
 {
     unsigned long syncStart = micros();
-    bool result = TapeReadSync(startTime);
+    bool result = ReadSync(startTime);
     totalSync = micros() - syncStart;
     return result;
 }
 
-bool TapeReadSync(unsigned long &startTime)
+
+/**
+ * @brief Reads the synchronization 
+ * @param startTime The start of the next bit
+ * @returns True if successful; false if timed out
+*/
+bool ReadSync(unsigned long &startTime)
 {
     while (true) {
         // Wait for HIGH of XOUT and return zero if timed out
-        unsigned long startTimeout = millis();
-        while (!digitalRead(SHARP_XOUT)) {      
-            if ((millis() - startTimeout) > 1000) return false;       
-        }  
+        if (!WaitForXoutHigh()) return false;
         // Potential start time of the data
         startTime = micros();
         // Wait for low transition
-        while (digitalRead(SHARP_XOUT));       
-
+        WaitForXoutLow();
         // Wait for HIGH of XOUT and return zero if timed out
-        startTimeout = millis();
-        while (!digitalRead(SHARP_XOUT)) {    
-            if ((millis() - startTimeout) > 1000) return false;       
-        }  
-
+        if (!WaitForXoutHigh()) return false;
         // Calculate the duration of the pulse
         unsigned long duration = micros() - startTime;
         // If duration is greater than 270 then sync over and return start time
@@ -242,45 +254,52 @@ bool TapeReadSync(unsigned long &startTime)
 }
 
 
-unsigned long TapeReadSync()
+/**
+ * @brief Wait for the XOUT pin to go out high
+ * @param timeout   The amount to timeout
+ * @returns True if Xout goes high; false if timed out
+*/
+bool WaitForXoutHigh(int timeout = 1000)
 {
-    while (true) {
-        // Wait for HIGH of XOUT and return zero if timed out
-        unsigned long startTimeout = millis();
-        while (!digitalRead(SHARP_XOUT)) {      
-            if ((millis() - startTimeout) > 1000) return 0;       
-        }  
-        // Potential start time of the data
-        unsigned long startTime = micros();
-        // Wait for low transition
-        while (digitalRead(SHARP_XOUT));       
-
-        // Wait for HIGH of XOUT and return zero if timed out
-        startTimeout = millis();
-        while (!digitalRead(SHARP_XOUT)) {    
-            if ((millis() - startTimeout) > 1000) return 0;       
-        }  
-
-        // Calculate the duration of the pulse
-        unsigned long duration = micros() - startTime;
-        // If duration is greater than 270 then sync over and return start time
-        if (duration >= 270) return startTime;
-    }
+    unsigned long startTimeout = millis();
+    while (!digitalRead(SHARP_XOUT)) {      
+        if ((millis() - startTimeout) > timeout) return false;       
+    }  
+    return true;
 }
 
-int ReadTapeByte()
+
+/**
+ * @brief Wait for XOUT pin to go low
+*/
+void WaitForXoutLow()
+{
+    while (digitalRead(SHARP_XOUT));       
+}
+
+
+/**
+ * @brief Reads a byte from the tape after the start bit
+ * @returns The byte or error code
+*/
+int ReadByte()
 {
     int result = 0;
-    for (int j = 4; j < 8; j++) bitWrite(result, j, ReadTapeBit());
-    if (!ReadStopBit()) return -1;      // Stop bit
-    if (!ReadStartBit()) return -2;       // Start bit
-    for (int j = 0; j < 4; j++) bitWrite(result, j, ReadTapeBit());
-    if (!ReadStopBit()) return -3;      // Stop bit      
+    for (int i = 4; i < 8; i++) bitWrite(result, i, ReadBit());
+    if (!ReadStopBit()) return ErrorSync;       // Stop bit
+    if (!ReadStartBit()) return ErrorSync;      // Start bit
+    for (int i = 0; i < 4; i++) bitWrite(result, i, ReadBit());
+    if (!ReadStopBit()) return ErrorSync;       // Stop bit      
     return result;  
 }
 
 
-bool ReadTapeBit(unsigned long startTime)
+/**
+ * @brief Read a bit from the tape
+ * @param startTime The time where this bit starts
+ * @returns The bit value 
+*/
+bool ReadBit(unsigned long startTime = micros())
 {
     const int samplePeriod = 2000;
     int previousState = 0;
@@ -298,7 +317,17 @@ bool ReadTapeBit(unsigned long startTime)
     return pulseCount >= 6 ? 1 : 0; // If 6 or more cycles are detected, it's a 1 bit, otherwise it's a 0 bit
 }
 
-bool ReadTapeBit() { ReadTapeBit(micros()); }
-bool ReadStartBit(unsigned long startTime) { return !ReadTapeBit(startTime); }
-bool ReadStartBit() { return !ReadTapeBit(); }
-bool ReadStopBit() { return ReadTapeBit(); }
+
+/**
+ * @brief Reads a start bit (negative of the bit)
+ * @param startTime The start time of the bit
+ * @returns True if start bit
+*/
+bool ReadStartBit(unsigned long startTime = micros()) { return !ReadBit(startTime); }
+
+
+/**
+ * @brief Reads the stop bit
+ * @returns True if stop bit
+*/
+bool ReadStopBit() { return ReadBit(); }
