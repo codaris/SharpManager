@@ -32,7 +32,8 @@ namespace SharpManager
         Ping = 1,
         DeviceSelect = 2,
         LoadTape = 3,
-        Print = 4
+        Print = 4,
+        SaveTape = 5
     }
 
     public class Arduino : NotifyObject, IDisposable
@@ -213,6 +214,29 @@ namespace SharpManager
         }
 
 
+        public async Task<byte[]> ReadTapeFile()
+        {
+            if (serialStream == null) throw new InvalidOperationException("Cannot send file if not connected");
+            using var _ = StartCommand();
+
+            // Empty the read buffer
+            messageLog.WriteLine("Clearing stream...");
+            while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
+
+            // Send Syn character and wait for syn
+            messageLog.WriteLine("Synchronizing...");
+            if (!await Synchronize()) throw new Exception("Unable to start file transfer");
+
+            messageLog.WriteLine($"Waiting for CSAVE...");
+
+            serialStream.WriteByte(Ascii.SOH);    // Start of packet 
+            serialStream.WriteByte((byte)Command.SaveTape);
+            await ReadResponse();
+
+
+
+        }
+
         /// <summary>
         /// Reads and parses the response.
         /// </summary>
@@ -285,6 +309,7 @@ namespace SharpManager
                     return;
             }
         }
+
 
         /// <summary>
         /// The disposed value

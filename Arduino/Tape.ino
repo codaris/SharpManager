@@ -172,6 +172,8 @@ void Tape::Save()
     Serial.print("Device select: 0x");
     Serial.println(device, HEX);
 
+    // Device is 0x10 -- tape
+
     Serial.println("Starting sync...");
 
     unsigned long startTime = 0;

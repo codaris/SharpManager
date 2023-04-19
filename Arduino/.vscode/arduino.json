@@ -3,6 +3,5 @@
     "board": "arduino:avr:nano",
     "port": "COM4",
     "sketch": "Arduino.ino",
-    "output": "../build",
-    "programmer": "avrisp"
+    "output": "../build"
 }
