@@ -105,9 +105,33 @@ void Manager::ProcessPacket()
             // Run the load from tape command
             Tape::Load();
             break;
+        case Command::SaveTape:
+            // Run the save tape command
+            Tape::Save();
+            break;
         default:
             // Unknown command error
             SendFailure(ErrorCode::Unexpected);
             return;
     }
+}
+
+
+/**
+ * @brief Sends an escaped table data byte
+ * @param value Byte to send
+*/
+void Manager::SendTapeByte(int data)
+{
+    switch (data)
+    {
+        case Ascii::DLE:
+        case Ascii::SYN:
+        case Ascii::CAN:
+        case Ascii::ETX:
+        case Ascii::NAK:
+            Serial.write(Ascii::DLE);
+            break;
+    }
+    Serial.write(data);
 }

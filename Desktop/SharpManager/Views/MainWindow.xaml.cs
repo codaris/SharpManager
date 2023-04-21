@@ -98,6 +98,26 @@ namespace SharpManager.Views
         }
 
         /// <summary>
+        /// Handles the Click event of the OpenFile control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private async void ReceiveFile_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] data = await viewModel.Arduino.ReadTapeFile();
+
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Tape files (*.tap)|*.tap|All files (*.*)|*.*";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                Log.AppendText($"Saving file: {saveFileDialog.FileName}\r\n");
+                using var fileStream = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write);
+                fileStream.Write(data, 0, data.Length);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the Click event of the Exit control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

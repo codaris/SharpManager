@@ -213,7 +213,6 @@ namespace SharpManager
             messageLog.WriteLine($"Done.");
         }
 
-
         public async Task<byte[]> ReadTapeFile()
         {
             if (serialStream == null) throw new InvalidOperationException("Cannot send file if not connected");
@@ -228,13 +227,37 @@ namespace SharpManager
             if (!await Synchronize()) throw new Exception("Unable to start file transfer");
 
             messageLog.WriteLine($"Waiting for CSAVE...");
-
             serialStream.WriteByte(Ascii.SOH);    // Start of packet 
             serialStream.WriteByte((byte)Command.SaveTape);
             await ReadResponse();
 
+            // Wait for start of data
+            if (await serialStream.ReadByteAsync(10000) != Ascii.STX)
+            {
+                throw new Exception("Unexpected value");
+            }
 
+            // The data result
+            var result = new List<byte>();   
 
+            while (true)
+            {
+                var data = await serialStream.ReadByteAsync(1000);
+                switch (data)
+                {
+                    case Ascii.DLE:
+                        data = await serialStream.ReadByteAsync(1000);
+                        break;
+                    case Ascii.NAK:
+                        var error = await serialStream.ReadByteAsync(1000);
+                        throw new Exception($"Unexpected data: {error}");
+                    case Ascii.CAN:
+                        throw new Exception("Cancelled");
+                    case Ascii.ETX:
+                        return result.ToArray();
+                }
+                result.Add(data);
+            }
         }
 
         /// <summary>

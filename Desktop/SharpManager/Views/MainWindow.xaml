@@ -20,6 +20,7 @@
             <Menu DockPanel.Dock="Top" >
                 <MenuItem Header="_File">
                     <MenuItem Header="_Send File..." Click="OpenFile_Click" Icon="{StaticResource OpenFileIcon}" IsEnabled="{Binding IsConnected}" />
+                    <MenuItem Header="_Receive File..." Click="ReceiveFile_Click" Icon="{StaticResource OpenFileIcon}" IsEnabled="{Binding IsConnected}" />
                     <Separator />
                     <MenuItem Header="E_xit" Click="Exit_Click" />
                 </MenuItem>

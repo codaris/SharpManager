@@ -8,6 +8,7 @@ namespace Command
     const int DeviceSelect = 2;
     const int LoadTape = 3;
     const int Print = 4;
+    const int SaveTape = 5;
 }
 
 enum ErrorCode
@@ -26,7 +27,6 @@ namespace Manager
      * @return int      Byte read or -1 if timed out
      */
     int WaitReadByte();
-
 
     /**
      * @brief Waits for 2 byte short integer to become available on the serial interface
@@ -56,6 +56,12 @@ namespace Manager
      * @param value Character to print
     */
     void SendPrintChar(int value);
+
+    /**
+     * @brief Sends an escaped table data byte
+     * @param value Byte to send
+    */
+    void SendTapeByte(int data);
 
     /**
      * @brief Process a packet from the Serial port

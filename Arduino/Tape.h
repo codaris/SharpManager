@@ -11,8 +11,9 @@ namespace Tape
 
     /**
      * @brief Saves data from pocket computer
+     * @param debug Enable debug printing
      */
-    void Save();
+    void Save(bool debug = false);
 }
 
 

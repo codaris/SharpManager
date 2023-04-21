@@ -157,32 +157,38 @@ bool ReadBit(unsigned long startTime = micros());
 /**
  * @brief Saves data from the pocket computer to the serial port
  */
-void Tape::Save()
+void Tape::Save(bool debug = false)
 {
-    Serial.println("Waiting for CSAVE...");
+    if (debug) Serial.println("Waiting for CSAVE...");
 
     // Wait for xout to go high
     if (!WaitForXoutHigh(10000)) {
-        Serial.println("Timeout");
+        if (debug) Serial.println("Timeout");
+        else Manager::SendFailure(ErrorCode::Timeout);
         return;
     }
 
     // Read the device select
     int device = Sharp::ReadDeviceSelect(); 
-    Serial.print("Device select: 0x");
-    Serial.println(device, HEX);
-
-    // Device is 0x10 -- tape
-
-    Serial.println("Starting sync...");
-
-    unsigned long startTime = 0;
-    if (!ReadSync(startTime)) {
-        Serial.println("Timeout");
+    if (debug) {
+        Serial.print("Device select: 0x");
+        Serial.println(device, HEX);
+    } else if (device != 0x10) {
+        // Device is not tape
+        Manager::SendFailure(ErrorCode::Unexpected);
         return;
     }
 
-    // Serial.println("Reading tape data...");
+    if (debug) Serial.println("Reading tape data...");
+    else Serial.write(Ascii::STX);
+
+    unsigned long startTime = 0;
+    if (!ReadSync(startTime)) {
+        if (debug) Serial.println("Timeout");
+        else Manager::SendFailure(ErrorCode::Timeout);
+        return;
+    }
+
     bool headerMarker = false;                      // Have we see the end of header byte
     bool header = true;                             // Are we in the header portion
 
@@ -193,24 +199,32 @@ void Tape::Save()
             if (headerMarker) header = false;           // Read one byte past header marker
             if (value == 0x5F) headerMarker = true;     // Read the header marker
             if (value >= 0) {
-                Serial.print(value, HEX);
-                Serial.print(" ");
+                if (debug) {
+                    Serial.print(value, HEX);
+                    Serial.print(" ");
+                } else {
+                    Manager::SendTapeByte(value);
+                }
             } else {
-                if (value == ErrorTimeout) Serial.println("Timeout");
-                else if (value == ErrorSync) Serial.println("error");
-                Serial.println(value);
+                if (debug) {
+                    if (value == ErrorTimeout) Serial.println("Timeout");
+                    else if (value == ErrorSync) Serial.println("error");
+                } else {
+                    Manager::SendFailure((ErrorCode)(-value));
+                }
                 break;
             }
         }
         // Resync
         unsigned long syncTotal = 0;
         if (!ReadSync(startTime, syncTotal)) {
-            Serial.println("Timeout");
+            if (debug) Serial.println("Timeout");
+            else Manager::SendFailure(ErrorCode::Timeout);
             return;
         }
         if (syncTotal > 10000) {
-            Serial.println();
-            Serial.println("Done.");
+            if (debug) Serial.println("Done");
+            else Serial.write(Ascii::ETX);
             return;
         }
     }
