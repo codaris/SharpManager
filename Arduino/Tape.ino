@@ -159,7 +159,12 @@ bool ReadBit(unsigned long startTime = micros());
  */
 void Tape::Save(bool debug = false)
 {
-    if (debug) Serial.println("Waiting for CSAVE...");
+    if (debug) {
+        Serial.println("Waiting for CSAVE...");
+    } else {
+        // Acknowledge the save packet
+        Manager::SendSuccess();
+    }
 
     // Wait for xout to go high
     if (!WaitForXoutHigh(10000)) {
@@ -180,14 +185,15 @@ void Tape::Save(bool debug = false)
     }
 
     if (debug) Serial.println("Reading tape data...");
-    else Serial.write(Ascii::STX);
-
+    
     unsigned long startTime = 0;
     if (!ReadSync(startTime)) {
         if (debug) Serial.println("Timeout");
         else Manager::SendFailure(ErrorCode::Timeout);
         return;
     }
+
+    if (!debug) Serial.write(Ascii::STX);
 
     bool headerMarker = false;                      // Have we see the end of header byte
     bool header = true;                             // Are we in the header portion

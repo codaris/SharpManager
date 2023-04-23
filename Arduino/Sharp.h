@@ -3,6 +3,7 @@
 #define __SHARP_H__
 
 /** Sharp pins */
+const int SHARP_BEEP = 10;  // Pin D10, Beep
 const int SHARP_BUSY = 9;   // Pin D9, Busy   Sharp pin 4 
 const int SHARP_DOUT = 8;   // Pin D8, Dout   Sharp pin 5 
 const int SHARP_XIN = 7;    // Pin D7, Xin    Sharp pin 6
