@@ -260,18 +260,19 @@ bool ReadSync(unsigned long &startTime, unsigned long &totalSync)
 bool ReadSync(unsigned long &startTime)
 {
     while (true) {
-        // Wait for HIGH of XOUT and return zero if timed out
+        // Wait for HIGH of XOUT and return false if timed out
         if (!WaitForXoutHigh()) return false;
         // Potential start time of the data
         startTime = micros();
         // Wait for low transition
         WaitForXoutLow();
-        // Wait for HIGH of XOUT and return zero if timed out
+        // Wait for HIGH of XOUT and return false if timed out
         if (!WaitForXoutHigh()) return false;
         // Calculate the duration of the pulse
         unsigned long duration = micros() - startTime;
         // If duration is greater than 270 then sync over and return start time
         if (duration >= 270) return true;
+        // Otherwise continue sync loop
     }
 }
 

@@ -37,7 +37,7 @@ void loop()
 
     // If button is pressed send tape data
     if (digitalRead(BUTTON) == LOW) {
-        tone(SHARP_BEEP, 2093, 10);
+        // tone(SHARP_BEEP, 2093, 10);
         // Tape::Save(true);
     }
 
