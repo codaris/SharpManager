@@ -40,6 +40,10 @@ namespace SharpManager.ViewModels
         /// </summary>
         public bool IsDisconnected => !Arduino.IsConnected;
 
+        /// <summary>
+        /// Gets the status.
+        /// </summary>
+        public string Status => IsConnected ? "Connected" : "Disconnected";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
@@ -50,6 +54,7 @@ namespace SharpManager.ViewModels
             Arduino = new Arduino(messageLog);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsConnected);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsDisconnected);
+            this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.Status);
             SerialPortService.PortsChanged += SerialPortService_PortsChanged;
             UpdateSerialPorts(SerialPortService.GetAvailableSerialPorts());
         }

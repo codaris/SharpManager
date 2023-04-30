@@ -43,8 +43,8 @@ namespace SharpManager
         /// <returns></returns>
         public static async Task<ushort> ReadWordAsync(this IReadByteStream stream)
         {
-            int result = await stream.ReadByteAsync();
-            result += await stream.ReadByteAsync() << 8;
+            int result = await stream.ReadByteAsync().ConfigureAwait(false);
+            result += await stream.ReadByteAsync().ConfigureAwait(false) << 8;
             return (ushort)result;
         }
 
@@ -94,7 +94,7 @@ namespace SharpManager
         /// <exception cref="TimeoutException">Read operation timed out before completing</exception>
         public static async Task<byte> ReadByteAsync(this IReadByteStream stream, int millisecondsTimeout)
         {
-            var result = await TryReadByteAsync(stream, millisecondsTimeout);
+            var result = await TryReadByteAsync(stream, millisecondsTimeout).ConfigureAwait(false);
             if (!result.HasValue) throw new TimeoutException("Read operation timed out before completing");
             return result.Value;
         }
@@ -109,7 +109,7 @@ namespace SharpManager
         {
             var readTask = stream.ReadByteAsync();
             var delayTask = Task.Delay(millisecondsTimeout);
-            var task = await Task.WhenAny(readTask, delayTask);
+            var task = await Task.WhenAny(readTask, delayTask).ConfigureAwait(false);
             if (task == delayTask) return null;
             return readTask.Result;
         }

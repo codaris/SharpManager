@@ -159,7 +159,12 @@ bool ReadBit(unsigned long startTime = micros());
  */
 void Tape::Save(bool debug = false)
 {
-    if (debug) Serial.println("Waiting for CSAVE...");
+    if (debug) {
+        Serial.println("Waiting for CSAVE...");
+    } else {
+        // Acknowledge the save packet
+        Manager::SendSuccess();
+    }
 
     // Wait for xout to go high
     if (!WaitForXoutHigh(10000)) {
@@ -180,14 +185,15 @@ void Tape::Save(bool debug = false)
     }
 
     if (debug) Serial.println("Reading tape data...");
-    else Serial.write(Ascii::STX);
-
+    
     unsigned long startTime = 0;
     if (!ReadSync(startTime)) {
         if (debug) Serial.println("Timeout");
         else Manager::SendFailure(ErrorCode::Timeout);
         return;
     }
+
+    if (!debug) Serial.write(Ascii::STX);
 
     bool headerMarker = false;                      // Have we see the end of header byte
     bool header = true;                             // Are we in the header portion
@@ -254,18 +260,19 @@ bool ReadSync(unsigned long &startTime, unsigned long &totalSync)
 bool ReadSync(unsigned long &startTime)
 {
     while (true) {
-        // Wait for HIGH of XOUT and return zero if timed out
+        // Wait for HIGH of XOUT and return false if timed out
         if (!WaitForXoutHigh()) return false;
         // Potential start time of the data
         startTime = micros();
         // Wait for low transition
         WaitForXoutLow();
-        // Wait for HIGH of XOUT and return zero if timed out
+        // Wait for HIGH of XOUT and return false if timed out
         if (!WaitForXoutHigh()) return false;
         // Calculate the duration of the pulse
         unsigned long duration = micros() - startTime;
         // If duration is greater than 270 then sync over and return start time
         if (duration >= 270) return true;
+        // Otherwise continue sync loop
     }
 }
 

@@ -62,12 +62,16 @@
                     </Button>
                 </StackPanel>
             </Border>
-            <StatusBar DockPanel.Dock="Bottom">
-                <StatusBarItem Content="{Binding SelectedSerialPort}" />
-                <StatusBarItem Content="Connected" />
-                <StatusBarItem Content="Test" HorizontalAlignment="Right" />
+            <StatusBar DockPanel.Dock="Bottom" HorizontalAlignment="Stretch">
+                <StatusBarItem Content="{Binding SelectedSerialPort}" DockPanel.Dock="Left" />
+                <StatusBarItem Content="{Binding Status}" DockPanel.Dock="Left" />
+                <StatusBarItem DockPanel.Dock="Right">
+                    <ProgressBar Width="150" Value="0" Minimum="0" Maximum="100" Height="14" />
+                </StatusBarItem>
+                <StatusBarItem Content="Waiting" DockPanel.Dock="Right" />
+                <StatusBarItem />
             </StatusBar>
-            <TextBox x:Name="Log" Text="" IsReadOnly="True" IsReadOnlyCaretVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+            <TextBox x:Name="Log" IsReadOnly="True" IsReadOnlyCaretVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="14" Background="Black" Foreground="#FF00D866" SelectionBrush="#FFBDD8ED" Text="SharpManager 1.0" />
         </DockPanel>
     </Grid>
 </Window>

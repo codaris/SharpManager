@@ -118,9 +118,10 @@ namespace SharpManager
                 if (commandCount == 0 && serialStream.DataAvailable)
                 {
                     var data = serialStream.ReadByte();
-                    // If sync then ack
+                    // If sync then syn back
                     if (data == Ascii.SYN) serialStream.WriteByte(Ascii.SYN);
-                    if (data == Ascii.SOH) await ProcessPacket();
+                    // Processing incoming packet
+                    if (data == Ascii.SOH) await ProcessIncomingPacket().ConfigureAwait(false); ;
                     serialStream.WriteByte(Ascii.NAK);
                     serialStream.WriteByte((byte)ErrorCode.Unexpected);
                 }
@@ -134,7 +135,7 @@ namespace SharpManager
         /// <exception cref="System.InvalidOperationException">Cannot test if not connected</exception>
         public async Task Ping()
         {
-            if (serialStream == null) throw new InvalidOperationException("Cannot test if not connected");
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
             using var _ = StartCommand();
 
@@ -154,15 +155,15 @@ namespace SharpManager
             messageLog.WriteLine("Ping...");
             serialStream.WriteByte(Ascii.SOH);
             serialStream.WriteByte((byte)Command.Ping);
-            var response = await serialStream.TryReadByteAsync(2500);       // Wait for response
+            var response = await serialStream.TryReadByteAsync(2500).ConfigureAwait(false); ;       // Wait for response
             if (response == Ascii.ACK)
             {
                 messageLog.WriteLine("Success.\r\n");
             }
             else if (response == Ascii.NAK)
             {
-                response = await serialStream.TryReadByteAsync(2000);
-                var errorCode = ErrorCode.Unknown;
+                response = await serialStream.TryReadByteAsync(2000).ConfigureAwait(false); ;
+                var errorCode = ErrorCode.Timeout;
                 if (response.HasValue) errorCode = (ErrorCode)response.Value;
                 messageLog.WriteLine($"Fail: {errorCode}");
             }
@@ -180,7 +181,7 @@ namespace SharpManager
         /// <exception cref="System.Exception">Unable to start file transfer</exception>
         public async Task SendTapeFile(Stream fileStream)
         {
-            if (serialStream == null) throw new InvalidOperationException("Cannot send file if not connected");
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
             using var _ = StartCommand();
 
@@ -190,7 +191,7 @@ namespace SharpManager
 
             // Send Syn character and wait for syn
             messageLog.WriteLine("Synchronizing...");
-            if (!await Synchronize()) throw new Exception("Unable to start file transfer");
+            if (!await Synchronize().ConfigureAwait(false)) throw new ArduinoException("Unable to start file transfer");
 
             var packet = new byte[64];
             messageLog.WriteLine($"Start new tape...  Length: {fileStream.Length}");
@@ -199,7 +200,7 @@ namespace SharpManager
             serialStream.WriteByte((byte)Command.LoadTape);
             serialStream.WriteWord((ushort)fileStream.Length);
             serialStream.WriteByte(HeaderSize);
-            await ReadResponse();
+            await ReadResponse().ConfigureAwait(false);
 
             while (true)
             {
@@ -207,7 +208,7 @@ namespace SharpManager
                 if (packetSize == 0) break;
                 messageLog.WriteLine($"Sendng {packetSize} bytes...");
                 for (int i = 0; i < packetSize; i++) serialStream.WriteByte(packet[i]);
-                await ReadResponse();
+                await ReadResponse().ConfigureAwait(false);
             }
 
             messageLog.WriteLine($"Done.");
@@ -215,7 +216,7 @@ namespace SharpManager
 
         public async Task<byte[]> ReadTapeFile()
         {
-            if (serialStream == null) throw new InvalidOperationException("Cannot send file if not connected");
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
             using var _ = StartCommand();
 
             // Empty the read buffer
@@ -224,40 +225,51 @@ namespace SharpManager
 
             // Send Syn character and wait for syn
             messageLog.WriteLine("Synchronizing...");
-            if (!await Synchronize()) throw new Exception("Unable to start file transfer");
+            if (!await Synchronize().ConfigureAwait(false)) throw new ArduinoException("Unable to start file transfer");
 
             messageLog.WriteLine($"Waiting for CSAVE...");
             serialStream.WriteByte(Ascii.SOH);    // Start of packet 
             serialStream.WriteByte((byte)Command.SaveTape);
-            await ReadResponse();
+            await ReadResponse().ConfigureAwait(false);
 
-            // Wait for start of data
-            if (await serialStream.ReadByteAsync(10000) != Ascii.STX)
+            // Wait for start value
+            var startValue = await serialStream.ReadByteAsync(10000).ConfigureAwait(false);
+            if (startValue == Ascii.NAK)
             {
-                throw new Exception("Unexpected value");
+                throw new ArduinoException(await serialStream.ReadByteAsync(2000).ConfigureAwait(false));
             }
+            else if (startValue != Ascii.STX)
+            {
+                throw new ArduinoException($"Expecting transmisson start (STX) received 0x{startValue:X} instead.");
+            }
+
+            messageLog.WriteLine("Reading data:");
 
             // The data result
             var result = new List<byte>();   
 
             while (true)
             {
-                var data = await serialStream.ReadByteAsync(1000);
+                var data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
                 switch (data)
                 {
                     case Ascii.DLE:
-                        data = await serialStream.ReadByteAsync(1000);
+                        data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
                         break;
                     case Ascii.NAK:
-                        var error = await serialStream.ReadByteAsync(1000);
-                        throw new Exception($"Unexpected data: {error}");
+                        throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
                     case Ascii.CAN:
-                        throw new Exception("Cancelled");
+                        throw new ArduinoException(ErrorCode.Cancelled);
                     case Ascii.ETX:
+                        messageLog.WriteLine();
+                        messageLog.WriteLine("Done");
                         return result.ToArray();
                 }
                 result.Add(data);
+                messageLog.Write(" " + data.ToString("X2"));
+                if (result.Count % 16 == 0) messageLog.WriteLine();
             }
+
         }
 
         /// <summary>
@@ -267,15 +279,12 @@ namespace SharpManager
         /// <exception cref="System.Exception">Transmission Error {errorCode}</exception>
         private async Task ReadResponse()
         {
-            if (serialStream == null) throw new InvalidOperationException("Not Connected");
-            var response = await serialStream.TryReadByteAsync(2500);    // Wait for response
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+            var response = await serialStream.ReadByteAsync(2500).ConfigureAwait(false);    // Wait for response
             if (response == Ascii.ACK) return;
-            response = await serialStream.TryReadByteAsync(2000);         // Wait for error code
-            var errorCode = ErrorCode.Unknown;
-            if (response.HasValue) errorCode = (ErrorCode)response.Value;
-            throw new Exception($"Transmission Error {errorCode}");
+            if (response == Ascii.NAK) throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
+            throw new ArduinoException($"Unexpected response received 0x{response:X2}");
         }
-
 
         /// <summary>
         /// Synchronizes the serial connection
@@ -284,15 +293,15 @@ namespace SharpManager
         /// <returns></returns>
         private async Task<bool> Synchronize()
         {
-            if (serialStream == null) throw new InvalidOperationException("Not Connected");
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
             int tryCount = 0;
             while (true)
             {
                 serialStream.WriteByte(Ascii.SYN);
-                var startAck = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);       // Wait one second for response
-                if (startAck == Ascii.SYN) break;
-                if (startAck == Ascii.NAK)
+                var response = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);       // Wait one second for response
+                if (response == Ascii.SYN) break;
+                if (response == Ascii.NAK)
                 {
                     // Ignore error code
                     await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
@@ -307,9 +316,9 @@ namespace SharpManager
         /// <summary>
         /// Processes the incoming packet.
         /// </summary>
-        private async Task ProcessPacket()
+        private async Task ProcessIncomingPacket()
         {
-            if (serialStream == null) throw new InvalidOperationException("Not Connected");
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
             var command = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
             if (!command.HasValue) return;
             switch ((Command)command.Value)

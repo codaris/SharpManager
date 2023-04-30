@@ -36,7 +36,10 @@ void loop()
     if (Serial.available()) Manager::ProcessPacket();
 
     // If button is pressed send tape data
-    if (digitalRead(BUTTON) == LOW) Tape::Save(true);
+    if (digitalRead(BUTTON) == LOW) {
+        // tone(SHARP_BEEP, 2093, 10);
+        // Tape::Save(true);
+    }
 
     // Read the Xout PIN
     bool xout = digitalRead(SHARP_XOUT);
