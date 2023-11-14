@@ -1,0 +1,178 @@
+Receiving multiple bytes (Rx) from Sharp PC with Arduino UNO
+
+
+The subsequent Arduino program receives 16 or 24 bytes at the serial interface (UART), which are sent by the pocket computer.
+On the Pocket Computer, the standard INPUT command is used to enter the characters that are stored in the dimensioned variable Z$(0).
+On the Arduino side, the "Serial.read" function is used for receiving; the bit rate is set to 4800 baud.
+The output Fo1 or Fo3 (pin 4) of the Sharp Pocket Computer is connected to RX0 of the Arduino via an NPN driver transistor (e.g. BC546, BC547, BC548, ...) in an open-collector circuit.
+
+With the first call, the basic program must be started with RUN in order to transfer the machine program to the memory.
+The actual program for transferring the character string is subsequently started with DEF A.
+
+
+Breadboard with Arduino UNO:
+
+
+Program for Arduino:
+
+// Rx (D0) mit 4800 bit/s von Sharp PC-1401 (Pin 4 = Port Fo 1)
+// Rx (D0) mit 4800 bit/s von Sharp PC-1403 (Pin 4 = Port Fo 3)
+
+int inByte = 0;
+
+void setup() {
+  Serial.begin(4800);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    inByte = Serial.read();
+    Serial.println(inByte);
+  }
+}
+
+
+BASIC program for Sharp PC-1401 (transfer of 16 bytes):
+
+
+10:RESTORE
+20:FOR X=0 TO 70
+30:READ D
+40:POKE &4100+X,D
+50:NEXT X
+60:END
+100:"A" CLEAR
+110:DIM Z$(0)*16
+120:INPUT Z$(0)
+130:CALL &4100
+140:GOTO 120
+200:DATA 120,&41,&16,&85,2,&45,219,&84,2,&BF,219,2,15,52
+210:DATA &83,4,85,120,&41,&1E,47,7
+220:DATA 16,&40,&FE,&84,0,1,27,55
+230:DATA 18,94,96,0,95,206,97,1,95,78,0,2,1
+240:DATA &83,198,18,94,56,6,96,0,77,44,5,97,1,206,206,95,209,90
+250:DATA 43,19,78,18,96,0,95,78,18,55
+
+Assembler representation of the machine program
+&4100: 	120 	&41 	&16 	CALL 	&4116 	  	  	  	  	 
+&4103: 	&85 	  	  			LP05 	  	  	  	  	  	 
+&4104: 	002 	&45 	  		LIA 	&45 	  	  	  	  	 
+&4106: 	219 	  	  			EXAM 	  	  	  	  	  	 
+&4107: 	&84 	  	  			LP04 	  	  	  	  	  	 
+&4108: 	002 	&BF 	  		LIA 	&BF 	  	  	  	  	 
+&410A: 	219 	  	  			EXAM 	  	  	  	  	  	 
+&410B: 	002 	015 	  		LIA 	15 	  	  	  	  	 
+&410D: 	052 	  	  			PUSH 	  	  	  	  	  	 
+&410E: 	&83 	  	  			LP03 	  	< 	â” 	  	  	 
+&410F: 	004 	  	  			IX 	  	  	â”‚ 	  	  	 
+&4110: 	085 	  	  			MVMD 	  	  	â”‚ 	  	  	 
+&4111: 	120 	&41 	&1E 	CALL 	&411E 	  	â”‚ 	  	  	 
+&4114: 	047 	007 	  		LOOP 	7 	â”€ 	â”˜ 	  	  	 
+&4116: 	016 	&40 	&FE 	LIDP 	&40FE 	  	  	  	  	 
+&4119: 	&84 	  	  			LP04 	  	  	  	  	  	 
+&411A: 	000 	001 	  		LII 	1 	  	  	  	  	 
+&411C: 	027 	  	  			EXBD 	  	  	  	  	  	 
+&411D: 	055 	  	  			RTN 	  	  	  	  	  	 
+&411E: 	018 	094 	  		LIP 	94 	  	  	  	  	 
+&4120: 	096 	000 	  		ANIM 	0 	  	  	  	  	 
+&4122: 	095 	  	  			OUTF 	  	  	  	  	  	 
+&4123: 	206 	  	  			NOPT 	  	  	  	  	  	 
+&4124: 	097 	001 	  		ORIM 	1 	  	  	  	  	 
+&4126: 	095 	  	  			OUTF 	  	  	  	  	  	 
+&4127: 	078 	000 	  		WAIT 	0 	  	  	  	  	 
+&4129: 	002 	001 	  		LIA 	1 	  	  	  	  	 
+&412B: 	&83 	  	  			LP03 	  	< 	â”€ 	â”€ 	â” 	 
+&412C: 	198 	  	  			TSMA 	  	  	  	  	â”‚ 	 
+&412D: 	018 	094 	  		LIP 	94 	  	  	  	â”‚ 	 
+&412F: 	056 	006 	  		JRZP 	6 	â”€ 	â”€ 	â” 	â”‚ 	 
+&4131: 	096 	000 	  		ANIM 	0 	  	  	â”‚ 	â”‚ 	 
+&4133: 	077 	  	  			NOPW 	  	  	  	â”‚ 	â”‚ 	 
+&4134: 	044 	005 	  		JRP 	5 	â”€ 	â” 	â”‚ 	â”‚ 	 
+&4136: 	097 	001 	  		ORIM 	1 	< 	â”¼ 	â”˜ 	â”‚ 	 
+&4138: 	206 	  	  			NOPT 	  	  	â”‚ 	  	â”‚ 	 
+&4139: 	206 	  	  			NOPT 	  	  	â”‚ 	  	â”‚ 	 
+&413A: 	095 	  	  			OUTF 	  	< 	â”˜ 	  	â”‚ 	 
+&413B: 	209 	  	  			RC 	  	  	  	  	â”‚ 	 
+&413C: 	090 	  	  			SL 	  	  	  	  	â”‚ 	 
+&413D: 	043 	019 	  		JRNCM 	19 	â”€ 	â”€ 	â”€ 	â”˜ 	 
+&413F: 	078 	018 	  		WAIT 	18 	  	  	  	  	 
+&4141: 	096 	000 	  		ANIM 	0 	  	  	  	  	 
+&4143: 	095 	  	  			OUTF 	  	  	  	  	  	 
+&4144: 	078 	018 	  		WAIT 	18 	  	  	  	  	 
+&4146: 	055 	  	  			RTN 	  	  	  	  	  	 
+
+
+BASIC program for Sharp PC-1403 (transfer of 24 bytes):
+
+
+10:RESTORE
+20:FOR X=0 TO 69
+30:READ D
+40:POKE &F000+X,D
+50:NEXT X
+60:END
+100:"A" CLEAR
+110:DIM Z$(0)*24
+120:INPUT Z$(0)
+130:CALL &F000
+140:GOTO 120
+200:DATA 120,&F0,&16,&85,2,&FA,219,&84,2,&F7,219,2,23,52
+210:DATA &83,4,85,120,&F0,&1E,47,7
+220:DATA 16,&EF,&FE,&84,0,1,27,55
+230:DATA 18,94,96,0,95,78,48,97,4,95,206,2,1
+240:DATA &83,198,18,94,56,7,96,0,78,10,44,5,97,4,78,14,95,209,90
+250:DATA 43,20,78,32,96,0,95,55
+
+Assembler representation of the machine program
+&F000: 	120 	&F0 	&16 	CALL 	&F016 	  	  	  	  	 
+&F003: 	&85 	  	  	LP05 	  	  	  	  	  	 
+&F004: 	002 	&FA 	  	LIA 	&FA 	  	  	  	  	 
+&F006: 	219 	  	  	EXAM 	  	  	  	  	  	 
+&F007: 	&84 	  	  	LP04 	  	  	  	  	  	 
+&F008: 	002 	&F7 	  	LIA 	&F7 	  	  	  	  	 
+&F00A: 	219 	  	  	EXAM 	  	  	  	  	  	 
+&F00B: 	002 	023 	  	LIA 	23 	  	  	  	  	 
+&F00D: 	052 	  	  	PUSH 	  	  	  	  	  	 
+&F00E: 	&83 	  	  	LP03 	  	< 	â” 	  	  	 
+&F00F: 	004 	  	  	IX 	  	  	â”‚ 	  	  	 
+&F010: 	085 	  	  	MVMD 	  	  	â”‚ 	  	  	 
+&F011: 	120 	&F0 	&1E 	CALL 	&F01E 	  	â”‚ 	  	  	 
+&F014: 	047 	007 	  	LOOP 	7 	â”€ 	â”˜ 	  	  	 
+&F016: 	016 	&EF 	&FE 	LIDP 	&EFFE 	  	  	  	  	 
+&F019: 	&84 	  	  	LP04 	  	  	  	  	  	 
+&F01A: 	000 	001 	  	LII 	1 	  	  	  	  	 
+&F01C: 	027 	  	  	EXBD 	  	  	  	  	  	 
+&F01D: 	055 	  	  	RTN 	  	  	  	  	  	 
+&F01E: 	018 	094 	  	LIP 	94 	  	  	  	  	 
+&F020: 	096 	000 	  	ANIM 	0 	  	  	  	  	 
+&F022: 	095 	  	  	OUTF 	  	  	  	  	  	 
+&F023: 	078 	048 	  	WAIT 	48 	  	  	  	  	 
+&F025: 	097 	004 	  	ORIM 	4 	  	  	  	  	 
+&F027: 	095 	  	  	OUTF 	  	  	  	  	  	 
+&F028: 	206 	  	  	NOPT 	  	  	  	  	  	 
+&F029: 	002 	001 	  	LIA 	1 	  	  	  	  	 
+&F02B: 	&83 	  	  	LP03 	  	< 	â”€ 	â”€ 	â” 	 
+&F02C: 	198 	  	  	TSMA 	  	  	  	  	â”‚ 	 
+&F02D: 	018 	094 	  	LIP 	94 	  	  	  	â”‚ 	 
+&F02F: 	056 	007 	  	JRZP 	7 	â”€ 	â”€ 	â” 	â”‚ 	 
+&F031: 	096 	000 	  	ANIM 	0 	  	  	â”‚ 	â”‚ 	 
+&F033: 	078 	010 	  	WAIT 	10 	  	  	â”‚ 	â”‚ 	 
+&F035: 	044 	005 	  	JRP 	5 	â”€ 	â” 	â”‚ 	â”‚ 	 
+&F037: 	097 	004 	  	ORIM 	4 	< 	â”¼ 	â”˜ 	â”‚ 	 
+&F039: 	078 	014 	  	WAIT 	 14 	  	â”‚ 	  	â”‚ 	 
+&F03B: 	095 	  	  	OUTF 	  	< 	â”˜ 	  	â”‚ 	 
+&F03C: 	209 	  	  	RC 	  	  	  	  	â”‚ 	 
+&F03D: 	090 	  	  	SL 	  	  	  	  	â”‚ 	 
+&F03E: 	043 	020 	  	JRNCM 	20 	â”€ 	â”€ 	â”€ 	â”˜ 	 
+&F040: 	078 	032 	  	WAIT 	32 	  	  	  	  	 
+&F042: 	096 	000 	  	ANIM 	0 	  	  	  	  	 
+&F044: 	095 	  	  	OUTF 	  	  	  	  	  	 
+&F045: 	055 	  	  	RTN 	  	  	  	  	  	 
+
+
+pinout:
+Arduino UNO pin 	Surname 	Sharp PC
+11-pin interface
+GND 	GND 	pins 3
+RX 0 (input, via open-collector transistor stage) 	Port Fo 1 (PC-1401)
+Port Fo 3 (PC-1403) 	pins 4

@@ -259,9 +259,10 @@ bool ReadSync(unsigned long &startTime, unsigned long &totalSync)
 */
 bool ReadSync(unsigned long &startTime)
 {
+    int timeout = 10000;  // Initial timeout - 10 seconds
     while (true) {
         // Wait for HIGH of XOUT and return false if timed out
-        if (!WaitForXoutHigh()) return false;
+        if (!WaitForXoutHigh(timeout)) return false;
         // Potential start time of the data
         startTime = micros();
         // Wait for low transition
@@ -273,6 +274,8 @@ bool ReadSync(unsigned long &startTime)
         // If duration is greater than 270 then sync over and return start time
         if (duration >= 270) return true;
         // Otherwise continue sync loop
+        // After initial loop reset timeout to 1 second
+        timeout = 1000;
     }
 }
 
