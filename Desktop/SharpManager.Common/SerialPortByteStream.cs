@@ -10,10 +10,10 @@ namespace SharpManager
     public class SerialPortByteStream : IByteStream, IDisposable
     {
         /// <summary>The serial port to wrap</summary>
-        private SerialPort serialPort;
+        private readonly SerialPort serialPort;
 
         /// <summary>The send byte array</summary>
-        private byte[] sendByteArray = new byte[1];
+        private readonly byte[] sendByteArray = new byte[1];
 
         /// <summary>The read task completion source</summary>
         private TaskCompletionSource<bool>? readTaskCompletionSource = null;
@@ -68,10 +68,11 @@ namespace SharpManager
         /// Reads the byte asynchronously.
         /// </summary>
         /// <returns></returns>
-        public async Task<byte> ReadByteAsync()
+        public async Task<byte> ReadByteAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 lock (serialPort)
                 {
                     if (serialPort.BytesToRead > 0) return (byte)serialPort.ReadByte();

@@ -30,7 +30,9 @@ namespace Sharp
     /**
      * @brief Read a disk command from the pocket computer
      */
-    void ReadDisk();
-};
+    void ProcessDiskCommand();
+
+    void SendDiskByte(byte value);
+}
 
 #endif

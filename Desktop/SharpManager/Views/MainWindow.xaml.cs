@@ -44,6 +44,10 @@ namespace SharpManager.Views
 
             viewModel = new MainViewModel(this);
             DataContext = viewModel;
+
+            // Apppend newline after version text
+            Log.AppendText("\r\n");
+            Log.ScrollToEnd();
         }
 
         /// <summary>
@@ -104,7 +108,19 @@ namespace SharpManager.Views
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void ReceiveFile_Click(object sender, RoutedEventArgs e)
         {
-            byte[] data = await viewModel.Arduino.ReadTapeFile();
+            // The file data
+            byte[] data;
+            
+            try
+            {
+                // Read the tape data
+                data = await viewModel.Arduino.ReadTapeFile();
+            }
+            catch (System.OperationCanceledException)
+            {
+                Log.AppendText("Cancelled.");
+                return;
+            }
 
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Tape files (*.tap)|*.tap|All files (*.*)|*.*";
@@ -153,6 +169,16 @@ namespace SharpManager.Views
         }
 
         /// <summary>
+        /// Handles the Click event of the Cancel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Cancel();
+        }
+
+        /// <summary>
         /// Writes to the message log
         /// </summary>
         /// <param name="message">The message.</param>
@@ -162,6 +188,20 @@ namespace SharpManager.Views
                 Log.AppendText(message);
                 Log.ScrollToEnd();
             });
+        }
+
+        /// <summary>
+        /// Handles the PreviewKeyDown event of the Window control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && viewModel.CanCancel)
+            {
+                viewModel.Cancel();
+                e.Handled = true;   
+            }
         }
     }
 }

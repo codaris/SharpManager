@@ -160,16 +160,16 @@ bool ReadBit(unsigned long startTime = micros());
 void Tape::Save(bool debug = false)
 {
     if (debug) {
-        Serial.println("Waiting for CSAVE...");
+        Serial.println("Waiting for CSAVE... (ESC to Cancel)");
     } else {
         // Acknowledge the save packet
         Manager::SendSuccess();
     }
 
     // Wait for xout to go high
-    if (!WaitForXoutHigh(10000)) {
-        if (debug) Serial.println("Timeout");
-        else Manager::SendFailure(ErrorCode::Timeout);
+    if (!WaitForXoutHighOrCancel()) {
+        if (debug) Serial.println("Cancelled");
+        else Manager::SendFailure(ErrorCode::Cancelled);
         return;
     }
 
@@ -276,6 +276,17 @@ bool ReadSync(unsigned long &startTime)
     }
 }
 
+/**
+ * @brief Wait for the XOUT pin to go out high or cancel from manager
+ * @returns True if Xout goes high; false if cancelled
+*/
+bool WaitForXoutHighOrCancel()
+{
+    while (!digitalRead(SHARP_XOUT)) {      
+        if (Manager::ReadCancel()) return false;       
+    }  
+    return true;
+}
 
 /**
  * @brief Wait for the XOUT pin to go out high

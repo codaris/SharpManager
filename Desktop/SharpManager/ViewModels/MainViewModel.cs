@@ -41,6 +41,11 @@ namespace SharpManager.ViewModels
         public bool IsDisconnected => !Arduino.IsConnected;
 
         /// <summary>
+        /// Gets a value indicating whether the current operation can be cancelled
+        /// </summary>
+        public bool CanCancel => Arduino.CanCancel;
+
+        /// <summary>
         /// Gets the status.
         /// </summary>
         public string Status => IsConnected ? "Connected" : "Disconnected";
@@ -55,6 +60,7 @@ namespace SharpManager.ViewModels
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsConnected);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsDisconnected);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.Status);
+            this.PropagatePropertyChanged(Arduino, a => a.CanCancel, t => t.CanCancel); 
             SerialPortService.PortsChanged += SerialPortService_PortsChanged;
             UpdateSerialPorts(SerialPortService.GetAvailableSerialPorts());
         }
@@ -76,6 +82,14 @@ namespace SharpManager.ViewModels
         public void Disconnect()
         {
             Arduino.Disconnect();
+        }
+
+        /// <summary>
+        /// Cancels this instance.
+        /// </summary>
+        public void Cancel()
+        {
+            Arduino.Cancel();
         }
 
         /// <summary>

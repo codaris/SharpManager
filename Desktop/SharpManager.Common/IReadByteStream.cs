@@ -18,6 +18,6 @@ namespace SharpManager
         /// <summary>
         /// Reads a byte from the stream
         /// </summary>
-        Task<byte> ReadByteAsync();
+        Task<byte> ReadByteAsync(CancellationToken cancellationToken);
     }
 }

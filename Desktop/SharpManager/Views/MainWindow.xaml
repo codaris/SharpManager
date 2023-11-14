@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:SharpManager"
         mc:Ignorable="d"
         Title="Sharp Manager" Height="450" Width="800" 
-        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}">
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}" PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -58,6 +58,12 @@
                         <StackPanel Orientation="Horizontal">
                             <ContentControl Content="{StaticResource TriggerInterruptIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="Ping" VerticalAlignment="Center" Margin="0,0,5,2" />
+                        </StackPanel>
+                    </Button>
+                    <Button Margin="4,4,10,4" Click="Cancel_Click" Visibility="{Binding CanCancel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <ContentControl Content="{StaticResource CancelIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Cancel Operation" VerticalAlignment="Center" Margin="0,0,5,2" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

@@ -54,7 +54,7 @@ void loop()
 
             Manager::SendDeviceSelect(device);
             // if (device == 0x10) SendRawData();
-            // if (device == 0x41) ReadDisk();
+            if (device == 0x41) Sharp::ProcessDiskCommand();
         }
     }
 

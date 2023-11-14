@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.IO.Ports;
 using System.Linq;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,9 @@ namespace SharpManager
         DeviceSelect = 2,
         LoadTape = 3,
         Print = 4,
-        SaveTape = 5
+        SaveTape = 5,
+        Data = 6,
+        Disk = 7
     }
 
     public class Arduino : NotifyObject, IDisposable
@@ -45,10 +48,10 @@ namespace SharpManager
         private SerialPortByteStream? serialStream = null;
 
         /// <summary>Cancel the current operation</summary>
-        CancellationTokenSource? cancellationTokenSource = null;
+        private CancellationTokenSource? cancellationTokenSource = null;
 
         /// <summary>The message log</summary>
-        private IMessageLog messageLog;
+        private readonly IMessageLog messageLog;
 
         /// <summary>Whether or not current processing a command</summary>
         private int commandCount = 0;
@@ -63,6 +66,11 @@ namespace SharpManager
         /// Gets a value indicating whether this instance is connected.
         /// </summary>
         public bool IsConnected { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can cancel.
+        /// </summary>
+        public bool CanCancel => cancellationTokenSource != null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Arduino" /> class.
@@ -87,6 +95,7 @@ namespace SharpManager
             serialStream = new SerialPortByteStream(serialPort);
             IsConnected = true;
             OnPropertyChanged(nameof(IsConnected));
+            messageLog.WriteLine($"Connected to {portName}.");
 
             // Begin the main loop
             _ = Task.Run(async () => { await Mainloop(); });
@@ -105,6 +114,7 @@ namespace SharpManager
 
             IsConnected = false;
             OnPropertyChanged(nameof(IsConnected));
+            messageLog.WriteLine("Disconnected.");
         }
 
         /// <summary>
@@ -130,6 +140,17 @@ namespace SharpManager
         }
 
         /// <summary>
+        /// Cancels the current operation
+        /// </summary>
+        public void Cancel()
+        {
+            serialStream?.WriteByte(Ascii.CAN);
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource = null;
+            OnPropertyChanged(nameof(CanCancel));
+        }
+
+        /// <summary>
         /// Pings the arduino
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Cannot test if not connected</exception>
@@ -139,26 +160,22 @@ namespace SharpManager
 
             using var _ = StartCommand();
 
-            messageLog.WriteLine("Clearing stream...");
-
             // Empty the read buffer
+            messageLog.Write("Clearing stream... ");
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
 
-            messageLog.WriteLine("Synchronizing...");
-
             // Try synchronizing
-            if (!await Synchronize().ConfigureAwait(false))
-            {
-                messageLog.WriteLine("Synchronize failed.");
-            }
+            messageLog.Write("Synchronizing... ");
+            if (!await Synchronize().ConfigureAwait(false)) messageLog.WriteLine("Failed.");
+            else messageLog.WriteLine();
 
-            messageLog.WriteLine("Ping...");
+            messageLog.Write("Pinging... ");
             serialStream.WriteByte(Ascii.SOH);
             serialStream.WriteByte((byte)Command.Ping);
             var response = await serialStream.TryReadByteAsync(2500).ConfigureAwait(false); ;       // Wait for response
             if (response == Ascii.ACK)
             {
-                messageLog.WriteLine("Success.\r\n");
+                messageLog.WriteLine("Success.");
             }
             else if (response == Ascii.NAK)
             {
@@ -169,7 +186,7 @@ namespace SharpManager
             }
             else
             {
-                messageLog.WriteLine($"No response.\r\n");
+                messageLog.WriteLine($"No response.");
             }
         }
 
@@ -186,7 +203,7 @@ namespace SharpManager
             using var _ = StartCommand();
 
             // Empty the read buffer
-            messageLog.WriteLine("Clearing stream...");
+            messageLog.Write("Clearing stream... ");
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
 
             // Send Syn character and wait for syn
@@ -214,13 +231,17 @@ namespace SharpManager
             messageLog.WriteLine($"Done.");
         }
 
+        /// <summary>
+        /// Reads the tape file.
+        /// </summary>
+        /// <returns></returns>
         public async Task<byte[]> ReadTapeFile()
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
             using var _ = StartCommand();
 
             // Empty the read buffer
-            messageLog.WriteLine("Clearing stream...");
+            messageLog.Write("Clearing stream... ");
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
 
             // Send Syn character and wait for syn
@@ -232,44 +253,54 @@ namespace SharpManager
             serialStream.WriteByte((byte)Command.SaveTape);
             await ReadResponse().ConfigureAwait(false);
 
-            // Wait for start value
-            var startValue = await serialStream.ReadByteAsync(10000).ConfigureAwait(false);
-            if (startValue == Ascii.NAK)
+            try
             {
-                throw new ArduinoException(await serialStream.ReadByteAsync(2000).ConfigureAwait(false));
-            }
-            else if (startValue != Ascii.STX)
-            {
-                throw new ArduinoException($"Expecting transmisson start (STX) received 0x{startValue:X} instead.");
-            }
+                cancellationTokenSource = new();
+                OnPropertyChanged(nameof(CanCancel));
 
-            messageLog.WriteLine("Reading data:");
-
-            // The data result
-            var result = new List<byte>();   
-
-            while (true)
-            {
-                var data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
-                switch (data)
+                // Wait for start value
+                var startValue = await serialStream.ReadByteAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+                if (startValue == Ascii.NAK)
                 {
-                    case Ascii.DLE:
-                        data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
-                        break;
-                    case Ascii.NAK:
-                        throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
-                    case Ascii.CAN:
-                        throw new ArduinoException(ErrorCode.Cancelled);
-                    case Ascii.ETX:
-                        messageLog.WriteLine();
-                        messageLog.WriteLine("Done");
-                        return result.ToArray();
+                    throw new ArduinoException(await serialStream.ReadByteAsync(2000).ConfigureAwait(false));
                 }
-                result.Add(data);
-                messageLog.Write(" " + data.ToString("X2"));
-                if (result.Count % 16 == 0) messageLog.WriteLine();
-            }
+                else if (startValue != Ascii.STX)
+                {
+                    throw new ArduinoException($"Expecting transmisson start (STX) received 0x{startValue:X} instead.");
+                }
 
+                messageLog.WriteLine("Reading data:");
+
+                // The data result
+                var result = new List<byte>();
+
+                while (true)
+                {
+                    var data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+                    switch (data)
+                    {
+                        case Ascii.DLE:
+                            data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+                            break;
+                        case Ascii.NAK:
+                            throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
+                        case Ascii.CAN:
+                            throw new ArduinoException(ErrorCode.Cancelled);
+                        case Ascii.ETX:
+                            messageLog.WriteLine();
+                            messageLog.WriteLine("Done.");
+                            return result.ToArray();
+                    }
+                    result.Add(data);
+                    messageLog.Write(" " + data.ToString("X2"));
+                    if (result.Count % 16 == 0) messageLog.WriteLine();
+                }
+            }
+            finally
+            {
+                cancellationTokenSource = null;
+                OnPropertyChanged(nameof(CanCancel));
+            }
         }
 
         /// <summary>
@@ -337,11 +368,89 @@ namespace SharpManager
                     if (character.Value == 13) messageLog.WriteLine();
                     else messageLog.Write(((char)character.Value).ToString());
                     break;
+                case Command.Data:
+                    var value = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
+                    if (!value.HasValue) return;
+                    messageLog.WriteLine($"Data: {value:X2}");
+                    break;
+                case Command.Disk:
+                    messageLog.WriteLine($"Disk command");
+                    var _ = await ReadDiskCommand();
+                    await SendDiskPacket(new byte[] { 0, 5, 0, 0, 5 });
+                    break;
                 default:
                     return;
             }
         }
 
+        /// <summary>
+        /// Reads the disk command.
+        /// </summary>
+        /// <returns></returns>
+        private async Task<byte[]> ReadDiskCommand()
+        {
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+            // Wait for start value
+            var startValue = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+            if (startValue == Ascii.NAK)
+            {
+                throw new ArduinoException(await serialStream.ReadByteAsync(2000).ConfigureAwait(false));
+            }
+            else if (startValue != Ascii.STX)
+            {
+                throw new ArduinoException($"Expecting transmisson start (STX) received 0x{startValue:X} instead.");
+            }
+
+            messageLog.WriteLine("Reading data:");
+
+            // The data result
+            var result = new List<byte>();
+
+            while (true)
+            {
+                var data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+                switch (data)
+                {
+                    case Ascii.DLE:
+                        data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+                        break;
+                    case Ascii.NAK:
+                        throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
+                    case Ascii.CAN:
+                        throw new ArduinoException(ErrorCode.Cancelled);
+                    case Ascii.ETX:
+                        messageLog.WriteLine();
+                        messageLog.WriteLine("Done.");
+                        return result.ToArray();
+                }
+                result.Add(data);
+                messageLog.Write(" " + data.ToString("X2"));
+                if (result.Count % 16 == 0) messageLog.WriteLine();
+            }
+        }
+
+        /// <summary>
+        /// Sends the disk packet.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <exception cref="SharpManager.ArduinoException">Arduino is not connected</exception>
+        private async Task SendDiskPacket(byte[] data)
+        {
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+            serialStream.WriteByte(Ascii.SOH);
+            serialStream.WriteByte((byte)Command.Disk);
+            serialStream.WriteWord(data.Length);
+
+            int offset = 0;
+            while (true)
+            {
+                int packetSize = Math.Min(BufferSize, data.Length - offset);
+                if (packetSize == 0) break;
+                messageLog.WriteLine($"Sendng {packetSize} bytes...");
+                for (int i = 0; i < packetSize; i++) serialStream.WriteByte(data[offset++]);
+                await ReadResponse().ConfigureAwait(false);
+            }
+        }
 
         /// <summary>
         /// The disposed value

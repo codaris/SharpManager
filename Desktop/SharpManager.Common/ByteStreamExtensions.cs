@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SharpManager
@@ -41,10 +43,10 @@ namespace SharpManager
         /// <param name="stream">The stream.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static async Task<ushort> ReadWordAsync(this IReadByteStream stream)
+        public static async Task<ushort> ReadWordAsync(this IReadByteStream stream, CancellationToken cancellationToken)
         {
-            int result = await stream.ReadByteAsync().ConfigureAwait(false);
-            result += await stream.ReadByteAsync().ConfigureAwait(false) << 8;
+            int result = await stream.ReadByteAsync(cancellationToken).ConfigureAwait(false);
+            result += await stream.ReadByteAsync(cancellationToken).ConfigureAwait(false) << 8;
             return (ushort)result;
         }
 
@@ -53,7 +55,23 @@ namespace SharpManager
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <returns></returns>
-        public static byte ReadByte(this IReadByteStream stream) => stream.ReadByteAsync().Result;
+        public static byte ReadByte(this IReadByteStream stream) => stream.ReadByteAsync(CancellationToken.None).Result;
+
+        /// <summary>
+        /// Reads the byte.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public static byte ReadByte(this IReadByteStream stream, CancellationToken cancellationToken) => stream.ReadByteAsync(cancellationToken).Result;
+
+        /// <summary>
+        /// Reads the byte asynchronous.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public static Task<byte> ReadByteAsync(this IReadByteStream stream) => stream.ReadByteAsync(CancellationToken.None);
 
         /// <summary>
         /// Reads the byte.
@@ -62,10 +80,10 @@ namespace SharpManager
         /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
         /// <returns></returns>
         /// <exception cref="TimeoutException">Read operation timed out before completing</exception>
-        public static byte ReadByte(this IReadByteStream stream, int millisecondsTimeout)
+        public static byte ReadByte(this IReadByteStream stream, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var task = stream.ReadByteAsync();
-            if (!task.Wait(millisecondsTimeout))
+            var task = stream.ReadByteAsync(cancellationToken);
+            if (!task.Wait(millisecondsTimeout, cancellationToken))
             {
                 throw new TimeoutException("Read operation timed out before completing");
             }
@@ -78,23 +96,33 @@ namespace SharpManager
         /// <param name="stream">The stream.</param>
         /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
         /// <returns></returns>
-        public static byte? TryReadByte(this IReadByteStream stream, int millisecondsTimeout)
+        public static byte? TryReadByte(this IReadByteStream stream, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var task = stream.ReadByteAsync();
-            if (!task.Wait(millisecondsTimeout)) return null;
+            var task = stream.ReadByteAsync(cancellationToken);
+            if (!task.Wait(millisecondsTimeout, cancellationToken)) return null;
             return task.Result;
         }
+
+        /// <summary>
+        /// eads the byte asynchronously with timeout
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
+        /// <returns></returns>
+        public static Task<byte> ReadByteAsync(this IReadByteStream stream, int millisecondsTimeout) => ReadByteAsync(stream, millisecondsTimeout, CancellationToken.None);
 
         /// <summary>
         /// Reads the byte asynchronously with timeout
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
+        /// <exception cref="System.TimeoutException">Read operation timed out before completing</exception>
         /// <exception cref="TimeoutException">Read operation timed out before completing</exception>
-        public static async Task<byte> ReadByteAsync(this IReadByteStream stream, int millisecondsTimeout)
+        public static async Task<byte> ReadByteAsync(this IReadByteStream stream, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var result = await TryReadByteAsync(stream, millisecondsTimeout).ConfigureAwait(false);
+            var result = await TryReadByteAsync(stream, millisecondsTimeout, cancellationToken).ConfigureAwait(false);
             if (!result.HasValue) throw new TimeoutException("Read operation timed out before completing");
             return result.Value;
         }
@@ -105,10 +133,18 @@ namespace SharpManager
         /// <param name="stream">The stream.</param>
         /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
         /// <returns></returns>
-        public static async Task<byte?> TryReadByteAsync(this IReadByteStream stream, int millisecondsTimeout)
+        public static Task<byte?> TryReadByteAsync(this IReadByteStream stream, int millisecondsTimeout) => TryReadByteAsync(stream, millisecondsTimeout, CancellationToken.None);
+
+        /// <summary>
+        /// Tries to read the byte asynchronously with timeout
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
+        /// <returns></returns>
+        public static async Task<byte?> TryReadByteAsync(this IReadByteStream stream, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var readTask = stream.ReadByteAsync();
-            var delayTask = Task.Delay(millisecondsTimeout);
+            var readTask = stream.ReadByteAsync(cancellationToken);
+            var delayTask = Task.Delay(millisecondsTimeout, cancellationToken);
             var task = await Task.WhenAny(readTask, delayTask).ConfigureAwait(false);
             if (task == delayTask) return null;
             return readTask.Result;
