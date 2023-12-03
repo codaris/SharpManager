@@ -180,4 +180,14 @@ namespace SerialChannel
             if (timeout > 0 && (millis() - startTime) > timeout) return ResultType::Timeout;            
         }
     }
+
+    /**
+     * @brief Fills serial buffer 
+    */
+    void FillBuffer()
+    {
+        while (Serial.available() > 0 && serialBufferIndex < serialBufferCount) {
+            serialBuffer[serialBufferIndex++] = Serial.read();
+        }        
+    }
 }

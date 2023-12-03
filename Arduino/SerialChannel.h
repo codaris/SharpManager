@@ -31,7 +31,7 @@ namespace SerialChannel
         operator byte() const { return Value(); }
         operator ResultType() const { return Type(); }
         bool HasValue() const { return value >= 0; }
-        bool IsError() const { return value < 1; }
+        bool IsError() const { return value < 0; }
         bool IsDone() const { return value == (-ResultType::End); }
         ResultType Type() const {  return (value >= 0 ? ResultType::Ok : (ResultType)-value); }
         int Value() const { return value >= 0 ? value : 0; }
