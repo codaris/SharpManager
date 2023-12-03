@@ -40,7 +40,7 @@ namespace SharpManager
                     ExpressionType.Convert or ExpressionType.ConvertChecked => nameSelector(((UnaryExpression)e).Operand),
                     ExpressionType.Invoke => nameSelector(((InvocationExpression)e).Expression),
                     ExpressionType.ArrayLength => "Length",
-                    _ => throw new Exception("not a proper member selector"),
+                    _ => throw new DataException("not a proper member selector"),
                 };
             }
 

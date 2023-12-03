@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace SharpManager
 {
-    internal class CE140F
+    /// <summary>
+    /// Class representing the floppy disk drive
+    /// </summary>
+    public class CE140F
     {
     }
 }

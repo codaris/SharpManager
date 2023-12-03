@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.IO;
 using System.IO.Pipes;
@@ -22,7 +24,8 @@ namespace SharpManager
         Timeout = 1,
         InvalidData = 2,
         Cancelled = 3,
-        Unexpected = 4
+        Unexpected = 4,
+        Overflow = 5
     }
 
     /// <summary>
@@ -36,7 +39,8 @@ namespace SharpManager
         Print = 4,
         SaveTape = 5,
         Data = 6,
-        Disk = 7
+        Disk = 7,
+        Init = 10
     }
 
     public class Arduino : NotifyObject, IDisposable
@@ -61,6 +65,12 @@ namespace SharpManager
 
         /// <summary>The file header size</summary>
         private const int HeaderSize = 10;
+
+        /// <summary>The high version value</summary>
+        private const int VersionHigh = 1;
+
+        /// <summary>The low version value</summary>
+        private const int VersionLow = 1;
 
         /// <summary>
         /// Gets a value indicating whether this instance is connected.
@@ -148,6 +158,42 @@ namespace SharpManager
             cancellationTokenSource?.Cancel();
             cancellationTokenSource = null;
             OnPropertyChanged(nameof(CanCancel));
+        }
+
+        public async Task Initialize()
+        {
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+
+            using var _ = StartCommand();
+
+            // Empty the read buffer
+            while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
+
+            // Try synchronizing
+            if (!await Synchronize().ConfigureAwait(false)) messageLog.WriteLine("Initialize failed.");
+
+            serialStream.WriteByte(Ascii.SOH);
+            serialStream.WriteByte((byte)Command.Init);
+            
+            // Read the header
+            await serialStream.ExpectByteAsync(Ascii.SOH, 2500).ConfigureAwait(false);
+            int versionHigh = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+            int versionLow = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+            if (versionHigh != VersionHigh || versionLow != VersionLow)
+            {
+                throw new DataException($"Unexpected Arduino version (Expected {VersionHigh}.{VersionLow} but received {versionHigh}.{versionLow}");
+            }
+            int packetSize = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+            if (packetSize < 16) throw new DataException($"Received packet size of '{packetSize}' is too small.");
+
+            // Read the text stream from the Arduino
+            await serialStream.ExpectByteAsync(Ascii.STX, 1000).ConfigureAwait(false);
+            while (true)
+            {
+                byte value = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+                if (value == Ascii.ETX) break;
+                messageLog.Write(char.ConvertFromUtf32(value));
+            }
         }
 
         /// <summary>

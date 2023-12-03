@@ -149,5 +149,38 @@ namespace SharpManager
             if (task == delayTask) return null;
             return readTask.Result;
         }
+
+        /// <summary>
+        /// Expects the byte and throws DataException if doesn't match
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="expected">The expected.</param>
+        public static async Task ExpectByteAsync(this IReadByteStream stream, byte expected) => DataException.Expect(await ReadByteAsync(stream).ConfigureAwait(false), expected);
+
+        /// <summary>
+        /// Expects the byte and throws DataException if doesn't match or ArduinoException if timeout
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="expected">The expected.</param>
+        /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
+        public static async Task ExpectByteAsync(this IReadByteStream stream, byte expected, int millisecondsTimeout) => DataException.Expect(await ReadByteAsync(stream, millisecondsTimeout).ConfigureAwait(false), expected);
+
+        /// <summary>
+        /// Expects the byte and throws DataException if doesn't match
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="expected">The expected.</param>
+        /// <param name="errorMessage">The error message.</param>
+        public static async Task ExpectByteAsync(this IReadByteStream stream, byte expected, string errorMessage) => DataException.Expect(await ReadByteAsync(stream).ConfigureAwait(false), expected, errorMessage);
+
+        /// <summary>
+        /// Expects the byte and throws DataException if doesn't match or ArduinoException if timeout
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="expected">The expected.</param>
+        /// <param name="millisecondsTimeout">The milliseconds timeout.</param>
+        /// <param name="errorMessage">The error message.</param>
+        public static async Task ExpectByteAsync(this IReadByteStream stream, byte expected, int millisecondsTimeout, string errorMessage) => DataException.Expect(await ReadByteAsync(stream, millisecondsTimeout).ConfigureAwait(false), expected, errorMessage);
+
     }
 }

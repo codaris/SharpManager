@@ -3,6 +3,9 @@
 #include "Tape.h"
 #include "Sharp.h"
 
+const byte VersionHigh = 1;                  // Version number
+const byte VersionLow = 1;                  
+
 namespace Manager
 {
     const int BUFFER_SIZE = 64;         // The size of the serial and tape buffers
@@ -66,7 +69,7 @@ bool Manager::ReadCancel()
 void Manager::SendFailure(ErrorCode errorCode)
 {
     Serial.write(Ascii::NAK);
-    Serial.write(ErrorCode::Timeout);
+    Serial.write(errorCode);
 }
 
 
@@ -124,6 +127,7 @@ void Manager::EndDiskCommand()
  */
 void Manager::ProcessPacket()
 {
+    if (!Serial.available()) return;
     int data = Serial.read();
 
     // Respond to sync byte with sync response
@@ -143,6 +147,19 @@ void Manager::ProcessPacket()
             // Do nothing except ACK
             Serial.write(Ascii::ACK);
             break;
+        case Command::Init:
+            Serial.write(Ascii::SOH);
+            Serial.write("SM");
+            Serial.write(VersionHigh);
+            Serial.write(VersionLow);
+            Serial.write(SERIAL_RX_BUFFER_SIZE);
+            Serial.write(Ascii::STX);
+            Serial.write("Sharp Anduino Driver ");
+            Serial.print((int)VersionHigh);
+            Serial.print(".");
+            Serial.print((int)VersionLow);
+            Serial.print("\r\n");
+            Serial.write(Ascii::ETX);
         case Command::LoadTape:
             // Run the load from tape command
             Tape::Load();

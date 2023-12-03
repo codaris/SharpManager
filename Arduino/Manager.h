@@ -11,16 +11,18 @@ namespace Command
     const int SaveTape = 5;
     const int Data = 6;
     const int Disk = 7;
+    const int Init = 10;    
     const int Cancel = 99;
 }
 
-enum ErrorCode
+enum ErrorCode 
 {
     Unknown = 0,
     Timeout = 1,
     InvalidData = 2,
     Cancelled = 3,
-    Unexpected = 4
+    Unexpected = 4,
+    Overflow = 5
 };
 
 

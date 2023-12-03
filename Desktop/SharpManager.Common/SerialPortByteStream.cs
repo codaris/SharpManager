@@ -40,7 +40,7 @@ namespace SharpManager
         /// <exception cref="System.Exception">Serial port error: {e.EventType}</exception>
         private void SerialPort_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
-            throw new Exception($"Serial port error: {e.EventType}");
+            throw new DataException($"Serial port error: {e.EventType}");
         }
 
         /// <summary>

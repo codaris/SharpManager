@@ -3,7 +3,6 @@
 #include "Manager.h"
 #include "Sharp.h"
 
-
 const int TAPE_BUFFER_SIZE = 64;        // The size of the serial and tape buffers
 byte serialBuffer[TAPE_BUFFER_SIZE];    // Serial receive buffer
 byte tapeBuffer[TAPE_BUFFER_SIZE];      // The tape buffer
