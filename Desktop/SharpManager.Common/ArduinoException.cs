@@ -15,7 +15,7 @@ namespace SharpManager
         /// </summary>
         public ArduinoException() : base()
         {
-            ErrorCode = ErrorCode.Unknown;
+            ErrorCode = ErrorCode.Ok;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace SharpManager
         /// <param name="message">The message that describes the error.</param>
         public ArduinoException(string message) : base(message)
         {
-            ErrorCode = ErrorCode.Unknown;
+            ErrorCode = ErrorCode.Ok;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SharpManager
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.</param>
         public ArduinoException(string message, DataException innerException) : base(message, innerException)
         {
-            ErrorCode = ErrorCode.Unknown;
+            ErrorCode = ErrorCode.Ok;
         }
 
         /// <summary>
@@ -63,10 +63,10 @@ namespace SharpManager
         {
             return errorCode switch
             {
-                ErrorCode.Unknown => "Unknown response received",
+                ErrorCode.Ok => "Unknown response received",
                 ErrorCode.Cancelled => "Request cancelled",
                 ErrorCode.Timeout => "Timeout occured",
-                ErrorCode.InvalidData => "Invalid data received",
+                ErrorCode.SyncError => "Synchronization error",
                 ErrorCode.Unexpected => "Unexpected command received",
                 ErrorCode.Overflow => "Buffer overflow occurred",
                 _ => $"Unexpected error code 0x{errorCode:X2}",

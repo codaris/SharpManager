@@ -2,49 +2,33 @@
 #ifndef __MANAGER_H__
 #define __MANAGER_H__
 
-namespace Command
-{
-    const int Ping = 1;
-    const int DeviceSelect = 2;
-    const int LoadTape = 3;
-    const int Print = 4;
-    const int SaveTape = 5;
-    const int Data = 6;
-    const int Disk = 7;
-    const int Init = 10;    
-    const int Cancel = 99;
-}
-
-enum ErrorCode 
-{
-    Unknown = 0,
-    Timeout = 1,
-    InvalidData = 2,
-    Cancelled = 3,
-    Unexpected = 4,
-    Overflow = 5
-};
-
+#include "Result.h"
 
 namespace Manager
 {
     /**
      * @brief Waits for a single byte to become available on the serial interface
-     * @return int      Byte read or -1 if timed out
+     * @return Byte read or error
      */
-    int WaitReadByte();
+    Result WaitReadByte();
 
     /**
      * @brief Waits for 2 byte short integer to become available on the serial interface
-     * @return int      Byte read or -1 if timed out
+     * @return Byte read or error
      */
-    int WaitReadWord();
+    Result WaitReadWord();
 
     /**
-     * @brief Sends failure to the manager
-     * @param errorCode Error code to send
-    */
-    void SendFailure(ErrorCode errorCode);
+     * @brief Reads an escaped byte from the serial interface or resulting code.
+     * @return The data to be read or error code
+     */
+    Result WaitReadDataByte();
+
+    /**
+     * @brief Reads a single byte from the serial port and compares with the specified value
+     * @return Data if expected value returned or error code 
+     */
+    Result Expect(int value);
 
     /**
      * @brief Sees if there is a byte available on the serial line that will cancel the operation
@@ -53,9 +37,37 @@ namespace Manager
     bool ReadCancel();
 
     /**
-     * @brief Sends success to the manager
+     * @brief Sends failure to the manager
+     * @param errorCode Error code to send
+    */
+    void SendFailure(ResultType errorCode);
+
+    /**
+     * @brief Sends success/acknowledgement to the manager
     */
     void SendSuccess();
+
+    /**
+     * @brief Start a data packet transmission
+    */
+    void StartFrame();
+
+    /**
+     * @brief Sends an escaped data packet byte
+     * @param value Byte to send
+    */
+    void SendFrameByte(int data);
+
+    /**
+     * @brief End data packet transmission
+    */
+    void EndFrame();
+
+    /**
+     * @brief Send a byte to the manager
+     * @param data  Value to send
+    */
+    void SendDataByte(int data);
 
     /**
      * @brief Send the device select to the manager
@@ -65,69 +77,37 @@ namespace Manager
 
     /**
      * @brief Send the print character
-     * @param value Character to print
+     * @param data Character to print
     */
-    void SendPrintChar(int value);
+    void SendPrintChar(int data);
 
     /**
-     * @brief Start the disk command packet
-     * @note Use SendTapeData to send data
+     * @brief Sends the disk command start
     */
     void StartDiskCommand();
 
     /**
-     * @brief End the disk command packet
+     * @brief Initializes the buffer for reading 
+     * @param totalSize The total amount of data to read in BUFFER_SIZE packets
     */
-    void EndDiskCommand();
+    void InitializeBuffer(int totalSize);
 
     /**
-     * @brief Sends an escaped table data byte
-     * @param value Byte to send
+     * @brief Reads a byte from the buffer, fills the buffer as necessary.
+     * @param timeout Number of milliseconds to wait for byte from the buffer
+     * @returns A byte from the buffer or an error code
     */
-    void SendTapeByte(int data);
+    Result ReadBufferByte(int timeout = 0);
 
     /**
-     * @brief Sends an byte wrapped in packet for testing
-     * @param value Byte to send
+     * @brief Fills serial buffer 
     */
-    void SendDataByte(int data);
+    void FillBuffer();
 
     /**
-     * @brief Process a packet from the Serial port
-     * @note There should be one character available in the serial buffer
-    */
-    void ProcessPacket();
-
-    /**
-     * @brief Resets the incoming packet buffer
-    */
-    void ResetBuffer();
-
-    /**
-     * @brief Resets the incoming packet buffer
-     * @param remaining     The number of bytes remaining to read total
-    */
-    void ResetBuffer(int remaining);
-
-    /**
-     * @brief Return true if there is any data in the buffer to process
-     * @return  True if buffer contains a byte
-    */
-    bool BufferHasData();
-
-    /**
-     * @brief Reads a single byte from the buffer
-     * @note There must be a least one byte in the buffer @see BufferHasData()
-     * @return  A byte from the buffer
-    */
-    byte ReadFromBuffer();
-
-    /**
-     * @brief   Fills the buffer from the serial port.  Should be called in a loop.
-     * @param   remaining     The number of bytes remaining to read total
-     * @return  The number of bytes read into the buffer (subtract from remaining)
-    */
-    int FillBuffer(int remaining);
+     * @brief Process incoming commands 
+     */
+    void Task();
 }
 
 #endif

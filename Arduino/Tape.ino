@@ -2,17 +2,7 @@
 #include "Ascii.h"
 #include "Manager.h"
 #include "Sharp.h"
-
-const int TAPE_BUFFER_SIZE = 64;        // The size of the serial and tape buffers
-byte serialBuffer[TAPE_BUFFER_SIZE];    // Serial receive buffer
-byte tapeBuffer[TAPE_BUFFER_SIZE];      // The tape buffer
-int serialBufferCount = 0;              // The number of bytes to read into the serial buffer (no larger than TAPE_BUFFER_SIZE)
-int serialBufferIndex = 0;              // The index of the next position to read into the buffer
-int tapeBufferCount = 0;                // The number of items in the tape buffer
-int tapeBufferIndex = 0;                // The next byte to process in the tape buffer
-
-const int ErrorTimeout = -1;            // Read timeout error
-const int ErrorSync = -2;               // Sync error
+#include "Result.h"
 
 /**
  * @brief Loads data from the serial port to the pocket computer
@@ -20,71 +10,47 @@ const int ErrorSync = -2;               // Sync error
 void Tape::Load()
 {
     // Read the load tape packet information
-    int length = Manager::WaitReadWord();            // 2 bytes, total length of program
-    if (length == -1) {
-        Manager::SendFailure(ErrorCode::Timeout);
+    Result length = Manager::WaitReadWord();            // 2 bytes, total length of program
+    if (length.IsError()) {
+        Manager::SendFailure(length.AsErrorCode());
         return;
     }
 
-    int remaining = length;                 // Number of bytes remaining to be read from PC
-
-    int headerCount = Manager::WaitReadByte();       // Number of bytes that make up the header
-    if (length == -1) {
-        Manager::SendFailure(ErrorCode::Timeout);
+    Manager::InitializeBuffer(length);
+    Result headerCountResult = Manager::WaitReadByte();       // Number of bytes that make up the header
+    if (headerCountResult.IsError()) {
+        Manager::SendFailure(headerCountResult.AsErrorCode());
         return;
     }
+
+    int headerCount = headerCountResult.Value();
 
     // Parsing the header was a success
     Manager::SendSuccess();
-
-    // Reset the buffers
-    tapeBufferCount = 0;
-    tapeBufferIndex = 0;
-    serialBufferCount = min(TAPE_BUFFER_SIZE, remaining);
-    serialBufferIndex = 0;
 
     // Has the tape prefix been sent
     bool sentPrefix = false;
 
     while (true) 
     {
-        // If the write buffer contains unsent bytes
-        if (tapeBufferIndex < tapeBufferCount) {
-            // Send the prefix if it isn't already sent
-            if (!sentPrefix) {
-                digitalWrite(LED_BUILTIN, HIGH);
-                // Send the prefix  
-                for (int i = 0; i < 250; i++) SendTapeBit(1);    
-                sentPrefix = true;
-            }
-            // Send a single byte to the pocket computer
-            SendTapeByte(tapeBuffer[tapeBufferIndex++], headerCount > 0);
-            // Decrement the header count
-            if (headerCount > 0) headerCount--;
-        }
-        else
-        {
-            // If write buffer empty and no remaining bytes, leave
-            if (remaining == 0) break;
+        auto data = Manager::ReadBufferByte();
+        if (data.IsDone()) break;
+        if (data.IsError()) {
+            Manager::SendFailure(data.AsErrorCode());
+            return;
         }
 
-        // If a byte is available, add to read buffer
-        if (Serial.available() > 0 && serialBufferIndex < serialBufferCount) {
-            serialBuffer[serialBufferIndex++] = Serial.read();
-        }    
-
-        // If the read buffer is full and the write buffer is full
-        // Copy the read buffer into the write buffer and receive another packet
-        if (serialBufferIndex == serialBufferCount && tapeBufferIndex == tapeBufferCount) {
-            remaining -= serialBufferCount;
-            memcpy(tapeBuffer, serialBuffer, serialBufferCount);
-            tapeBufferCount = serialBufferCount;
-            tapeBufferIndex = 0;
-            serialBufferCount = min(TAPE_BUFFER_SIZE, remaining);
-            serialBufferIndex = 0;
-            // Acknowledge the read buffer
-            Manager::SendSuccess();
+        // Send the prefix if it isn't already sent
+        if (!sentPrefix) {
+            digitalWrite(LED_BUILTIN, HIGH);
+            // Send the prefix  
+            for (int i = 0; i < 250; i++) SendTapeBit(1);    
+            sentPrefix = true;
         }
+        // Send a single byte to the pocket computer
+        SendTapeByte(data.Value(), headerCount > 0);
+        // Decrement the header count
+        if (headerCount > 0) headerCount--;
     }
 
     // End with 2 stop bits
@@ -119,10 +85,8 @@ void SendTapeBit(bool bit)
     const int pulse8 = 125;  // μs, short pulse CSAVE/CLOAD (8 x pulse8 = HIGH)
     const int pulse4 = 250;  // μs, long  pulse CSAVE/CLOAD (4 x pulse4 = LOW)
 
-    // For every bit, attempt to read one byte from the buffer
-    if (Serial.available() > 0 && serialBufferIndex < serialBufferCount) {
-        serialBuffer[serialBufferIndex++] = Serial.read();
-    }
+    // For every bit, attempt to read from the buffer
+    Manager::FillBuffer();
 
     // Pulse the bits
     if (bit) { // Bit = 1
@@ -147,89 +111,66 @@ void TapePulseOut(int duration)
 }
 
 
-
 bool WaitForXoutHigh(int timeout = 1000);
 bool ReadStartBit(unsigned long startTime = micros());
 bool ReadBit(unsigned long startTime = micros());
-
+Result ReadByte();
 
 /**
  * @brief Saves data from the pocket computer to the serial port
  */
-void Tape::Save(bool debug = false)
+void Tape::Save()
 {
-    if (debug) {
-        Serial.println("Waiting for CSAVE... (ESC to Cancel)");
-    } else {
-        // Acknowledge the save packet
-        Manager::SendSuccess();
-    }
+    // Acknowledge the save packet
+    Manager::SendSuccess();
 
     // Wait for xout to go high
     if (!WaitForXoutHighOrCancel()) {
-        if (debug) Serial.println("Cancelled");
-        else Manager::SendFailure(ErrorCode::Cancelled);
+        Manager::SendFailure(ResultType::Cancelled);
         return;
     }
 
     // Read the device select
     int device = Sharp::ReadDeviceSelect(); 
-    if (debug) {
-        Serial.print("Device select: 0x");
-        Serial.println(device, HEX);
-    } else if (device != 0x10) {
+    if (device != 0x10) {
         // Device is not tape
-        Manager::SendFailure(ErrorCode::Unexpected);
+        Manager::SendFailure(ResultType::Unexpected);
         return;
     }
-
-    if (debug) Serial.println("Reading tape data...");
-    
+  
     unsigned long startTime = 0;
     if (!ReadSync(startTime)) {
-        if (debug) Serial.println("Timeout");
-        else Manager::SendFailure(ErrorCode::Timeout);
+        Manager::SendFailure(ResultType::Timeout);
         return;
     }
-
-    if (!debug) Serial.write(Ascii::STX);
 
     bool headerMarker = false;                      // Have we see the end of header byte
     bool header = true;                             // Are we in the header portion
+    bool started = false;
 
     while (true) {
         // Start bit
         if (ReadStartBit(startTime)) {
-            int value = ReadByte();
-            if (headerMarker) header = false;           // Read one byte past header marker
-            if (value == 0x5F) headerMarker = true;     // Read the header marker
-            if (value >= 0) {
-                if (debug) {
-                    Serial.print(value, HEX);
-                    Serial.print(" ");
-                } else {
-                    Manager::SendTapeByte(value);
-                }
-            } else {
-                if (debug) {
-                    if (value == ErrorTimeout) Serial.println("Timeout");
-                    else if (value == ErrorSync) Serial.println("error");
-                } else {
-                    Manager::SendFailure((ErrorCode)(-value));
-                }
+            Result data = ReadByte();
+            if (data.IsError()) {
+                Manager::SendFailure(data.AsErrorCode());
                 break;
             }
+
+            if (headerMarker) header = false;           // Read one byte past header marker
+            if (data.Value() == 0x5F) headerMarker = true;     // Read the header marker
+            if (!started) Manager::StartFrame();
+            Manager::SendFrameByte(data);
         }
+
         // Resync
         unsigned long syncTotal = 0;
         if (!ReadSync(startTime, syncTotal)) {
-            if (debug) Serial.println("Timeout");
-            else Manager::SendFailure(ErrorCode::Timeout);
+            Manager::SendFailure(ResultType::Timeout);
             return;
         }
         if (syncTotal > 10000) {
-            if (debug) Serial.println("Done");
-            else Serial.write(Ascii::ETX);
+            Manager::EndFrame();
             return;
         }
     }
@@ -313,19 +254,18 @@ void WaitForXoutLow()
     while (digitalRead(SHARP_XOUT));       
 }
 
-
 /**
  * @brief Reads a byte from the tape after the start bit
  * @returns The byte or error code
 */
-int ReadByte()
+Result ReadByte()
 {
     int result = 0;
     for (int i = 4; i < 8; i++) bitWrite(result, i, ReadBit());
-    if (!ReadStopBit()) return ErrorSync;       // Stop bit
-    if (!ReadStartBit()) return ErrorSync;      // Start bit
+    if (!ReadStopBit()) return ResultType::SyncError;
+    if (!ReadStartBit()) return ResultType::SyncError;      // Start bit
     for (int i = 0; i < 4; i++) bitWrite(result, i, ReadBit());
-    if (!ReadStopBit()) return ErrorSync;       // Stop bit      
+    if (!ReadStopBit()) return ResultType::SyncError;       // Stop bit      
     return result;  
 }
 

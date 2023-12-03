@@ -32,8 +32,8 @@ void setup()
  */
 void loop() 
 {   
-    // Process a packet from the serial port
-    if (Serial.available()) Manager::ProcessPacket();
+    // Process manager operations
+    Manager::Task();
 
     // If button is pressed send tape data
     if (digitalRead(BUTTON) == LOW) {

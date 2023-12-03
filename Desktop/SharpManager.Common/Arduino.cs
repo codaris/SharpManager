@@ -20,12 +20,13 @@ namespace SharpManager
     /// </summary>
     public enum ErrorCode
     {
-        Unknown = 0,
+        Ok = 0,
         Timeout = 1,
-        InvalidData = 2,
-        Cancelled = 3,
-        Unexpected = 4,
-        Overflow = 5
+        Cancelled = 2,
+        Unexpected = 3,
+        Overflow = 4,
+        SyncError = 5,
+        End = 0xFF
     }
 
     /// <summary>
@@ -33,14 +34,14 @@ namespace SharpManager
     /// </summary>
     public enum Command
     {
-        Ping = 1,
-        DeviceSelect = 2,
-        LoadTape = 3,
+        Init = 1,
+        Ping = 2,
+        DeviceSelect = 3,
         Print = 4,
-        SaveTape = 5,
-        Data = 6,
-        Disk = 7,
-        Init = 10
+        Data = 5,
+        LoadTape = 6,
+        SaveTape = 7,
+        Disk = 8
     }
 
     public class Arduino : NotifyObject, IDisposable
@@ -141,7 +142,7 @@ namespace SharpManager
                     // If sync then syn back
                     if (data == Ascii.SYN) serialStream.WriteByte(Ascii.SYN);
                     // Processing incoming packet
-                    if (data == Ascii.SOH) await ProcessIncomingPacket().ConfigureAwait(false); ;
+                    if (data == Ascii.SOH) await ProcessIncomingCommand().ConfigureAwait(false); ;
                     serialStream.WriteByte(Ascii.NAK);
                     serialStream.WriteByte((byte)ErrorCode.Unexpected);
                 }
@@ -160,11 +161,14 @@ namespace SharpManager
             OnPropertyChanged(nameof(CanCancel));
         }
 
+        /// <summary>
+        /// Initializes the Arduino 
+        /// </summary>
         public async Task Initialize()
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
-            using var _ = StartCommand();
+            using var _ = StartCommandScope();
 
             // Empty the read buffer
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
@@ -183,8 +187,8 @@ namespace SharpManager
             {
                 throw new DataException($"Unexpected Arduino version (Expected {VersionHigh}.{VersionLow} but received {versionHigh}.{versionLow}");
             }
-            int packetSize = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
-            if (packetSize < 16) throw new DataException($"Received packet size of '{packetSize}' is too small.");
+            int bufferSize = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+            if (bufferSize < 16) throw new DataException($"Received buffer size of '{bufferSize}' is too small.");
 
             // Read the text stream from the Arduino
             await serialStream.ExpectByteAsync(Ascii.STX, 1000).ConfigureAwait(false);
@@ -204,7 +208,7 @@ namespace SharpManager
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
-            using var _ = StartCommand();
+            using var _ = StartCommandScope();
 
             // Empty the read buffer
             messageLog.Write("Clearing stream... ");
@@ -246,7 +250,7 @@ namespace SharpManager
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
-            using var _ = StartCommand();
+            using var _ = StartCommandScope();
 
             // Empty the read buffer
             messageLog.Write("Clearing stream... ");
@@ -284,7 +288,7 @@ namespace SharpManager
         public async Task<byte[]> ReadTapeFile()
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
-            using var _ = StartCommand();
+            using var _ = StartCommandScope();
 
             // Empty the read buffer
             messageLog.Write("Clearing stream... ");
@@ -303,44 +307,7 @@ namespace SharpManager
             {
                 cancellationTokenSource = new();
                 OnPropertyChanged(nameof(CanCancel));
-
-                // Wait for start value
-                var startValue = await serialStream.ReadByteAsync(cancellationTokenSource.Token).ConfigureAwait(false);
-                if (startValue == Ascii.NAK)
-                {
-                    throw new ArduinoException(await serialStream.ReadByteAsync(2000).ConfigureAwait(false));
-                }
-                else if (startValue != Ascii.STX)
-                {
-                    throw new ArduinoException($"Expecting transmisson start (STX) received 0x{startValue:X} instead.");
-                }
-
-                messageLog.WriteLine("Reading data:");
-
-                // The data result
-                var result = new List<byte>();
-
-                while (true)
-                {
-                    var data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
-                    switch (data)
-                    {
-                        case Ascii.DLE:
-                            data = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
-                            break;
-                        case Ascii.NAK:
-                            throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
-                        case Ascii.CAN:
-                            throw new ArduinoException(ErrorCode.Cancelled);
-                        case Ascii.ETX:
-                            messageLog.WriteLine();
-                            messageLog.WriteLine("Done.");
-                            return result.ToArray();
-                    }
-                    result.Add(data);
-                    messageLog.Write(" " + data.ToString("X2"));
-                    if (result.Count % 16 == 0) messageLog.WriteLine();
-                }
+                return await ReadFrame(cancellationTokenSource.Token).ConfigureAwait(false);
             }
             finally
             {
@@ -393,7 +360,7 @@ namespace SharpManager
         /// <summary>
         /// Processes the incoming packet.
         /// </summary>
-        private async Task ProcessIncomingPacket()
+        private async Task ProcessIncomingCommand()
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
             var command = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
@@ -422,7 +389,7 @@ namespace SharpManager
                 case Command.Disk:
                     messageLog.WriteLine($"Disk command");
                     var _ = await ReadDiskCommand();
-                    await SendDiskPacket(new byte[] { 0, 5, 0, 0, 5 });
+                    await SendDiskResponse(new byte[] { 0, 5, 0, 0, 5 });
                     break;
                 default:
                     return;
@@ -435,9 +402,42 @@ namespace SharpManager
         /// <returns></returns>
         private async Task<byte[]> ReadDiskCommand()
         {
+            return await ReadFrame().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sends the disk packet.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <exception cref="SharpManager.ArduinoException">Arduino is not connected</exception>
+        private async Task SendDiskResponse(byte[] data)
+        {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+            serialStream.WriteByte(Ascii.SOH);
+            serialStream.WriteByte((byte)Command.Disk);
+            serialStream.WriteWord(data.Length);
+
+            int offset = 0;
+            while (true)
+            {
+                int size = Math.Min(BufferSize, data.Length - offset);
+                if (size == 0) break;
+                messageLog.WriteLine($"Sendng {size} bytes...");
+                for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
+                await ReadResponse().ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Reads a data frame.
+        /// </summary>
+        /// <returns>Byte array of data</returns>
+        private async Task<byte[]> ReadFrame(CancellationToken cancellationToken = default)
+        {
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+
             // Wait for start value
-            var startValue = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
+            var startValue = await serialStream.ReadByteAsync(cancellationToken).ConfigureAwait(false);
             if (startValue == Ascii.NAK)
             {
                 throw new ArduinoException(await serialStream.ReadByteAsync(2000).ConfigureAwait(false));
@@ -472,29 +472,6 @@ namespace SharpManager
                 result.Add(data);
                 messageLog.Write(" " + data.ToString("X2"));
                 if (result.Count % 16 == 0) messageLog.WriteLine();
-            }
-        }
-
-        /// <summary>
-        /// Sends the disk packet.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <exception cref="SharpManager.ArduinoException">Arduino is not connected</exception>
-        private async Task SendDiskPacket(byte[] data)
-        {
-            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
-            serialStream.WriteByte(Ascii.SOH);
-            serialStream.WriteByte((byte)Command.Disk);
-            serialStream.WriteWord(data.Length);
-
-            int offset = 0;
-            while (true)
-            {
-                int packetSize = Math.Min(BufferSize, data.Length - offset);
-                if (packetSize == 0) break;
-                messageLog.WriteLine($"Sendng {packetSize} bytes...");
-                for (int i = 0; i < packetSize; i++) serialStream.WriteByte(data[offset++]);
-                await ReadResponse().ConfigureAwait(false);
             }
         }
 
@@ -535,7 +512,7 @@ namespace SharpManager
         /// <summary>
         /// Starts the command.
         /// </summary>
-        internal ScopeGuard StartCommand()
+        internal ScopeGuard StartCommandScope()
         {
             commandCount++;
             return new ScopeGuard(() => { if (commandCount > 0) commandCount--; });

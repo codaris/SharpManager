@@ -66,13 +66,14 @@ int Sharp::ReadPrintByte()
 void Sharp::ProcessDiskCommand()
 {
     Manager::StartDiskCommand();
+    Manager::StartFrame();
     long timeout = micros();
     while (true) {
         int data = 0;
         while (!digitalRead(SHARP_BUSY))               // Wait for busy to go HIGH
         {
             if (micros() - timeout > IN_DATAREADY_TIMEOUT) {
-                Manager::EndDiskCommand();
+                Manager::EndFrame();
                 return;
             }
         }
@@ -94,7 +95,7 @@ void Sharp::ProcessDiskCommand()
         delayMicroseconds(100);
         digitalWrite(SHARP_ACK, LOW);                   // Acknowledge to LOW (ACK)        
         timeout = micros();                             // Reset timeout
-        Manager::SendTapeByte(data);                    // Sends the data        
+        Manager::SendFrameByte(data);                 // Sends the data        
     }
 }
 
