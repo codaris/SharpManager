@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.IO.Ports;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -73,6 +74,16 @@ namespace SharpManager
         /// <summary>The low version value</summary>
         private const int VersionLow = 1;
 
+        private enum FileFormat
+        {
+            Basic = 0x70,
+            BasicPassword = 0x71,
+            ExtBasic = 0x72,
+            ExtBasicPassword = 0x73,
+            Data = 0x74,
+            Binary = 0x76
+        }
+
         /// <summary>
         /// Gets a value indicating whether this instance is connected.
         /// </summary>
@@ -83,6 +94,8 @@ namespace SharpManager
         /// </summary>
         public bool CanCancel => cancellationTokenSource != null;
 
+        public CE140F DiskDrive { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Arduino" /> class.
         /// </summary>
@@ -90,6 +103,7 @@ namespace SharpManager
         public Arduino(IMessageLog messageLog)
         {
             this.messageLog = messageLog;
+            this.DiskDrive = new CE140F(messageLog);
         }
 
         /// <summary>
@@ -250,6 +264,20 @@ namespace SharpManager
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
+            // TODO improve file parsing
+            using var memoryStream = new MemoryStream();
+            fileStream.CopyTo(memoryStream);
+            var data = memoryStream.ToArray();
+            var fileFormat = (FileFormat)data[0];
+            // Swap the nibbles of bytes 1 through 7
+            for (int i = 1; i <= 7; i++) data[i] = data[i].SwapNibbles();
+            // If password also swap the password bytes
+            if (fileFormat == FileFormat.BasicPassword || fileFormat == FileFormat.ExtBasicPassword)
+            {
+                // Swap the nibbles of bytes 10 through 17
+                for (int i = 10; i <= 17; i++) data[i] = data[i].SwapNibbles();
+            }
+
             using var _ = StartCommandScope();
 
             // Empty the read buffer
@@ -260,7 +288,6 @@ namespace SharpManager
             messageLog.WriteLine("Synchronizing...");
             if (!await Synchronize().ConfigureAwait(false)) throw new ArduinoException("Unable to start file transfer");
 
-            var packet = new byte[64];
             messageLog.WriteLine($"Start new tape...  Length: {fileStream.Length}");
 
             serialStream.WriteByte(Ascii.SOH);    // Start of packet 
@@ -268,16 +295,7 @@ namespace SharpManager
             serialStream.WriteWord((ushort)fileStream.Length);
             serialStream.WriteByte(HeaderSize);
             await ReadResponse().ConfigureAwait(false);
-
-            while (true)
-            {
-                int packetSize = fileStream.Read(packet, 0, packet.Length);
-                if (packetSize == 0) break;
-                messageLog.WriteLine($"Sendng {packetSize} bytes...");
-                for (int i = 0; i < packetSize; i++) serialStream.WriteByte(packet[i]);
-                await ReadResponse().ConfigureAwait(false);
-            }
-
+            await SendBuffer(data).ConfigureAwait(false);
             messageLog.WriteLine($"Done.");
         }
 
@@ -388,8 +406,8 @@ namespace SharpManager
                     break;
                 case Command.Disk:
                     messageLog.WriteLine($"Disk command");
-                    var _ = await ReadDiskCommand();
-                    await SendDiskResponse(new byte[] { 0, 5, 0, 0, 5 });
+                    var response = DiskDrive.ProcessCommand(await ReadDiskCommand());
+                    await SendDiskResponse(response);
                     break;
                 default:
                     return;
@@ -416,16 +434,8 @@ namespace SharpManager
             serialStream.WriteByte(Ascii.SOH);
             serialStream.WriteByte((byte)Command.Disk);
             serialStream.WriteWord(data.Length);
-
-            int offset = 0;
-            while (true)
-            {
-                int size = Math.Min(BufferSize, data.Length - offset);
-                if (size == 0) break;
-                messageLog.WriteLine($"Sendng {size} bytes...");
-                for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
-                await ReadResponse().ConfigureAwait(false);
-            }
+            await ReadResponse().ConfigureAwait(false);     // Wait for acknowledge
+            await SendBuffer(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -472,6 +482,49 @@ namespace SharpManager
                 result.Add(data);
                 messageLog.Write(" " + data.ToString("X2"));
                 if (result.Count % 16 == 0) messageLog.WriteLine();
+            }
+        }
+
+        /// <summary>
+        /// Sends the stream by breaking into BufferSize sized groups TODO remove
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        private async Task SendStream(Stream stream)
+        {
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+            var buffer = new byte[BufferSize];
+            while (true)
+            {
+                int bufferSize = stream.Read(buffer, 0, buffer.Length);
+                if (bufferSize == 0) break;
+                messageLog.WriteLine($"Sendng {bufferSize} bytes...");
+                for (int i = 0; i < bufferSize; i++) serialStream.WriteByte(buffer[i]);
+                await ReadResponse().ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Sends the buffer by breaking into BufferSize sized groups
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <exception cref="SharpManager.ArduinoException">Arduino is not connected</exception>
+        private async Task SendBuffer(byte[] data)
+        {
+            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
+            int offset = 0;
+            while (true)
+            {
+                int size = Math.Min(BufferSize, data.Length - offset);
+                if (size == 0) break;
+                messageLog.WriteLine($"Sendng {size} bytes:");
+                for (int i = 0; i < size; i++)
+                {
+                    messageLog.Write(" " + data[offset + i].ToString("X2"));
+                    if (i + 1 % 16 == 0) messageLog.WriteLine();
+                }
+                messageLog.WriteLine();
+                for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
+                await ReadResponse().ConfigureAwait(false);
             }
         }
 

@@ -177,6 +177,7 @@ namespace Manager
     */
     void SendDeviceSelect(int device)
     {
+        Serial.
         Serial.write(Ascii::SOH);
         Serial.write(Command::DeviceSelect);
         Serial.write(device); 
@@ -272,7 +273,7 @@ namespace Manager
      * @param sendFunction  The function to call with the buffered data
      * @return True if succesful, false on error
      */
-    bool ProcessDataPacket(void (*sendFunction)(byte))
+    bool ProcessDataFrame(void (*sendFunction)(byte))
     {
         // Read the data packet length
         Result length = WaitReadWord();            // 2 bytes, total length of data
@@ -280,6 +281,8 @@ namespace Manager
             SendFailure(length.AsErrorCode());
             return false;
         }
+
+        SendSuccess();  // Acknowledge the header
 
         InitializeBuffer(length);
 
@@ -354,7 +357,7 @@ namespace Manager
                 break;
             case Command::Disk:
                 // Disk command response
-                ProcessDataPacket(Sharp::SendDiskByte);            
+                ProcessDataFrame(Sharp::SendDiskByte);            
                 break;
             default:
                 // Unknown command error

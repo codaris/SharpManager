@@ -45,6 +45,8 @@ namespace SharpManager.Views
             viewModel = new MainViewModel(this);
             DataContext = viewModel;
 
+            viewModel.Arduino.DiskDrive.DriveDirectory = new DirectoryInfo("C:\\Projects\\Handhelds\\Sharp Pocket\\SharpManager\\Disk");
+
             // Apppend newline after version text
             Log.AppendText("\r\n");
             Log.ScrollToEnd();

@@ -182,5 +182,14 @@ namespace SharpManager
         /// <param name="errorMessage">The error message.</param>
         public static async Task ExpectByteAsync(this IReadByteStream stream, byte expected, int millisecondsTimeout, string errorMessage) => DataException.Expect(await ReadByteAsync(stream, millisecondsTimeout).ConfigureAwait(false), expected, errorMessage);
 
+        /// <summary>
+        /// Swaps the nibbles of a byte
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static byte SwapNibbles(this byte value)
+        {
+           return (byte)((value & 0x0F) << 4 | (value & 0xF0) >> 4);
+        }
     }
 }
