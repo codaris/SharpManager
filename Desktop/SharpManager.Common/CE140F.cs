@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,13 +16,38 @@ namespace SharpManager
     /// </summary>
     public class CE140F
     {
+        private enum CaptureMode
+        {
+            None,
+            BinarySave,
+            TextSave,
+            Print
+        }
+
+        /// <summary>The maximum number of open files</summary>
+        private const int MaxFileHandles = 6;
+
         public DirectoryInfo? DriveDirectory { get; set; }
 
-        private List<string> files = new List<string>();
+        private List<string> files = new();
 
         private int fileIndex = 0;
 
         private readonly IMessageLog messageLog;
+
+        /// <summary>The currently open file</summary>
+        private FileStream? currentFile = null;
+
+        /// <summary>The error frame</summary>
+        private readonly byte[] ErrorFrame = new byte[] { 0xFF, 0 };
+
+        /// <summary>The current file size</summary>
+        private int currentFileSize = 0;
+
+        /// <summary>The file handles</summary>
+        private FileStream?[] fileHandles = new FileStream[MaxFileHandles];
+
+        private CaptureMode captureMode = CaptureMode.None;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CE140F"/> class.
@@ -27,66 +56,87 @@ namespace SharpManager
         public CE140F(IMessageLog messageLog)
         {
             this.messageLog = messageLog;
-            //files.Add("Test1.bas");
-            //files.Add("Test2.bas");
-            //files.Add("Test3.txt");
         }
 
-        public byte[] ProcessCommand(byte[] data)
+        /// <summary>
+        /// Resets this instance.
+        /// </summary>
+        public void Reset()
         {
-            List<byte>? result = null;
+            files.Clear();
+            fileIndex = 0;
+            currentFile?.Dispose();
+            currentFile = null;
+            currentFileSize = 0;
+            for (int i = 0; i < MaxFileHandles; i++)
+            {
+                fileHandles[i]?.Dispose();
+                fileHandles[i] = null;
+            }
+        }
+
+        /// <summary>
+        /// Processes the command.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>The response from the command</returns>
+        public DiskResponse ProcessCommand(byte[] data)
+        {
+            return new DiskResponse(ProcessCommandInternal(data), captureMode != CaptureMode.None);
+        }
+
+        /// <summary>
+        /// Processes the command main implementation
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>The response from the command</returns>
+        private byte[] ProcessCommandInternal(byte[] data)
+        {
+            // Save the current mode and reset to none berfore calling the mode commands
+            if (captureMode != CaptureMode.None)
+            {
+                var currentMode = captureMode;
+                captureMode = CaptureMode.None;
+                if (currentMode == CaptureMode.TextSave) return CommandSaveWriteLine(data);
+                if (currentMode == CaptureMode.BinarySave) return CommandSaveWriteBinary(data);
+                if (currentMode == CaptureMode.Print) return CommandPrintWrite(data);
+            }
+
             switch (data[0])
             {
-                case 0x05: result = CommandFilesInit(); break;
-                case 0x06: result = CommandFilesItem(false); break;
-                case 0x07: result = CommandFilesItem(true); break;
-                case 0x0E: result = CommandLoadOpen(data); break;
+                case 0x05: return CommandFilesInit();
+                case 0x06: return CommandFilesItem(false);
+                case 0x07: return CommandFilesItem(true);
+                case 0x0E: return CommandLoadOpen(data);
+                case 0x17: return CommandLoadReadByte();
+                case 0x12: return CommandLoadReadLine();
+                case 0x0F: return CommandLoadBinary();
+                case 0x1D: return CommandDiskFree(data);
+                case 0x10: return CommandSaveOpen(data);
+                case 0x11: return CommandSaveBinary(data);
+                case 0x16: return CommandSaveText();
+                case 0x03: return CommandOpen(data);
+                case 0x04: return CommandClose(data);
+                case 0x0A: return CommandKill(data);
+                case 0x13: return CommandInput(data); // string         INPUT #x, X$
+                case 0x14: return CommandInput(data); // number         INPUT #x, X
+                case 0x15: return CommandPrint(data);
+                // case 0x1F: return CommandInput(data); // ?? TODO
+                case 0x20: return CommandInput(data); // number array
+
                 /*
-                case 0x03: process_OPEN(); break;
-                case 0x04: process_CLOSE(); break;
                 //case 0x08: process_INIT(0x08);break;
                 //case 0x09: process_INIT(0x09);break;
-                case 0x0A: process_KILL(); break;
                 //    case 0x0B: process_NAME(0x0B);break;
                 //    case 0x0C: process_SET(0x0C);break;
                 //    case 0x0D: process_COPY(0x0D);break;
-                case 0x0E: process_LOAD(0x0E); break;
-                case 0x0F: process_LOAD(0x0F); break;
-                case 0x10: process_SAVE(0x10); break;
-                case 0x11: process_SAVE(0x11); break;
-                case 0x16: process_SAVE(0x16); break;    // SAVE ASCII
-                case 0xFE: process_SAVE(0xfe); break;    // next SAVE ascii cmd
-                case 0xFF: process_SAVE(0xff); break;    // next SAVE cmd
-                case 0x12: process_LOAD(0x12); break;
-                case 0x13: process_INPUT(0x13); break; // INPUT #x, X$
-                case 0x14: process_INPUT(0x14); break; // INPUT #x, X
-                case 0x15: process_PRINT(0x15); break;
-                case 0xFD: process_PRINT(0xfd); break; // next PRINT cmd
-                case 0x17: process_LOAD(0x17); break;
                 //    case 0x1A: process_EOF(0x1A);break;
                 //    case 0x1C: process_LOC(0x1C);break;
                 */
-                case 0x1D: result = CommandDiskFree(data); break;
-                //    case 0x1F: process_INPUT(0x1f);break;
-                // case 0x20: process_INPUT(0x20); break;
                 default:
                     messageLog.WriteLine($"Unknown command {data[0]:X2}");
-                    break;
+                    return new byte[] { 0xFF, 0 };
             }
-
-            // If no result then return error
-            if (result == null) return new byte[] { 0xFF, 0 };
-
-            // First byte is always zero                
-            result.Insert(0, 0);
-
-            // Add checksum
-            int checksum = 0;
-            foreach (var value in result) checksum = (checksum + value) & 0xFF;
-            result.Add((byte)checksum);
-
-            // Return result
-            return result.ToArray();
         }
 
         /// <summary>
@@ -94,21 +144,21 @@ namespace SharpManager
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns></returns>
-        private List<byte> CommandDiskFree(byte[] data)
+        private byte[] CommandDiskFree(byte[] data)
         {
             int driveNumber = data[1];
             int diskFree = 65000;
             messageLog.WriteLine($"DSKF command ({driveNumber})");
             var result = new List<byte>();
             result.AddSize(diskFree);
-            return result;
+            return result.ToFrame();
         }
 
         /// <summary>
         /// The FILES command which parses the directory and returns the total number of files
         /// </summary>
         /// <returns>Number of files</returns>
-        private List<byte> CommandFilesInit()
+        private byte[] CommandFilesInit()
         {
             messageLog.WriteLine($"FILES command");
             fileIndex = 0;
@@ -117,7 +167,7 @@ namespace SharpManager
             {
                 files.Add(file.Name);
             }
-            return new List<byte>() { (byte)files.Count };
+            return CreateFrame((byte)files.Count);
         }
 
         /// <summary>
@@ -125,10 +175,10 @@ namespace SharpManager
         /// </summary>
         /// <param name="previous">if set to <c>true</c> then previous.</param>
         /// <returns>File name</returns>
-        private List<byte>? CommandFilesItem(bool previous)
+        private byte[] CommandFilesItem(bool previous)
         {
             // If no files, return error to computer
-            if (files.Count == 0) return null;
+            if (files.Count == 0) return ErrorFrame;
 
             // Add file name to the result
             var result = new List<byte>();
@@ -139,7 +189,7 @@ namespace SharpManager
             if (fileIndex < 0) fileIndex = 0;
             if (fileIndex > files.Count - 1) fileIndex = files.Count - 1;
 
-            return result;
+            return result.ToFrame();
         }
 
         /// <summary>
@@ -147,16 +197,391 @@ namespace SharpManager
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns></returns>
-        private List<byte> CommandLoadOpen(byte[] data)
+        private byte[] CommandLoadOpen(byte[] data)
         {
+            var result = new List<byte>();
+            result.AddString(" ");
+
+            if (DriveDirectory == null)
+            {
+                messageLog.WriteLine("No directory selected for drive.");
+                result.AddSize(0);
+                return result.ToFrame();
+            }
+
             // Get filename
             string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
             messageLog.WriteLine($"LOAD command '{fileName}'");
+            messageLog.WriteLine(Path.Combine(DriveDirectory.FullName, fileName));
+            currentFile = File.OpenRead(Path.Combine(DriveDirectory.FullName, fileName));
+            result.AddSize((int)currentFile.Length);
+            return result.ToFrame();
+        }
 
+        /// <summary>
+        /// Commands the load read byte.
+        /// </summary>
+        /// <returns></returns>
+        private byte[] CommandLoadReadByte()
+        {
             var result = new List<byte>();
-            result.AddString(" ");
-            result.AddSize(0);
-            return result;
+            var value = currentFile?.ReadByte() ?? -1;
+            if (value == -1) return ErrorFrame;
+            result.Add((byte)value);
+            return result.ToFrame();
+        }
+
+        /// <summary>
+        /// Commands the load read line.
+        /// </summary>
+        /// <returns></returns>
+        private byte[] CommandLoadReadLine() 
+        {
+            var result = new List<byte>();
+            while (true)
+            {
+                var value = currentFile?.ReadByte() ?? -1;
+                if (value == 0x0A) continue;            // Ignore line-feeds
+                if (value == -1)
+                {
+                    result.Add(0x1A);           // Send EOF
+                    currentFile?.Dispose();     // Close file
+                    currentFile = null;
+                    break;                  // End
+                }
+                result.Add((byte)value);    // Send byte
+                if (value == 0x0D) break;   // If CR then end line
+            }
+            result.AddFrame();              // Frame the line
+            result.Add(0);                  // Add an additional zero byte
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Commands the load binary.
+        /// </summary>
+        /// <returns></returns>
+        private byte[] CommandLoadBinary()
+        {
+            var result = new List<byte>();
+            result.Add(0);                      // Start of frame
+            var buffer = new byte[256];
+            while (true)
+            {
+                int bytesRead = currentFile?.Read(buffer, 0, buffer.Length) ?? 0;
+                if (bytesRead == 0) break;
+                result.AddBlock(new ArraySegment<byte>(buffer, 0, bytesRead));
+            }
+            result.Add(0);                      // Additional zero byte
+            currentFile?.Dispose();             // Close file
+            currentFile = null;
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// The save command
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandSaveOpen(byte[] data)
+        {
+            if (DriveDirectory == null)
+            {
+                messageLog.WriteLine("No directory selected for drive.");
+                return CreateResult(false);
+            }
+
+            // Get filename
+            string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
+            messageLog.WriteLine($"SAVE command '{fileName}'");
+            messageLog.WriteLine(Path.Combine(DriveDirectory.FullName, fileName));
+            currentFile = File.OpenWrite(Path.Combine(DriveDirectory.FullName, fileName));
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Commands the save binary.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandSaveBinary(byte[] data)
+        {
+            currentFileSize = data[2] + (data[3] << 8) + (data[4] << 16);
+            messageLog.WriteLine($"Binary file (size {currentFileSize:n0}): ");
+            captureMode = CaptureMode.BinarySave;
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Commands the save text.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandSaveText()
+        {
+            messageLog.Write($"Text file.");
+            captureMode = CaptureMode.TextSave;
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Save file text line
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandSaveWriteLine(byte[] data)
+        {
+            // File not open
+            if (currentFile == null) return CreateResult(false);
+
+            // End of file
+            if (data[0] == 0x1A)
+            {
+                messageLog.WriteLine();
+                messageLog.WriteLine("Done.");
+                currentFile.Dispose();
+                currentFile = null;
+                return CreateResult(true);
+            }
+
+            messageLog.Write(".");
+
+            // Last byte is checksum so ignore
+            for (int i = 0; i < data.Length - 1; i++)
+            {
+                currentFile.WriteByte(data[i]);
+            }
+
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Save file binary
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandSaveWriteBinary(byte[] data)
+        {
+            // File not open
+            if (currentFile == null) return CreateResult(false);
+
+            messageLog.Write(".");
+
+            // Write the data -- last byte is checksum
+            for (int i = 0; i < data.Length - 1; i++)
+            {
+                currentFile.WriteByte(data[i]);
+            }
+
+            // If the file is the correct size, close the file
+            if (currentFile.Length == currentFileSize)
+            {
+                messageLog.WriteLine();
+                messageLog.WriteLine("Done.");
+                currentFile.Dispose();
+                currentFile = null;
+            }
+            else
+            {
+                // Otherwise receive the next block
+                captureMode = CaptureMode.BinarySave;
+            }
+
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Close a file or all files
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandClose(byte[] data)
+        {
+            int fileNumber = data[1];
+            messageLog.WriteLine($"CLOSE #{fileNumber:X2}");
+
+            if (fileNumber == 0xFF)
+            {
+                for (int i = 0; i < MaxFileHandles; i++)
+                {
+                    fileHandles[i]?.Dispose();
+                    fileHandles[i] = null;
+                }
+            }
+            else
+            {
+                fileNumber -= 2;        // Convert to index
+                fileHandles[fileNumber]?.Dispose();
+                fileHandles[fileNumber] = null;
+            }
+
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Open a file
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandOpen(byte[] data)
+        {
+            if (DriveDirectory == null)
+            {
+                messageLog.WriteLine("No directory selected for drive.");
+                return CreateResult(false);
+            }
+
+            // Get filename
+            string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
+            int fileMode = data[15];            // 1: input, 2: output, 3: append
+            int fileNumber = data[16] - 2;  // file#
+
+            messageLog.WriteLine($"OPEN \"{fileName}\" FOR '{fileMode}' AS #{fileNumber + 2}");
+            if (fileNumber < 0 || fileNumber > MaxFileHandles)
+            {
+                messageLog.WriteLine("Invalid file #");
+                return CreateResult(false);
+            }
+
+            if (fileHandles[fileNumber] != null)
+            {
+                fileHandles[fileNumber]?.Dispose();
+                fileHandles[fileNumber] = null;
+            }
+
+            fileName = Path.Combine(DriveDirectory.FullName, fileName);
+
+            try
+            {
+                if (fileMode == 1) fileHandles[fileNumber] = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                else if (fileMode == 2) fileHandles[fileNumber] = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+                else if (fileMode == 3) fileHandles[fileNumber] = new FileStream(fileName, FileMode.Append, FileAccess.Write);
+                else
+                {
+                    messageLog.WriteLine($"Invalid file mode {fileMode}");
+                    return CreateResult(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                messageLog.WriteLine($"Error {ex.Message}");
+                return CreateResult(false);
+            }
+
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Print to an open file
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandPrint(byte[] data)
+        {
+            int fileNumber = data[1] - 2;
+            messageLog.WriteLine("PRINT #{fileNumber}");
+            if (fileNumber < 0 || fileNumber > MaxFileHandles)
+            {
+                messageLog.WriteLine($"Invalid file #{fileNumber}");
+                return CreateResult(false);
+            }
+            if (fileHandles[fileNumber] == null)
+            {
+                messageLog.WriteLine($"File #{fileNumber} not open");
+                return CreateResult(false);
+            }
+            if (!fileHandles[fileNumber]?.CanWrite ?? false)
+            {
+                messageLog.WriteLine($"File #{fileNumber} not writable");
+                return CreateResult(false);
+            }
+
+            captureMode = CaptureMode.Print;
+            currentFile = fileHandles[fileNumber];
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Print line to file
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandPrintWrite(byte[] data)
+        {
+            // No current file
+            if (currentFile == null) return CreateResult(false);
+
+            // skip empty message (CRLF only)
+            if (data[0] == 0x0D && data[1] == 0x0A) return CreateResult(true);
+
+            // Write data
+            for (int i = 0; i < data.Length - 2; i++)  // Ignore 0 and checksum
+            {
+                currentFile.WriteByte(data[i]);
+            }
+
+            // If no line terminater then add
+            if (data[^3] != 0x0A)
+            {
+                messageLog.WriteLine("Appending CRLF");
+                currentFile.WriteByte(0x0D);
+                currentFile.WriteByte(0x0A);
+            }
+
+            return CreateResult(true);
+        }
+
+        /// <summary>
+        /// Read line from file
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandInput(byte[] data)
+        {
+            int fileNumber = data[1] - 2;
+            messageLog.WriteLine("INPUT #{fileNumber}");
+            if (fileNumber < 0 || fileNumber > MaxFileHandles)
+            {
+                messageLog.WriteLine($"Invalid file #{fileNumber}");
+                return CreateResult(false);
+            }
+            if (fileHandles[fileNumber] == null)
+            {
+                messageLog.WriteLine($"File #{fileNumber} not open");
+                return CreateResult(false);
+            }
+            if (!fileHandles[fileNumber]?.CanRead ?? false)
+            {
+                messageLog.WriteLine($"File #{fileNumber} not readable");
+                return CreateResult(false);
+            }
+
+            // Read line from the file
+            var result = new List<byte>();
+            while (true)
+            {
+                var value = fileHandles[fileNumber]?.ReadByte() ?? -1;
+                if (value == -1) break;
+                result.Add((byte)value);    // Send byte
+                if (value == 0x0A) break;   // If LF then end line
+            }
+            result.Add(0);                  // Add an additional zero byte
+            result.AddFrame();              // Frame the line
+            result.Add(0);                  // Add an additional zero byte
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Kill command deletes a file
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] CommandKill(byte[] data)
+        {
+            string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
+            messageLog.WriteLine($"KILL \"{fileName}\"");
+            // TODO implement kill
+            return CreateResult(false);
         }
 
         /// <summary>
@@ -177,6 +602,38 @@ namespace SharpManager
             name = name.Length > maxNameLength ? name[..maxNameLength] : name.PadRight(maxNameLength, ' ');
             extension = extension.Length > maxExtensionLength ? extension[..maxExtensionLength] : extension.PadRight(maxExtensionLength, ' ');
             return $"{drivePrefix}{name}.{extension} ";
+        }
+
+        /// <summary>
+        /// Creates the frame.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private static byte[] CreateFrame(params byte[] data)
+        {
+            var result = new List<byte>();
+            result.AddRange(data);
+            return result.ToFrame();
+        }
+
+        /// <summary>
+        /// Creates the array.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private static byte[] CreateArray(params byte[] data)
+        {
+            return data;
+        }
+
+        /// <summary>
+        /// Creates the result.
+        /// </summary>
+        /// <param name="success">if set to <c>true</c> [success].</param>
+        /// <returns></returns>
+        private static byte[] CreateResult(bool success)
+        {
+            return CreateArray(success ? (byte)0 : (byte)0xFF);
         }
     }
 }

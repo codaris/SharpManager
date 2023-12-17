@@ -177,7 +177,6 @@ namespace Manager
     */
     void SendDeviceSelect(int device)
     {
-        Serial.
         Serial.write(Ascii::SOH);
         Serial.write(Command::DeviceSelect);
         Serial.write(device); 
@@ -337,8 +336,13 @@ namespace Manager
         if (data != Ascii::SOH) return;
 
         // Read the command type
-        int command = WaitReadByte();
-        switch (command)
+        Result command = WaitReadByte();
+        if (command.IsError()) {
+            SendFailure(command.AsErrorCode());
+            return;
+        }
+
+        switch (command.Value())
         {
             case Command::Ping:
                 // Do nothing except ACK
@@ -356,13 +360,19 @@ namespace Manager
                 Tape::Save();
                 break;
             case Command::Disk:
+                Result capture = WaitReadByte();
+                if (capture.IsError()) {
+                    SendFailure(capture.AsErrorCode());
+                    return;
+                }
                 // Disk command response
-                ProcessDataFrame(Sharp::SendDiskByte);            
+                ProcessDataFrame(Sharp::SendDiskByte);      
+                if (capture.Value() == 0xFF) Sharp::ProcessDiskCommand();
                 break;
             default:
                 // Unknown command error
                 SendFailure(ResultType::Unexpected);
-                return;
+                break;
         }
     }
 }

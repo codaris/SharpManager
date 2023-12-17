@@ -152,10 +152,7 @@ namespace SharpManager.Views
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Connect_Click(object sender, RoutedEventArgs e)
         {
-            if (viewModel.Connect())
-            {
-                await viewModel.Arduino.Initialize();
-            }            
+            await viewModel.Connect();
         }
 
         /// <summary>

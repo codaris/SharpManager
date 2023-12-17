@@ -69,10 +69,10 @@ namespace SharpManager.ViewModels
         /// Connects this instance.
         /// </summary>
         /// <returns></returns>
-        public bool Connect()
+        public async Task<bool> Connect()
         {
             if (SelectedSerialPort == null) return false;
-            Arduino.Connect(SelectedSerialPort);
+            await Arduino.Connect(SelectedSerialPort);
             return true;
         }
 

@@ -106,6 +106,7 @@ namespace Manager
 
     /**
      * @brief Process incoming commands 
+     * @return The processed command
      */
     void Task();
 }

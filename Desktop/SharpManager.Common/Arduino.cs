@@ -111,7 +111,7 @@ namespace SharpManager
         /// </summary>
         /// <param name="portName">Name of the port.</param>
         /// <returns></returns>
-        public void Connect(string portName)
+        public async Task Connect(string portName)
         {
             cancellationTokenSource = new();
             serialPort = new SerialPort(portName, 115200);
@@ -122,6 +122,9 @@ namespace SharpManager
             OnPropertyChanged(nameof(IsConnected));
             messageLog.WriteLine($"Connected to {portName}.");
 
+            // Empty the read buffer
+            await Initialize();
+
             // Begin the main loop
             _ = Task.Run(async () => { await Mainloop(); });
         }
@@ -131,6 +134,7 @@ namespace SharpManager
         /// </summary>
         public void Disconnect()
         {
+            DiskDrive.Reset();
             serialStream?.Dispose();
             serialStream = null;
             serialPort?.Close();
@@ -178,7 +182,7 @@ namespace SharpManager
         /// <summary>
         /// Initializes the Arduino 
         /// </summary>
-        public async Task Initialize()
+        private async Task Initialize()
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
 
@@ -370,7 +374,7 @@ namespace SharpManager
                     continue;
                 }
                 tryCount++;
-                if (tryCount > 5) return false;
+                if (tryCount > 10) return false;
             }
             return true;
         }
@@ -407,6 +411,7 @@ namespace SharpManager
                 case Command.Disk:
                     messageLog.WriteLine($"Disk command");
                     var response = DiskDrive.ProcessCommand(await ReadDiskCommand());
+                    messageLog.WriteLine($"Disk capture: {response.Capture}");
                     await SendDiskResponse(response);
                     break;
                 default:
@@ -426,16 +431,17 @@ namespace SharpManager
         /// <summary>
         /// Sends the disk packet.
         /// </summary>
-        /// <param name="data">The data.</param>
+        /// <param name="response">The data.</param>
         /// <exception cref="SharpManager.ArduinoException">Arduino is not connected</exception>
-        private async Task SendDiskResponse(byte[] data)
+        private async Task SendDiskResponse(DiskResponse response)
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
             serialStream.WriteByte(Ascii.SOH);
             serialStream.WriteByte((byte)Command.Disk);
-            serialStream.WriteWord(data.Length);
+            serialStream.WriteByte(response.Capture ? 0xFF : 0);
+            serialStream.WriteWord(response.Data.Length);
             await ReadResponse().ConfigureAwait(false);     // Wait for acknowledge
-            await SendBuffer(data).ConfigureAwait(false);
+            await SendBuffer(response.Data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -457,7 +463,7 @@ namespace SharpManager
                 throw new ArduinoException($"Expecting transmisson start (STX) received 0x{startValue:X} instead.");
             }
 
-            messageLog.WriteLine("Reading data:");
+            messageLog.Write("Reading data: ");
 
             // The data result
             var result = new List<byte>();
@@ -475,31 +481,12 @@ namespace SharpManager
                     case Ascii.CAN:
                         throw new ArduinoException(ErrorCode.Cancelled);
                     case Ascii.ETX:
-                        messageLog.WriteLine();
-                        messageLog.WriteLine("Done.");
+                        messageLog.WriteLine(" Done.");
+                        messageLog.Dump(result);
                         return result.ToArray();
                 }
                 result.Add(data);
-                messageLog.Write(" " + data.ToString("X2"));
-                if (result.Count % 16 == 0) messageLog.WriteLine();
-            }
-        }
-
-        /// <summary>
-        /// Sends the stream by breaking into BufferSize sized groups TODO remove
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        private async Task SendStream(Stream stream)
-        {
-            if (serialStream == null) throw new ArduinoException("Arduino is not connected");
-            var buffer = new byte[BufferSize];
-            while (true)
-            {
-                int bufferSize = stream.Read(buffer, 0, buffer.Length);
-                if (bufferSize == 0) break;
-                messageLog.WriteLine($"Sendng {bufferSize} bytes...");
-                for (int i = 0; i < bufferSize; i++) serialStream.WriteByte(buffer[i]);
-                await ReadResponse().ConfigureAwait(false);
+                messageLog.Write(".");               
             }
         }
 
@@ -517,12 +504,7 @@ namespace SharpManager
                 int size = Math.Min(BufferSize, data.Length - offset);
                 if (size == 0) break;
                 messageLog.WriteLine($"Sendng {size} bytes:");
-                for (int i = 0; i < size; i++)
-                {
-                    messageLog.Write(" " + data[offset + i].ToString("X2"));
-                    if (i + 1 % 16 == 0) messageLog.WriteLine();
-                }
-                messageLog.WriteLine();
+                messageLog.Dump(new ArraySegment<byte>(data, offset, size));
                 for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
                 await ReadResponse().ConfigureAwait(false);
             }
