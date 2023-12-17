@@ -346,7 +346,7 @@ namespace SharpManager
         private async Task ReadResponse()
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
-            var response = await serialStream.ReadByteAsync(2500).ConfigureAwait(false);    // Wait for response
+            var response = await serialStream.ReadByteAsync(5000).ConfigureAwait(false);    // Wait for response
             if (response == Ascii.ACK) return;
             if (response == Ascii.NAK) throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
             throw new ArduinoException($"Unexpected response received 0x{response:X2}");
@@ -409,9 +409,8 @@ namespace SharpManager
                     messageLog.WriteLine($"Data: {value:X2}");
                     break;
                 case Command.Disk:
-                    messageLog.WriteLine($"Disk command");
+                    messageLog.Write("Reading Disk Command: ");
                     var response = DiskDrive.ProcessCommand(await ReadDiskCommand());
-                    messageLog.WriteLine($"Disk capture: {response.Capture}");
                     await SendDiskResponse(response);
                     break;
                 default:
@@ -463,8 +462,6 @@ namespace SharpManager
                 throw new ArduinoException($"Expecting transmisson start (STX) received 0x{startValue:X} instead.");
             }
 
-            messageLog.Write("Reading data: ");
-
             // The data result
             var result = new List<byte>();
 
@@ -503,7 +500,7 @@ namespace SharpManager
             {
                 int size = Math.Min(BufferSize, data.Length - offset);
                 if (size == 0) break;
-                messageLog.WriteLine($"Sendng {size} bytes:");
+                messageLog.WriteLine($"  Sending {size} bytes:");
                 messageLog.Dump(new ArraySegment<byte>(data, offset, size));
                 for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
                 await ReadResponse().ConfigureAwait(false);

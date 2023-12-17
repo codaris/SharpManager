@@ -53,11 +53,11 @@ namespace SharpManager
                 
                 if (offset % 16 == 0)
                 {
-                    Write($"{offset:X8}  ");
+                    Write($"  {offset:X8}  ");
                 }
 
                 hex.AppendFormat("{0:X2} ", b);
-                ascii.Append(Char.IsControl((char)b) ? '.' : (char)b);
+                ascii.Append((b >= 32 && b <= 126) ? (char)b : '.');
                 offset++;
             }
 

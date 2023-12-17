@@ -226,14 +226,6 @@ namespace Manager
         unsigned long startTime = millis();
         while (true)
         {
-            // If the write buffer contains unsent bytes
-            if (outBufferIndex < outBufferCount) {
-                return outBuffer[outBufferIndex++];
-            } else {
-                // If write buffer empty and no remaining bytes, leave
-                if (dataRemaining == 0) return ResultType::End;
-            }
-
             // If bytes are available, add to read buffer
             while (Serial.available() > 0 && serialBufferIndex < serialBufferCount) {
                 serialBuffer[serialBufferIndex++] = Serial.read();
@@ -250,6 +242,14 @@ namespace Manager
                 serialBufferIndex = 0;
                 // Acknowledge the serial buffer
                 SendSuccess();
+            }
+
+            // If the write buffer contains unsent bytes
+            if (outBufferIndex < outBufferCount) {
+                return outBuffer[outBufferIndex++];
+            } else {
+                // If write buffer empty and no remaining bytes, leave
+                if (dataRemaining <= 0) return ResultType::End;
             }
 
             // Timeout if no byte returned in time

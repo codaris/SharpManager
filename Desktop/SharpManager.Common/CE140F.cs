@@ -102,6 +102,8 @@ namespace SharpManager
                 if (currentMode == CaptureMode.Print) return CommandPrintWrite(data);
             }
 
+            messageLog.Write($"[Command #{data[0]:X2}] ");
+
             switch (data[0])
             {
                 case 0x05: return CommandFilesInit();
@@ -134,7 +136,7 @@ namespace SharpManager
                 //    case 0x1C: process_LOC(0x1C);break;
                 */
                 default:
-                    messageLog.WriteLine($"Unknown command {data[0]:X2}");
+                    messageLog.WriteLine($"Unknown");
                     return new byte[] { 0xFF, 0 };
             }
         }
@@ -148,7 +150,7 @@ namespace SharpManager
         {
             int driveNumber = data[1];
             int diskFree = 65000;
-            messageLog.WriteLine($"DSKF command ({driveNumber})");
+            messageLog.WriteLine($"DSKF({driveNumber})");
             var result = new List<byte>();
             result.AddSize(diskFree);
             return result.ToFrame();
@@ -160,7 +162,7 @@ namespace SharpManager
         /// <returns>Number of files</returns>
         private byte[] CommandFilesInit()
         {
-            messageLog.WriteLine($"FILES command");
+            messageLog.WriteLine($"FILES");
             fileIndex = 0;
             files.Clear();
             if (DriveDirectory != null) foreach (var file in DriveDirectory.EnumerateFiles())
@@ -177,6 +179,8 @@ namespace SharpManager
         /// <returns>File name</returns>
         private byte[] CommandFilesItem(bool previous)
         {
+            messageLog.WriteLine($"FILES " + (previous ? "Up" : "Down"));
+
             // If no files, return error to computer
             if (files.Count == 0) return ErrorFrame;
 
@@ -199,6 +203,9 @@ namespace SharpManager
         /// <returns></returns>
         private byte[] CommandLoadOpen(byte[] data)
         {
+            string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
+            messageLog.WriteLine($"LOAD \"{fileName}\"");
+
             var result = new List<byte>();
             result.AddString(" ");
 
@@ -210,10 +217,9 @@ namespace SharpManager
             }
 
             // Get filename
-            string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
-            messageLog.WriteLine($"LOAD command '{fileName}'");
-            messageLog.WriteLine(Path.Combine(DriveDirectory.FullName, fileName));
-            currentFile = File.OpenRead(Path.Combine(DriveDirectory.FullName, fileName));
+            string filePath = Path.Combine(DriveDirectory.FullName, fileName);
+            messageLog.WriteLine($"  {filePath}");
+            currentFile = File.OpenRead(filePath);
             result.AddSize((int)currentFile.Length);
             return result.ToFrame();
         }
@@ -237,6 +243,7 @@ namespace SharpManager
         /// <returns></returns>
         private byte[] CommandLoadReadLine() 
         {
+            messageLog.WriteLine("Load file line");
             var result = new List<byte>();
             while (true)
             {
@@ -263,6 +270,7 @@ namespace SharpManager
         /// <returns></returns>
         private byte[] CommandLoadBinary()
         {
+            messageLog.WriteLine("Load file data");
             var result = new List<byte>();
             result.Add(0);                      // Start of frame
             var buffer = new byte[256];
@@ -285,6 +293,9 @@ namespace SharpManager
         /// <returns></returns>
         private byte[] CommandSaveOpen(byte[] data)
         {
+            string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
+            messageLog.WriteLine($"SAVE \"{fileName}\"");
+
             if (DriveDirectory == null)
             {
                 messageLog.WriteLine("No directory selected for drive.");
@@ -292,10 +303,9 @@ namespace SharpManager
             }
 
             // Get filename
-            string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
-            messageLog.WriteLine($"SAVE command '{fileName}'");
-            messageLog.WriteLine(Path.Combine(DriveDirectory.FullName, fileName));
-            currentFile = File.OpenWrite(Path.Combine(DriveDirectory.FullName, fileName));
+            string filePath = Path.Combine(DriveDirectory.FullName, fileName);
+            messageLog.WriteLine($"  {filePath}");
+            currentFile = File.OpenWrite(filePath);
             return CreateResult(true);
         }
 
@@ -307,7 +317,7 @@ namespace SharpManager
         private byte[] CommandSaveBinary(byte[] data)
         {
             currentFileSize = data[2] + (data[3] << 8) + (data[4] << 16);
-            messageLog.WriteLine($"Binary file (size {currentFileSize:n0}): ");
+            messageLog.WriteLine($"Save binary file (size {currentFileSize:n0})");
             captureMode = CaptureMode.BinarySave;
             return CreateResult(true);
         }
@@ -319,7 +329,7 @@ namespace SharpManager
         /// <returns></returns>
         private byte[] CommandSaveText()
         {
-            messageLog.Write($"Text file.");
+            messageLog.Write($"Save text file");
             captureMode = CaptureMode.TextSave;
             return CreateResult(true);
         }
@@ -398,10 +408,9 @@ namespace SharpManager
         private byte[] CommandClose(byte[] data)
         {
             int fileNumber = data[1];
-            messageLog.WriteLine($"CLOSE #{fileNumber:X2}");
-
             if (fileNumber == 0xFF)
             {
+                messageLog.WriteLine($"CLOSE ALL");
                 for (int i = 0; i < MaxFileHandles; i++)
                 {
                     fileHandles[i]?.Dispose();
@@ -410,9 +419,10 @@ namespace SharpManager
             }
             else
             {
-                fileNumber -= 2;        // Convert to index
-                fileHandles[fileNumber]?.Dispose();
-                fileHandles[fileNumber] = null;
+                messageLog.WriteLine($"CLOSE #{fileNumber:X2}");
+                int fileIndex = fileNumber - 2;        // Convert to index
+                fileHandles[fileIndex]?.Dispose();
+                fileHandles[fileIndex] = null;
             }
 
             return CreateResult(true);
@@ -434,28 +444,29 @@ namespace SharpManager
             // Get filename
             string fileName = Encoding.ASCII.GetString(data, 3, 12).Replace(" ", "");
             int fileMode = data[15];            // 1: input, 2: output, 3: append
-            int fileNumber = data[16] - 2;  // file#
+            int fileNumber = data[16];          // file#
+            int fileIndex = fileNumber - 2;     // file index
 
-            messageLog.WriteLine($"OPEN \"{fileName}\" FOR '{fileMode}' AS #{fileNumber + 2}");
-            if (fileNumber < 0 || fileNumber > MaxFileHandles)
+            messageLog.WriteLine($"OPEN \"{fileName}\" FOR '{fileMode}' AS #{fileNumber}");
+            if (fileIndex < 0 || fileIndex > MaxFileHandles)
             {
-                messageLog.WriteLine("Invalid file #");
+                messageLog.WriteLine($"Invalid file #{fileNumber}");
                 return CreateResult(false);
             }
 
-            if (fileHandles[fileNumber] != null)
+            if (fileHandles[fileIndex] != null)
             {
-                fileHandles[fileNumber]?.Dispose();
-                fileHandles[fileNumber] = null;
+                fileHandles[fileIndex]?.Dispose();
+                fileHandles[fileIndex] = null;
             }
 
             fileName = Path.Combine(DriveDirectory.FullName, fileName);
 
             try
             {
-                if (fileMode == 1) fileHandles[fileNumber] = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-                else if (fileMode == 2) fileHandles[fileNumber] = new FileStream(fileName, FileMode.Create, FileAccess.Write);
-                else if (fileMode == 3) fileHandles[fileNumber] = new FileStream(fileName, FileMode.Append, FileAccess.Write);
+                if (fileMode == 1) fileHandles[fileIndex] = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                else if (fileMode == 2) fileHandles[fileIndex] = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+                else if (fileMode == 3) fileHandles[fileIndex] = new FileStream(fileName, FileMode.Append, FileAccess.Write);
                 else
                 {
                     messageLog.WriteLine($"Invalid file mode {fileMode}");
@@ -478,26 +489,27 @@ namespace SharpManager
         /// <returns></returns>
         private byte[] CommandPrint(byte[] data)
         {
-            int fileNumber = data[1] - 2;
-            messageLog.WriteLine("PRINT #{fileNumber}");
-            if (fileNumber < 0 || fileNumber > MaxFileHandles)
+            int fileNumber = data[1];
+            int fileIndex = fileNumber - 2;
+            messageLog.WriteLine($"PRINT #{fileNumber}");
+            if (fileIndex < 0 || fileIndex > MaxFileHandles)
             {
                 messageLog.WriteLine($"Invalid file #{fileNumber}");
                 return CreateResult(false);
             }
-            if (fileHandles[fileNumber] == null)
+            if (fileHandles[fileIndex] == null)
             {
                 messageLog.WriteLine($"File #{fileNumber} not open");
                 return CreateResult(false);
             }
-            if (!fileHandles[fileNumber]?.CanWrite ?? false)
+            if (!fileHandles[fileIndex]?.CanWrite ?? false)
             {
                 messageLog.WriteLine($"File #{fileNumber} not writable");
                 return CreateResult(false);
             }
 
             captureMode = CaptureMode.Print;
-            currentFile = fileHandles[fileNumber];
+            currentFile = fileHandles[fileIndex];
             return CreateResult(true);
         }
 
@@ -523,7 +535,7 @@ namespace SharpManager
             // If no line terminater then add
             if (data[^3] != 0x0A)
             {
-                messageLog.WriteLine("Appending CRLF");
+                messageLog.WriteLine("  Appending CRLF");
                 currentFile.WriteByte(0x0D);
                 currentFile.WriteByte(0x0A);
             }
@@ -538,19 +550,20 @@ namespace SharpManager
         /// <returns></returns>
         private byte[] CommandInput(byte[] data)
         {
-            int fileNumber = data[1] - 2;
-            messageLog.WriteLine("INPUT #{fileNumber}");
-            if (fileNumber < 0 || fileNumber > MaxFileHandles)
+            int fileNumber = data[1];
+            int fileIndex = fileNumber - 2;
+            messageLog.WriteLine($"INPUT #{fileNumber}");
+            if (fileIndex < 0 || fileIndex > MaxFileHandles)
             {
                 messageLog.WriteLine($"Invalid file #{fileNumber}");
                 return CreateResult(false);
             }
-            if (fileHandles[fileNumber] == null)
+            if (fileHandles[fileIndex] == null)
             {
                 messageLog.WriteLine($"File #{fileNumber} not open");
                 return CreateResult(false);
             }
-            if (!fileHandles[fileNumber]?.CanRead ?? false)
+            if (!fileHandles[fileIndex]?.CanRead ?? false)
             {
                 messageLog.WriteLine($"File #{fileNumber} not readable");
                 return CreateResult(false);
@@ -560,7 +573,7 @@ namespace SharpManager
             var result = new List<byte>();
             while (true)
             {
-                var value = fileHandles[fileNumber]?.ReadByte() ?? -1;
+                var value = fileHandles[fileIndex]?.ReadByte() ?? -1;
                 if (value == -1) break;
                 result.Add((byte)value);    // Send byte
                 if (value == 0x0A) break;   // If LF then end line
