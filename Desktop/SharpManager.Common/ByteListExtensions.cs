@@ -81,7 +81,7 @@ namespace SharpManager
         /// <param name="values">The values.</param>
         public static void AddChecksum(this List<byte> data, IEnumerable<byte>? values = null)
         {
-            if (values == null) values = data;
+            values ??= data;
             // Add checksum
             int checksum = 0;
             foreach (var value in values) checksum = (checksum + value) & 0xFF;

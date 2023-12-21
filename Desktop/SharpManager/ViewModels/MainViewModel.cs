@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SharpManager.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public class MainViewModel : BaseViewModel, IDebugTarget
     {
         /// <summary>
         /// Gets the arduino interface instance.
@@ -51,16 +51,45 @@ namespace SharpManager.ViewModels
         public string Status => IsConnected ? "Connected" : "Disconnected";
 
         /// <summary>
+        /// Gets or sets whether to show debug messages
+        /// </summary>
+        public bool ShowDebug
+        {
+            get => GetProperty(false);
+            set => SetProperty(value);
+        }
+
+        /// <summary>
+        /// Gets the disk directory text.
+        /// </summary>
+        public string DiskDirectoryText
+        {
+            get
+            {
+                if (Arduino.DiskDrive.DiskDirectory == null) return "No Disk Folder Specified";
+                return "Disk Folder: " + Arduino.DiskDrive.DiskDirectory;
+            }
+        }
+
+        /// <summary>
+        /// The message target
+        /// </summary>
+        private readonly IMessageTarget messageTarget;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
         /// </summary>
-        /// <param name="messageLog">The message log.</param>
-        public MainViewModel(IMessageLog messageLog)
+        /// <param name="messageTarget">The message log.</param>
+        public MainViewModel(IMessageTarget messageTarget)
         {
-            Arduino = new Arduino(messageLog);
+            this.messageTarget = messageTarget;
+            Arduino = new Arduino(this);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsConnected);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsDisconnected);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.Status);
-            this.PropagatePropertyChanged(Arduino, a => a.CanCancel, t => t.CanCancel); 
+            this.PropagatePropertyChanged(Arduino, a => a.CanCancel, t => t.CanCancel);
+            this.PropagatePropertyChanged(Arduino.DiskDrive, d => d.DiskDirectory!, t => t.DiskDirectoryText);
+
             SerialPortService.PortsChanged += SerialPortService_PortsChanged;
             UpdateSerialPorts(SerialPortService.GetAvailableSerialPorts());
         }
@@ -127,6 +156,24 @@ namespace SharpManager.ViewModels
             }
 
             SelectedSerialPort ??= SerialPorts.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Write the specified debug message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        void IDebugTarget.DebugWrite(string message)
+        {
+            if (ShowDebug) messageTarget.Write(message);
+        }
+
+        /// <summary>
+        /// Write the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        void IMessageTarget.Write(string message)
+        {
+            messageTarget.Write(message);
         }
     }
 }

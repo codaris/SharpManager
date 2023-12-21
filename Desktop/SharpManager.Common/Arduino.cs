@@ -57,7 +57,7 @@ namespace SharpManager
         private CancellationTokenSource? cancellationTokenSource = null;
 
         /// <summary>The message log</summary>
-        private readonly IMessageLog messageLog;
+        private readonly IDebugTarget messageTarget;
 
         /// <summary>Whether or not current processing a command</summary>
         private int commandCount = 0;
@@ -99,11 +99,11 @@ namespace SharpManager
         /// <summary>
         /// Initializes a new instance of the <see cref="Arduino" /> class.
         /// </summary>
-        /// <param name="messageLog">The message log.</param>
-        public Arduino(IMessageLog messageLog)
+        /// <param name="messageTarget">The message log.</param>
+        public Arduino(IDebugTarget messageTarget)
         {
-            this.messageLog = messageLog;
-            this.DiskDrive = new CE140F(messageLog);
+            this.messageTarget = messageTarget;
+            this.DiskDrive = new CE140F(messageTarget);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SharpManager
             serialStream = new SerialPortByteStream(serialPort);
             IsConnected = true;
             OnPropertyChanged(nameof(IsConnected));
-            messageLog.WriteLine($"Connected to {portName}.");
+            messageTarget.WriteLine($"Connected to {portName}.");
 
             // Empty the read buffer
             await Initialize();
@@ -143,7 +143,7 @@ namespace SharpManager
 
             IsConnected = false;
             OnPropertyChanged(nameof(IsConnected));
-            messageLog.WriteLine("Disconnected.");
+            messageTarget.WriteLine("Disconnected.");
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SharpManager
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
 
             // Try synchronizing
-            if (!await Synchronize().ConfigureAwait(false)) messageLog.WriteLine("Initialize failed.");
+            if (!await Synchronize().ConfigureAwait(false)) messageTarget.WriteLine("Initialize failed.");
 
             serialStream.WriteByte(Ascii.SOH);
             serialStream.WriteByte((byte)Command.Init);
@@ -214,7 +214,7 @@ namespace SharpManager
             {
                 byte value = await serialStream.ReadByteAsync(1000).ConfigureAwait(false);
                 if (value == Ascii.ETX) break;
-                messageLog.Write(char.ConvertFromUtf32(value));
+                messageTarget.Write(char.ConvertFromUtf32(value));
             }
         }
 
@@ -229,32 +229,31 @@ namespace SharpManager
             using var _ = StartCommandScope();
 
             // Empty the read buffer
-            messageLog.Write("Clearing stream... ");
+            messageTarget.DebugWriteLine("Clearing stream...");
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
 
             // Try synchronizing
-            messageLog.Write("Synchronizing... ");
-            if (!await Synchronize().ConfigureAwait(false)) messageLog.WriteLine("Failed.");
-            else messageLog.WriteLine();
+            messageTarget.DebugWriteLine("Synchronizing...");
+            if (!await Synchronize().ConfigureAwait(false)) messageTarget.WriteLine("Synchronization failed.");
 
-            messageLog.Write("Pinging... ");
+            messageTarget.Write("Pinging... ");
             serialStream.WriteByte(Ascii.SOH);
             serialStream.WriteByte((byte)Command.Ping);
             var response = await serialStream.TryReadByteAsync(2500).ConfigureAwait(false); ;       // Wait for response
             if (response == Ascii.ACK)
             {
-                messageLog.WriteLine("Success.");
+                messageTarget.WriteLine("Success.");
             }
             else if (response == Ascii.NAK)
             {
                 response = await serialStream.TryReadByteAsync(2000).ConfigureAwait(false); ;
                 var errorCode = ErrorCode.Timeout;
                 if (response.HasValue) errorCode = (ErrorCode)response.Value;
-                messageLog.WriteLine($"Fail: {errorCode}");
+                messageTarget.WriteLine($"Ping Failure.  Error {errorCode}");
             }
             else
             {
-                messageLog.WriteLine($"No response.");
+                messageTarget.WriteLine($"No response.");
             }
         }
 
@@ -285,14 +284,14 @@ namespace SharpManager
             using var _ = StartCommandScope();
 
             // Empty the read buffer
-            messageLog.Write("Clearing stream... ");
+            messageTarget.DebugWriteLine("Clearing stream... ");
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
 
             // Send Syn character and wait for syn
-            messageLog.WriteLine("Synchronizing...");
+            messageTarget.DebugWriteLine("Synchronizing...");
             if (!await Synchronize().ConfigureAwait(false)) throw new ArduinoException("Unable to start file transfer");
 
-            messageLog.WriteLine($"Start new tape...  Length: {fileStream.Length}");
+            messageTarget.WriteLine($"Sending type file; Length: {fileStream.Length}");
 
             serialStream.WriteByte(Ascii.SOH);    // Start of packet 
             serialStream.WriteByte((byte)Command.LoadTape);
@@ -300,7 +299,7 @@ namespace SharpManager
             serialStream.WriteByte(HeaderSize);
             await ReadResponse().ConfigureAwait(false);
             await SendBuffer(data).ConfigureAwait(false);
-            messageLog.WriteLine($"Done.");
+            messageTarget.WriteLine($"Done.");
         }
 
         /// <summary>
@@ -313,14 +312,14 @@ namespace SharpManager
             using var _ = StartCommandScope();
 
             // Empty the read buffer
-            messageLog.Write("Clearing stream... ");
+            messageTarget.DebugWriteLine("Clearing stream... ");
             while (serialStream.DataAvailable) await serialStream.ReadByteAsync().ConfigureAwait(false);
 
             // Send Syn character and wait for syn
-            messageLog.WriteLine("Synchronizing...");
+            messageTarget.DebugWriteLine("Synchronizing...");
             if (!await Synchronize().ConfigureAwait(false)) throw new ArduinoException("Unable to start file transfer");
 
-            messageLog.WriteLine($"Waiting for CSAVE...");
+            messageTarget.WriteLine($"Waiting for CSAVE on pocket computer...");
             serialStream.WriteByte(Ascii.SOH);    // Start of packet 
             serialStream.WriteByte((byte)Command.SaveTape);
             await ReadResponse().ConfigureAwait(false);
@@ -395,21 +394,21 @@ namespace SharpManager
                 case Command.DeviceSelect:
                     var device = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
                     if (!device.HasValue) return;
-                    messageLog.WriteLine($"Device Select: 0x{device.Value:X}");
+                    messageTarget.DebugWriteLine($"Device Select: 0x{device.Value:X}");
                     break;
                 case Command.Print:
                     var character = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
                     if (!character.HasValue) return;
-                    if (character.Value == 13) messageLog.WriteLine();
-                    else messageLog.Write(((char)character.Value).ToString());
+                    if (character.Value == 13) messageTarget.WriteLine();
+                    else messageTarget.Write(((char)character.Value).ToString());
                     break;
                 case Command.Data:
                     var value = await serialStream.TryReadByteAsync(1000).ConfigureAwait(false);
                     if (!value.HasValue) return;
-                    messageLog.WriteLine($"Data: {value:X2}");
+                    messageTarget.WriteLine($"Data: {value:X2}");
                     break;
                 case Command.Disk:
-                    messageLog.Write("Reading Disk Command: ");
+                    messageTarget.DebugWrite("Reading Disk Command: ");
                     var response = DiskDrive.ProcessCommand(await ReadDiskCommand());
                     await SendDiskResponse(response);
                     break;
@@ -478,12 +477,12 @@ namespace SharpManager
                     case Ascii.CAN:
                         throw new ArduinoException(ErrorCode.Cancelled);
                     case Ascii.ETX:
-                        messageLog.WriteLine(" Done.");
-                        messageLog.Dump(result);
+                        messageTarget.WriteLine(" Done.");
+                        messageTarget.Dump(result);
                         return result.ToArray();
                 }
                 result.Add(data);
-                messageLog.Write(".");               
+                messageTarget.Write(".");
             }
         }
 
@@ -500,8 +499,8 @@ namespace SharpManager
             {
                 int size = Math.Min(BufferSize, data.Length - offset);
                 if (size == 0) break;
-                messageLog.WriteLine($"  Sending {size} bytes:");
-                messageLog.Dump(new ArraySegment<byte>(data, offset, size));
+                messageTarget.DebugWriteLine($"Sending {size} bytes:");
+                messageTarget.Dump(new ArraySegment<byte>(data, offset, size));
                 for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
                 await ReadResponse().ConfigureAwait(false);
             }

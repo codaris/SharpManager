@@ -18,8 +18,7 @@ namespace SharpManager
         /// <exception cref="System.ArgumentNullException">action</exception>
         public ScopeGuard(Action action)
         {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            _action = action;
+            _action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
         /// <summary>

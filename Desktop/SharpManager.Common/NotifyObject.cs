@@ -16,6 +16,9 @@ namespace SharpManager
         /// <returns></returns>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// The properties
+        /// </summary>
         private readonly Dictionary<string, object> properties = new();
 
         /// <summary>

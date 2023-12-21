@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 using SharpManager.ViewModels;
 
@@ -25,7 +26,7 @@ namespace SharpManager.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IMessageLog
+    public partial class MainWindow : Window, IMessageTarget
     {
         /// <summary>
         /// The view model
@@ -45,7 +46,7 @@ namespace SharpManager.Views
             viewModel = new MainViewModel(this);
             DataContext = viewModel;
 
-            viewModel.Arduino.DiskDrive.DriveDirectory = new DirectoryInfo("C:\\Projects\\Handhelds\\Sharp Pocket\\SharpManager\\Disk");
+            viewModel.Arduino.DiskDrive.DiskDirectory = "C:\\Projects\\Handhelds\\Sharp Pocket\\SharpManager\\Disk";
 
             // Apppend newline after version text
             Log.AppendText("\r\n");
@@ -134,6 +135,19 @@ namespace SharpManager.Views
             }
         }
 
+        private void SelectDiskFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            dialog.InitialDirectory = viewModel.Arduino.DiskDrive.DiskDirectory;
+            var result = dialog.ShowDialog();
+            if (result == CommonFileDialogResult.Ok)
+            {
+                viewModel.Arduino.DiskDrive.DiskDirectory = dialog.FileName;
+            }
+        }
+
+
 
         /// <summary>
         /// Handles the Click event of the Exit control.
@@ -181,18 +195,6 @@ namespace SharpManager.Views
         }
 
         /// <summary>
-        /// Writes to the message log
-        /// </summary>
-        /// <param name="message">The message.</param>
-        void IMessageLog.Write(string message)
-        {
-            Dispatcher.InvokeAsync(() => {
-                Log.AppendText(message);
-                Log.ScrollToEnd();
-            });
-        }
-
-        /// <summary>
         /// Handles the PreviewKeyDown event of the Window control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -205,6 +207,19 @@ namespace SharpManager.Views
                 e.Handled = true;   
             }
         }
+
+        /// <summary>
+        /// Write the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        void IMessageTarget.Write(string message)
+        {
+            Dispatcher.InvokeAsync(() => {
+                Log.AppendText(message);
+                Log.ScrollToEnd();
+            });
+        }
+
     }
 }
  

@@ -6,34 +6,27 @@ using System.Threading.Tasks;
 
 namespace SharpManager
 {
-    public interface IMessageLog
+    public interface IDebugTarget : IMessageTarget
     {
         /// <summary>
-        /// Writes a line to the message log
+        /// Write the specified debug message.
         /// </summary>
         /// <param name="message">The message.</param>
-        void WriteLine(string message)
-        {
-            Write(message);
-            WriteLine();
-        }
+        void DebugWrite(string message);
 
         /// <summary>
-        /// Writes a newline.
-        /// </summary>
-        void WriteLine()
-        {
-            Write("\r\n");
-        }
-
-        /// <summary>
-        /// Writes to the message log
+        /// Write the specified debug message with newline.
         /// </summary>
         /// <param name="message">The message.</param>
-        void Write(string message);
+        void DebugWriteLine(string message) => DebugWrite(message + Environment.NewLine);
 
         /// <summary>
-        /// Dump the specified bytes.
+        /// Write a newline to debug
+        /// </summary>
+        void DebugNewLine() => DebugWrite(Environment.NewLine);
+
+        /// <summary>
+        /// Dump the specified bytes to debug
         /// </summary>
         /// <param name="data">The data.</param>
         void Dump(IEnumerable<byte> data)
@@ -45,15 +38,15 @@ namespace SharpManager
             foreach (byte b in data)
             {
                 if (offset % 16 == 0 && offset > 0)
-                { 
-                    WriteLine($"{hex}  |{ascii}|");
+                {
+                    DebugWriteLine($"{hex}  |{ascii}|");
                     hex.Clear();
                     ascii.Clear();
                 }
-                
+
                 if (offset % 16 == 0)
                 {
-                    Write($"  {offset:X8}  ");
+                    DebugWrite($"  {offset:X8}  ");
                 }
 
                 hex.AppendFormat("{0:X2} ", b);
@@ -63,7 +56,7 @@ namespace SharpManager
 
             if (hex.Length > 0)
             {
-                WriteLine($"{hex,-48}  |{ascii}|");
+                DebugWriteLine($"{hex,-48}  |{ascii}|");
             }
         }
     }

@@ -360,6 +360,7 @@ namespace Manager
                 Tape::Save();
                 break;
             case Command::Disk:
+                // Get the capture flag
                 Result capture = WaitReadByte();
                 if (capture.IsError()) {
                     SendFailure(capture.AsErrorCode());
