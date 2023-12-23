@@ -135,6 +135,11 @@ namespace SharpManager.Views
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the SelectDiskFolder control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SelectDiskFolder_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new CommonOpenFileDialog();
@@ -147,7 +152,15 @@ namespace SharpManager.Views
             }
         }
 
-
+        /// <summary>
+        /// Handles the Click event of the Clear control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void Clear_Click(object sender, RoutedEventArgs e)
+        {
+            Log.Clear();
+        }
 
         /// <summary>
         /// Handles the Click event of the Exit control.

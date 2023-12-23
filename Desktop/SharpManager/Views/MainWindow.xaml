@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:SharpManager"
         mc:Ignorable="d"
         Title="Sharp Manager" Height="450" Width="800" 
-        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}" PreviewKeyDown="Window_PreviewKeyDown">
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}" PreviewKeyDown="Window_PreviewKeyDown" Icon="/Resources/Calculator.png">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,10 +19,10 @@
         <DockPanel LastChildFill="True">
             <Menu DockPanel.Dock="Top" >
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Send File..." Click="OpenFile_Click" Icon="{StaticResource OpenFileIcon}" IsEnabled="{Binding IsConnected}" />
-                    <MenuItem Header="_Receive File..." Click="ReceiveFile_Click" Icon="{StaticResource OpenFileIcon}" IsEnabled="{Binding IsConnected}" />
+                    <MenuItem Header="_Send Tape File..." Click="OpenFile_Click" Icon="{StaticResource UploadDocument}" IsEnabled="{Binding IsConnected}" />
+                    <MenuItem Header="_Receive Tape File..." Click="ReceiveFile_Click" Icon="{StaticResource DownloadDocument}" IsEnabled="{Binding IsConnected}" />
                     <Separator />
-                    <MenuItem Header="Select _Disk Folder..." Click="SelectDiskFolder_Click" />
+                    <MenuItem Header="Select _Disk Folder..." Click="SelectDiskFolder_Click" Icon="{StaticResource OpenFolderIcon}" />
                     <Separator />
                     <MenuItem Header="E_xit" Click="Exit_Click" />
                 </MenuItem>
@@ -46,19 +46,19 @@
                     <ComboBox Margin="4,4,10,4" ItemsSource="{Binding SerialPorts}" SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}" />
                     <Button Margin="4,4,10,4" Click="Connect_Click" Visibility="{Binding IsDisconnected, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Horizontal">
-                            <ContentControl Content="{StaticResource OpenFileIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <ContentControl Content="{StaticResource Connect}" Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="Connect" VerticalAlignment="Center" Margin="0,0,5,2" />
                         </StackPanel>
                     </Button>
                     <Button Margin="4,4,10,4" Click="Disconnect_Click" Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Horizontal">
-                            <ContentControl Content="{StaticResource OpenFileIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <ContentControl Content="{StaticResource Disconnect}" Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="Disconnect" VerticalAlignment="Center" Margin="0,0,5,2" />
                         </StackPanel>
                     </Button>
                     <Button Margin="4,4,10,4" Click="Ping_Click" Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Horizontal">
-                            <ContentControl Content="{StaticResource TriggerInterruptIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <ContentControl Content="{StaticResource Trigger}" Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="Ping" VerticalAlignment="Center" Margin="0,0,5,2" />
                         </StackPanel>
                     </Button>
@@ -66,6 +66,12 @@
                         <StackPanel Orientation="Horizontal">
                             <ContentControl Content="{StaticResource CancelIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
                             <TextBlock Text="Cancel Operation" VerticalAlignment="Center" Margin="0,0,5,2" />
+                        </StackPanel>
+                    </Button>
+                    <Button Margin="4,4,10,4" Click="Clear_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ContentControl Content="{StaticResource EraserIcon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Clear Log" VerticalAlignment="Center" Margin="0,0,5,2" />
                         </StackPanel>
                     </Button>
                     <CheckBox Margin="4,7,4,4" Content="Show Debug Messages" IsChecked="{Binding ShowDebug, Mode=TwoWay}" />

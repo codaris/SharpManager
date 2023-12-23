@@ -408,7 +408,7 @@ namespace SharpManager
                     messageTarget.WriteLine($"Data: {value:X2}");
                     break;
                 case Command.Disk:
-                    messageTarget.DebugWrite("Reading Disk Command: ");
+                    messageTarget.DebugWriteLine("Reading Disk Command:");
                     var response = DiskDrive.ProcessCommand(await ReadDiskCommand());
                     await SendDiskResponse(response);
                     break;
@@ -477,12 +477,14 @@ namespace SharpManager
                     case Ascii.CAN:
                         throw new ArduinoException(ErrorCode.Cancelled);
                     case Ascii.ETX:
-                        messageTarget.WriteLine(" Done.");
+                        if (result.Count % 40 != 0) messageTarget.WriteLine();
                         messageTarget.Dump(result);
                         return result.ToArray();
                 }
                 result.Add(data);
                 messageTarget.Write(".");
+                // messageTarget.Write(" " + data.ToString("X2"));
+                if (result.Count % 80 == 0) messageTarget.WriteLine();
             }
         }
 

@@ -369,14 +369,13 @@ namespace SharpManager
             // End of file
             if (data[0] == 0x1A)
             {
-                messageTarget.WriteLine();
                 messageTarget.WriteLine("Done.");
                 currentFile.Dispose();
                 currentFile = null;
                 return CreateResult(true);
             }
 
-            messageTarget.Write(".");
+            // messageTarget.Write("."); TODO remove
 
             // Last byte is checksum so ignore
             for (int i = 0; i < data.Length - 1; i++)
@@ -397,18 +396,16 @@ namespace SharpManager
             // File not open
             if (currentFile == null) return CreateResult(false);
 
-            messageTarget.Write(".");
-
             // Write the data -- last byte is checksum
             for (int i = 0; i < data.Length - 1; i++)
             {
+                // messageTarget.Write("."); TODO remove
                 currentFile.WriteByte(data[i]);
             }
 
             // If the file is the correct size, close the file
             if (currentFile.Length == currentFileSize)
             {
-                messageTarget.WriteLine();
                 messageTarget.WriteLine("Done.");
                 currentFile.Dispose();
                 currentFile = null;

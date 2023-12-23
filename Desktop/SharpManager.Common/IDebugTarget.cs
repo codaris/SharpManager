@@ -23,7 +23,7 @@ namespace SharpManager
         /// <summary>
         /// Write a newline to debug
         /// </summary>
-        void DebugNewLine() => DebugWrite(Environment.NewLine);
+        void DebugWriteLine() => DebugWrite(Environment.NewLine);
 
         /// <summary>
         /// Dump the specified bytes to debug
