@@ -19,6 +19,12 @@ namespace Manager
     Result WaitReadWord();
 
     /**
+     * @brief Waits for 4 byte integer to become available on the serial interface
+     * @return Byte read or error
+     */
+    Result WaitReadInt();
+
+    /**
      * @brief Reads an escaped byte from the serial interface or resulting code.
      * @return The data to be read or error code
      */

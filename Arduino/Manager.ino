@@ -59,6 +59,20 @@ namespace Manager
     }
 
     /**
+     * @brief Waits for 4 byte integer to become available on the serial interface
+     * @return Byte read or error
+     */
+    Result WaitReadInt()
+    {
+        unsigned long startTime = millis();
+        while (Serial.available() < 4) {
+            // Wait for a byte to become available or until the timeout
+            if ((millis() - startTime) > 1000) return ResultType::Timeout;
+        }
+        return Serial.read() | (Serial.read() << 8) | (Serial.read() << 16) | (Serial.read() << 24);        
+    }
+
+    /**
      * @brief Reads an escaped byte from the serial interface or resulting code.
      * @return The data to be read or error code
      */
