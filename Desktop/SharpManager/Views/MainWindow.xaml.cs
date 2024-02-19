@@ -46,10 +46,8 @@ namespace SharpManager.Views
             viewModel = new MainViewModel(this);
             DataContext = viewModel;
 
-            viewModel.Arduino.DiskDrive.DiskDirectory = "C:\\Projects\\Handhelds\\Sharp Pocket\\SharpManager\\Disk";
-
             // Apppend newline after version text
-            Log.AppendText("\r\n");
+            Log.AppendText(" " + App.Version.ToString(3) + "\r\n");
             Log.ScrollToEnd();
         }
 
@@ -144,11 +142,11 @@ namespace SharpManager.Views
         {
             var dialog = new CommonOpenFileDialog();
             dialog.IsFolderPicker = true;
-            dialog.InitialDirectory = viewModel.Arduino.DiskDrive.DiskDirectory;
+            dialog.InitialDirectory = viewModel.DiskDirectory;
             var result = dialog.ShowDialog();
             if (result == CommonFileDialogResult.Ok)
             {
-                viewModel.Arduino.DiskDrive.DiskDirectory = dialog.FileName;
+                viewModel.DiskDirectory = dialog.FileName;
             }
         }
 

@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SharpManager"
              xmlns:helpers="clr-namespace:SharpManager.Helpers"
-             StartupUri="Views/MainWindow.xaml">
+             StartupUri="Views/MainWindow.xaml"
+             Exit="Application_Exit">
     <Application.Resources>
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Application.Resources>

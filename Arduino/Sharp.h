@@ -19,20 +19,25 @@ namespace Sharp
     /**
      * @brief Reads the device select 
      */
-    int ReadDeviceSelect();
+    Result ReadDeviceSelect();
 
     /**
      * @brief Reads a byte to be sent to printer from pocket computer 
      * @returns The byte read
      */
-    int ReadPrintByte();
+    Result ReadPrintByte();
 
     /**
-     * @brief Read a disk command from the pocket computer
+     * @brief Read a disk command from the pocket computer and sends data frame directly to desktop
      */
     void ProcessDiskCommand();
 
-    void SendDiskByte(byte value);
+    /**
+     * @brief Sends a disk byte to the pocket computer
+     * @param value         Byte to send
+     * @return Result of sending the byte
+     */
+    ResultType SendDiskByte(byte value);
 }
 
 #endif

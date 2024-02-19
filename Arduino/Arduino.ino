@@ -7,6 +7,8 @@
 /** Physical button */
 const int BUTTON = 14;
 
+unsigned long ledMillis = 0;        // will store last time LED was updated
+const long ledInterval = 1000;      // LED blink interval
 
 /**
  * @brief Setup the Arduino for connection to Sharp Pocket Computer
@@ -35,31 +37,38 @@ void loop()
     // Process manager operations
     Manager::Task();
 
-    // If button is pressed send tape data
-    if (digitalRead(BUTTON) == LOW) {
-        // tone(SHARP_BEEP, 2093, 10);
-        // Tape::Save(true);
-    }
-
     // Read the Xout PIN
     bool xout = digitalRead(SHARP_XOUT);
     
     // if Xout is high, read device select
     if (xout) {
-        int device = Sharp::ReadDeviceSelect();       
-        if (device == 0x0F || device == 0x10 || device == 0x45 || device == 0x41) {
-            digitalWrite(SHARP_ACK, 1);
-            delayMicroseconds(9000);
-            digitalWrite(SHARP_ACK, 0);
+        Result device = Sharp::ReadDeviceSelect();       
+        if (device.HasValue()) {
+            int deviceCode = device.Value();
+            if (deviceCode == 0x0F || deviceCode == 0x10 || deviceCode == 0x45 || deviceCode == 0x41) {
+                digitalWrite(SHARP_ACK, 1);
+                delayMicroseconds(9000);
+                digitalWrite(SHARP_ACK, 0);
 
-            Manager::SendDeviceSelect(device);
-            // if (device == 0x10) SendRawData();
-            if (device == 0x41) Sharp::ProcessDiskCommand();
+                Manager::SendDeviceSelect(deviceCode);
+                // if (device == 0x10) SendRawData();
+                if (deviceCode == 0x41) Sharp::ProcessDiskCommand();
+            }
         }
     }
 
     // If busy pin and not Xout, read and print printer byte
     if (digitalRead(SHARP_BUSY) && !xout) {
-        Manager::SendPrintChar(Sharp::ReadPrintByte());
+        Result printChar = Sharp::ReadPrintByte();
+        if (printChar.HasValue()) Manager::SendPrintChar(printChar.Value());
     }
+
+    // Blink the LED
+    unsigned long currentMillis = millis();
+    if (currentMillis - ledMillis >= ledInterval) {
+        // save the last time you blinked the LED
+        ledMillis = currentMillis;
+        // Flip the LED
+        digitalWrite(LED_BUILTIN, digitalRead(LED_BUILTIN) == LOW);
+    }      
 }

@@ -35,7 +35,8 @@ namespace SharpManager
             get => directoryInfo?.FullName;
             set
             {
-                directoryInfo = (value != null) ? new DirectoryInfo(value) : null;
+                directoryInfo = (!string.IsNullOrEmpty(value)) ? new DirectoryInfo(value) : null;
+                if (!(directoryInfo?.Exists ?? false)) directoryInfo = null;
                 OnPropertyChanged();
             }
         }
@@ -465,7 +466,7 @@ namespace SharpManager
             int fileMode = data[15];            // 1: input, 2: output, 3: append
             int fileNumber = data[16];          // file#
             int fileIndex = fileNumber - 2;     // file index
-            string fileModeText = fileMode == 1 ? "INPUT" : (fileMode == 2 ? "OTUPUT" : "APPEND");
+            string fileModeText = fileMode == 1 ? "INPUT" : (fileMode == 2 ? "OUTPUT" : "APPEND");
 
             messageTarget.WriteLine($"OPEN \"{fileName}\" FOR {fileModeText} AS #{fileNumber}");
             if (fileIndex < 0 || fileIndex > MaxFileHandles)

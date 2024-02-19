@@ -43,6 +43,20 @@ namespace Manager
     bool ReadCancel();
 
     /**
+     * @brief Sends failure if result is error
+     * @param result 
+     * @return true if is error
+     */
+    bool Error(Result result);
+
+    /**
+     * @brief Sends failure if error code is error
+     * @param errorCode 
+     * @return true if is error
+     */
+    bool Error(ResultType errorCode);
+
+    /**
      * @brief Sends failure to the manager
      * @param errorCode Error code to send
     */

@@ -94,16 +94,28 @@ namespace SharpManager
         /// </summary>
         public bool CanCancel => cancellationTokenSource != null;
 
-        public CE140F DiskDrive { get; }
+        /// <summary>
+        /// Gets or sets the disk directory.
+        /// </summary>
+        public string? DiskDirectory
+        {
+            get => diskDrive.DiskDirectory;
+            set => diskDrive.DiskDirectory = value; 
+        }
+
+        /// <summary>The disk drive instance</summary>
+        private readonly CE140F diskDrive;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Arduino" /> class.
         /// </summary>
         /// <param name="messageTarget">The message log.</param>
-        public Arduino(IDebugTarget messageTarget)
+        /// <param name="diskDirectory">The disk directory.</param>
+        public Arduino(IDebugTarget messageTarget, string? diskDirectory)
         {
             this.messageTarget = messageTarget;
-            this.DiskDrive = new CE140F(messageTarget);
+            this.diskDrive = new CE140F(messageTarget);
+            this.diskDrive.DiskDirectory = diskDirectory;
         }
 
         /// <summary>
@@ -134,7 +146,7 @@ namespace SharpManager
         /// </summary>
         public void Disconnect()
         {
-            DiskDrive.Reset();
+            diskDrive.Reset();
             serialStream?.Dispose();
             serialStream = null;
             serialPort?.Close();
@@ -270,16 +282,7 @@ namespace SharpManager
             // TODO improve file parsing
             using var memoryStream = new MemoryStream();
             fileStream.CopyTo(memoryStream);
-            var data = memoryStream.ToArray();
-            var fileFormat = (FileFormat)data[0];
-            // Swap the nibbles of bytes 1 through 7
-            for (int i = 1; i <= 7; i++) data[i] = data[i].SwapNibbles();
-            // If password also swap the password bytes
-            if (fileFormat == FileFormat.BasicPassword || fileFormat == FileFormat.ExtBasicPassword)
-            {
-                // Swap the nibbles of bytes 10 through 17
-                for (int i = 10; i <= 17; i++) data[i] = data[i].SwapNibbles();
-            }
+            var data = ProcessTapeFile(memoryStream.ToArray());
 
             using var _ = StartCommandScope();
 
@@ -328,7 +331,7 @@ namespace SharpManager
             {
                 cancellationTokenSource = new();
                 OnPropertyChanged(nameof(CanCancel));
-                return await ReadFrame(cancellationTokenSource.Token).ConfigureAwait(false);
+                return ProcessTapeFile(await ReadFrame(cancellationTokenSource.Token).ConfigureAwait(false));
             }
             finally
             {
@@ -409,7 +412,7 @@ namespace SharpManager
                     break;
                 case Command.Disk:
                     messageTarget.DebugWriteLine("Reading Disk Command:");
-                    var response = DiskDrive.ProcessCommand(await ReadDiskCommand());
+                    var response = diskDrive.ProcessCommand(await ReadDiskCommand());
                     await SendDiskResponse(response);
                     break;
                 default:
@@ -506,6 +509,28 @@ namespace SharpManager
                 for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
                 await ReadResponse().ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Processes the tape file by inverting nibbles as needed
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private byte[] ProcessTapeFile(byte[] data)
+        {
+            if (data.Length < 8) return data;
+            // Get the file format of the file
+            var fileFormat = (FileFormat)data[0];
+            // Swap the nibbles of bytes 1 through 7
+            for (int i = 1; i <= 7; i++) data[i] = data[i].SwapNibbles();
+            // If password also swap the password bytes
+            if (fileFormat == FileFormat.BasicPassword || fileFormat == FileFormat.ExtBasicPassword)
+            {
+                if (data.Length < 18) return data;
+                // Swap the nibbles of bytes 10 through 17
+                for (int i = 10; i <= 17; i++) data[i] = data[i].SwapNibbles();
+            }
+            return data;
         }
 
         /// <summary>

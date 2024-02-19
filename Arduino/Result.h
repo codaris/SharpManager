@@ -2,6 +2,7 @@
 #ifndef __RESULT_H__
 #define __RESULT_H__
 
+/// @brief Result codes / error codes (sync with app)
 enum ResultType
 {
     Ok = 0,
@@ -10,9 +11,12 @@ enum ResultType
     Unexpected = 3,
     Overflow = 4,
     SyncError = 5,
+    ChecksumError = 6,
     End = 0xFF
 };
 
+
+/// @brief Result class for read functions -- stores errors as negative values
 class Result
 {
     public:

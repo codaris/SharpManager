@@ -121,6 +121,30 @@ namespace Manager
     }    
 
     /**
+     * @brief Sends failure if result is error
+     * @param result 
+     * @return true if is error
+     */
+    bool Error(Result result)
+    {
+        if (!result.IsError()) return false;
+        SendFailure(result.AsErrorCode());
+        return true;
+    }
+
+    /**
+     * @brief Sends failure if error code is error
+     * @param errorCode 
+     * @return true if is error
+     */
+    bool Error(ResultType errorCode)  
+    {
+        if (errorCode == ResultType::Ok) return false;
+        SendFailure(errorCode);
+        return true;
+    }
+
+    /**
      * @brief Sends failure to the manager
      * @param errorCode Error code to send
     */
@@ -286,7 +310,7 @@ namespace Manager
      * @param sendFunction  The function to call with the buffered data
      * @return True if succesful, false on error
      */
-    bool ProcessDataFrame(void (*sendFunction)(byte))
+    bool ProcessDataFrame(ResultType (*sendFunction)(byte))
     {
         // Read the data packet length
         Result length = WaitReadWord();            // 2 bytes, total length of data
@@ -303,11 +327,8 @@ namespace Manager
         {
             Result data = ReadBufferByte();
             if (data.IsDone()) break;
-            if (data.IsError()) {
-                SendFailure(data.AsErrorCode());
-                return false;
-            }
-            sendFunction(data);
+            if (Manager::Error(data)) return false;
+            if (Manager::Error(sendFunction(data))) return false;
         }
 
         // Completed processing packet

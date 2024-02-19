@@ -26,8 +26,12 @@ namespace SharpManager.ViewModels
         /// </summary>
         public string? SelectedSerialPort
         {
-            get => GetProperty<string?>();
-            set => SetProperty(value);
+            get => GetProperty<string?>(Properties.Settings.Default.SerialPort, nameof(SelectedSerialPort));
+            set
+            {
+                SetProperty(value);
+                Properties.Settings.Default.SerialPort = value;
+            }
         }
 
         /// <summary>
@@ -55,8 +59,24 @@ namespace SharpManager.ViewModels
         /// </summary>
         public bool ShowDebug
         {
-            get => GetProperty(false);
-            set => SetProperty(value);
+            get => GetProperty(Properties.Settings.Default.ShowDebugMessages);
+            set
+            {
+                SetProperty(value);
+                Properties.Settings.Default.ShowDebugMessages = value;
+            }
+        }
+
+        public string? DiskDirectory
+        {
+            get => Arduino.DiskDirectory;
+            set
+            {
+                Arduino.DiskDirectory = value;
+                Properties.Settings.Default.DiskDirectory = value;
+                OnPropertyChanged(nameof(DiskDirectory));
+                OnPropertyChanged(nameof(DiskDirectoryText));
+            }
         }
 
         /// <summary>
@@ -66,8 +86,8 @@ namespace SharpManager.ViewModels
         {
             get
             {
-                if (Arduino.DiskDrive.DiskDirectory == null) return "No Disk Folder Specified";
-                return "Disk Folder: " + Arduino.DiskDrive.DiskDirectory;
+                if (DiskDirectory == null) return "No Disk Folder Specified";
+                return "Disk Folder: " + DiskDirectory;
             }
         }
 
@@ -83,12 +103,11 @@ namespace SharpManager.ViewModels
         public MainViewModel(IMessageTarget messageTarget)
         {
             this.messageTarget = messageTarget;
-            Arduino = new Arduino(this);
+            Arduino = new Arduino(this, Properties.Settings.Default.DiskDirectory);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsConnected);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.IsDisconnected);
             this.PropagatePropertyChanged(Arduino, a => a.IsConnected, t => t.Status);
             this.PropagatePropertyChanged(Arduino, a => a.CanCancel, t => t.CanCancel);
-            this.PropagatePropertyChanged(Arduino.DiskDrive, d => d.DiskDirectory!, t => t.DiskDirectoryText);
 
             SerialPortService.PortsChanged += SerialPortService_PortsChanged;
             UpdateSerialPorts(SerialPortService.GetAvailableSerialPorts());
