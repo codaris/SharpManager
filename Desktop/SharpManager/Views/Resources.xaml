@@ -550,4 +550,22 @@
         </Rectangle>
     </Viewbox>
 
+    <Viewbox x:Key="Upload" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <Rectangle Width="16" Height="16">
+            <Rectangle.Fill>
+                <DrawingBrush>
+                    <DrawingBrush.Drawing>
+                        <DrawingGroup>
+                            <DrawingGroup.Children>
+                                <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M7.6716,-0.000199999999999534L0.3786,7.2938 3.2066,10.1208 6.0006,7.3288 6.0006,15.9998 9.9996,15.9998 9.9996,7.3288 12.7926,10.1208 15.6216,7.2938 8.3276,-0.000199999999999534z" />
+                                <GeometryDrawing Brush="#FF00529C" Geometry="F1M12.793,8.707L9,4.914 9,15 7,15 7,4.914 3.207,8.707 1.793,7.293 8,1.086 14.207,7.293z" />
+                            </DrawingGroup.Children>
+                        </DrawingGroup>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+    </Viewbox>    
+    
 </ResourceDictionary>

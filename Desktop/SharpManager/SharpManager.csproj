@@ -5,15 +5,24 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <Version>1.0.1</Version>
+    <Authors>Wayne Venables</Authors>
+    <Company>Codaris Computing</Company>
+    <Product>SharpManager</Product>
+    <Copyright>Copyright © 2024</Copyright>
+    <Description>Floppy drive and tape drive emulator for Sharp pocket computers.</Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\SharpPocket.ico" />
+    <None Remove="Resources\SharpPocketIcon.png" />
+    <None Remove="Resources\Upload.png" />
     <None Remove="Views\Calculator.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.Ports" Version="7.0.0" />
-    <PackageReference Include="System.Management" Version="7.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
 
@@ -23,6 +32,9 @@
 
   <ItemGroup>
     <Resource Include="Resources\Calculator.png" />
+    <Resource Include="Resources\SharpPocket.ico" />
+    <Resource Include="Resources\SharpPocketIcon.png" />
+    <Resource Include="Resources\Upload.png" />
   </ItemGroup>
 
   <ItemGroup>

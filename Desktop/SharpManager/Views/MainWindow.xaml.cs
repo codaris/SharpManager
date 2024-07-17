@@ -231,6 +231,27 @@ namespace SharpManager.Views
             });
         }
 
+        /// <summary>
+        /// Handles the Click event of the About control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            var about = new About();
+            about.Owner = this;
+            about.ShowDialog();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the UploadFirmware control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void UploadFirmware_Click(object sender, RoutedEventArgs e)
+        {
+            UploadFirmware.ShowDialog(this, viewModel);
+        }
     }
 }
  

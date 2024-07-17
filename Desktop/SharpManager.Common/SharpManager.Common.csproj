@@ -8,7 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.Ports" Version="7.0.0" />
+    <None Remove="Firmware\NanoR3.hex" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Firmware\NanoR3.hex" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ArduinoUploaderCore" Version="4.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
