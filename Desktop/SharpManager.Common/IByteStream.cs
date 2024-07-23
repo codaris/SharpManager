@@ -7,8 +7,8 @@ namespace SharpManager
     /// <summary>
     /// Read and write stream interface
     /// </summary>
-    /// <seealso cref="Common.IReadByteStream" />
-    /// <seealso cref="Common.IWriteByteStream" />
+    /// <seealso cref="IReadByteStream" />
+    /// <seealso cref="IWriteByteStream" />
     public interface IByteStream : IReadByteStream, IWriteByteStream
     {
     }

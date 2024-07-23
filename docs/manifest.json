@@ -1,0 +1,275 @@
+{
+  "source_base_path": "C:/Projects/Handhelds/Sharp Pocket/SharpManager/Desktop/Documentation",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.Arduino.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.Arduino.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.ArduinoException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.ArduinoException.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.ArduinoHardware.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.ArduinoHardware.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.ByteListExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.ByteListExtensions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.ByteStreamExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.ByteStreamExtensions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.CE140F.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.CE140F.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.Command.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.Command.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.DataException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.DataException.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.DiskResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.DiskResponse.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.ErrorCode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.ErrorCode.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.IByteStream.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.IByteStream.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.IDebugTarget.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.IDebugTarget.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.IMessageTarget.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.IMessageTarget.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.IReadByteStream.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.IReadByteStream.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.IWriteByteStream.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.IWriteByteStream.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.NotifyObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.NotifyObject.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.SerialPortByteStream.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.SerialPortByteStream.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/SharpManagerBanner.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/SharpManagerBanner.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/SharpManagerIcon.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/SharpManagerIcon.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/SharpManagerLogo.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/SharpManagerLogo.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/SharpMangerNanoConnect.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/SharpMangerNanoConnect.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

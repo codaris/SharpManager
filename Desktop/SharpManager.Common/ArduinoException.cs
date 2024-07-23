@@ -11,7 +11,7 @@ namespace SharpManager
         public ErrorCode ErrorCode { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VectorException"/> class.
+        /// Initializes a new instance of the <see cref="ArduinoException"/> class.
         /// </summary>
         public ArduinoException() : base()
         {
@@ -19,7 +19,7 @@ namespace SharpManager
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VectorException"/> class.
+        /// Initializes a new instance of the <see cref="ArduinoException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public ArduinoException(string message) : base(message)
@@ -28,7 +28,7 @@ namespace SharpManager
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VectorException"/> class.
+        /// Initializes a new instance of the <see cref="ArduinoException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.</param>

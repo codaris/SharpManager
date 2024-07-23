@@ -5,7 +5,11 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpManager", "SharpManager\SharpManager.csproj", "{2092C425-173E-4282-A61D-FD67BB9D1218}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpManager.Common", "SharpManager.Common\SharpManager.Common.csproj", "{42A7D74A-ABEC-4166-B367-9686D842603B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpManager.Common", "SharpManager.Common\SharpManager.Common.csproj", "{42A7D74A-ABEC-4166-B367-9686D842603B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documentation", "Documentation\Documentation.csproj", "{63AF86BB-E04E-4CBA-9089-F11BB584A3D9}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SharpManagerSetup", "SharpManagerSetup\SharpManagerSetup.vdproj", "{01B538BF-3A20-42DA-AA7F-BD8E7076CD35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{42A7D74A-ABEC-4166-B367-9686D842603B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42A7D74A-ABEC-4166-B367-9686D842603B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42A7D74A-ABEC-4166-B367-9686D842603B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63AF86BB-E04E-4CBA-9089-F11BB584A3D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63AF86BB-E04E-4CBA-9089-F11BB584A3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63AF86BB-E04E-4CBA-9089-F11BB584A3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63AF86BB-E04E-4CBA-9089-F11BB584A3D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01B538BF-3A20-42DA-AA7F-BD8E7076CD35}.Debug|Any CPU.ActiveCfg = Debug
+		{01B538BF-3A20-42DA-AA7F-BD8E7076CD35}.Debug|Any CPU.Build.0 = Debug
+		{01B538BF-3A20-42DA-AA7F-BD8E7076CD35}.Release|Any CPU.ActiveCfg = Release
+		{01B538BF-3A20-42DA-AA7F-BD8E7076CD35}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,1274 @@
+### YamlMime:XRefMap
+sorted: true
+references:
+- uid: SharpManager
+  name: SharpManager
+  href: api/SharpManager.html
+  commentId: N:SharpManager
+  fullName: SharpManager
+  nameWithType: SharpManager
+- uid: SharpManager.Arduino
+  name: Arduino
+  href: api/SharpManager.Arduino.html
+  commentId: T:SharpManager.Arduino
+  fullName: SharpManager.Arduino
+  nameWithType: Arduino
+- uid: SharpManager.Arduino.#ctor(SharpManager.IDebugTarget,System.String)
+  name: Arduino(IDebugTarget, string?)
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino__ctor_SharpManager_IDebugTarget_System_String_
+  commentId: M:SharpManager.Arduino.#ctor(SharpManager.IDebugTarget,System.String)
+  name.vb: New(IDebugTarget, String)
+  fullName: SharpManager.Arduino.Arduino(SharpManager.IDebugTarget, string?)
+  fullName.vb: SharpManager.Arduino.New(SharpManager.IDebugTarget, String)
+  nameWithType: Arduino.Arduino(IDebugTarget, string?)
+  nameWithType.vb: Arduino.New(IDebugTarget, String)
+- uid: SharpManager.Arduino.#ctor*
+  name: Arduino
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino__ctor_
+  commentId: Overload:SharpManager.Arduino.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: SharpManager.Arduino.Arduino
+  fullName.vb: SharpManager.Arduino.New
+  nameWithType: Arduino.Arduino
+  nameWithType.vb: Arduino.New
+- uid: SharpManager.Arduino.CanCancel
+  name: CanCancel
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_CanCancel
+  commentId: P:SharpManager.Arduino.CanCancel
+  fullName: SharpManager.Arduino.CanCancel
+  nameWithType: Arduino.CanCancel
+- uid: SharpManager.Arduino.CanCancel*
+  name: CanCancel
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_CanCancel_
+  commentId: Overload:SharpManager.Arduino.CanCancel
+  isSpec: "True"
+  fullName: SharpManager.Arduino.CanCancel
+  nameWithType: Arduino.CanCancel
+- uid: SharpManager.Arduino.Cancel
+  name: Cancel()
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Cancel
+  commentId: M:SharpManager.Arduino.Cancel
+  fullName: SharpManager.Arduino.Cancel()
+  nameWithType: Arduino.Cancel()
+- uid: SharpManager.Arduino.Cancel*
+  name: Cancel
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Cancel_
+  commentId: Overload:SharpManager.Arduino.Cancel
+  isSpec: "True"
+  fullName: SharpManager.Arduino.Cancel
+  nameWithType: Arduino.Cancel
+- uid: SharpManager.Arduino.Connect(System.String)
+  name: Connect(string)
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Connect_System_String_
+  commentId: M:SharpManager.Arduino.Connect(System.String)
+  name.vb: Connect(String)
+  fullName: SharpManager.Arduino.Connect(string)
+  fullName.vb: SharpManager.Arduino.Connect(String)
+  nameWithType: Arduino.Connect(string)
+  nameWithType.vb: Arduino.Connect(String)
+- uid: SharpManager.Arduino.Connect*
+  name: Connect
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Connect_
+  commentId: Overload:SharpManager.Arduino.Connect
+  isSpec: "True"
+  fullName: SharpManager.Arduino.Connect
+  nameWithType: Arduino.Connect
+- uid: SharpManager.Arduino.Disconnect
+  name: Disconnect()
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Disconnect
+  commentId: M:SharpManager.Arduino.Disconnect
+  fullName: SharpManager.Arduino.Disconnect()
+  nameWithType: Arduino.Disconnect()
+- uid: SharpManager.Arduino.Disconnect*
+  name: Disconnect
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Disconnect_
+  commentId: Overload:SharpManager.Arduino.Disconnect
+  isSpec: "True"
+  fullName: SharpManager.Arduino.Disconnect
+  nameWithType: Arduino.Disconnect
+- uid: SharpManager.Arduino.DiskDirectory
+  name: DiskDirectory
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_DiskDirectory
+  commentId: P:SharpManager.Arduino.DiskDirectory
+  fullName: SharpManager.Arduino.DiskDirectory
+  nameWithType: Arduino.DiskDirectory
+- uid: SharpManager.Arduino.DiskDirectory*
+  name: DiskDirectory
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_DiskDirectory_
+  commentId: Overload:SharpManager.Arduino.DiskDirectory
+  isSpec: "True"
+  fullName: SharpManager.Arduino.DiskDirectory
+  nameWithType: Arduino.DiskDirectory
+- uid: SharpManager.Arduino.Dispose
+  name: Dispose()
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Dispose
+  commentId: M:SharpManager.Arduino.Dispose
+  fullName: SharpManager.Arduino.Dispose()
+  nameWithType: Arduino.Dispose()
+- uid: SharpManager.Arduino.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Dispose_System_Boolean_
+  commentId: M:SharpManager.Arduino.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: SharpManager.Arduino.Dispose(bool)
+  fullName.vb: SharpManager.Arduino.Dispose(Boolean)
+  nameWithType: Arduino.Dispose(bool)
+  nameWithType.vb: Arduino.Dispose(Boolean)
+- uid: SharpManager.Arduino.Dispose*
+  name: Dispose
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Dispose_
+  commentId: Overload:SharpManager.Arduino.Dispose
+  isSpec: "True"
+  fullName: SharpManager.Arduino.Dispose
+  nameWithType: Arduino.Dispose
+- uid: SharpManager.Arduino.IsConnected
+  name: IsConnected
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_IsConnected
+  commentId: P:SharpManager.Arduino.IsConnected
+  fullName: SharpManager.Arduino.IsConnected
+  nameWithType: Arduino.IsConnected
+- uid: SharpManager.Arduino.IsConnected*
+  name: IsConnected
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_IsConnected_
+  commentId: Overload:SharpManager.Arduino.IsConnected
+  isSpec: "True"
+  fullName: SharpManager.Arduino.IsConnected
+  nameWithType: Arduino.IsConnected
+- uid: SharpManager.Arduino.Ping
+  name: Ping()
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Ping
+  commentId: M:SharpManager.Arduino.Ping
+  fullName: SharpManager.Arduino.Ping()
+  nameWithType: Arduino.Ping()
+- uid: SharpManager.Arduino.Ping*
+  name: Ping
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_Ping_
+  commentId: Overload:SharpManager.Arduino.Ping
+  isSpec: "True"
+  fullName: SharpManager.Arduino.Ping
+  nameWithType: Arduino.Ping
+- uid: SharpManager.Arduino.ReadTapeFile
+  name: ReadTapeFile()
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_ReadTapeFile
+  commentId: M:SharpManager.Arduino.ReadTapeFile
+  fullName: SharpManager.Arduino.ReadTapeFile()
+  nameWithType: Arduino.ReadTapeFile()
+- uid: SharpManager.Arduino.ReadTapeFile*
+  name: ReadTapeFile
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_ReadTapeFile_
+  commentId: Overload:SharpManager.Arduino.ReadTapeFile
+  isSpec: "True"
+  fullName: SharpManager.Arduino.ReadTapeFile
+  nameWithType: Arduino.ReadTapeFile
+- uid: SharpManager.Arduino.SendTapeFile(System.IO.Stream)
+  name: SendTapeFile(Stream)
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_SendTapeFile_System_IO_Stream_
+  commentId: M:SharpManager.Arduino.SendTapeFile(System.IO.Stream)
+  fullName: SharpManager.Arduino.SendTapeFile(System.IO.Stream)
+  nameWithType: Arduino.SendTapeFile(Stream)
+- uid: SharpManager.Arduino.SendTapeFile*
+  name: SendTapeFile
+  href: api/SharpManager.Arduino.html#SharpManager_Arduino_SendTapeFile_
+  commentId: Overload:SharpManager.Arduino.SendTapeFile
+  isSpec: "True"
+  fullName: SharpManager.Arduino.SendTapeFile
+  nameWithType: Arduino.SendTapeFile
+- uid: SharpManager.ArduinoException
+  name: ArduinoException
+  href: api/SharpManager.ArduinoException.html
+  commentId: T:SharpManager.ArduinoException
+  fullName: SharpManager.ArduinoException
+  nameWithType: ArduinoException
+- uid: SharpManager.ArduinoException.#ctor
+  name: ArduinoException()
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException__ctor
+  commentId: M:SharpManager.ArduinoException.#ctor
+  name.vb: New()
+  fullName: SharpManager.ArduinoException.ArduinoException()
+  fullName.vb: SharpManager.ArduinoException.New()
+  nameWithType: ArduinoException.ArduinoException()
+  nameWithType.vb: ArduinoException.New()
+- uid: SharpManager.ArduinoException.#ctor(SharpManager.ErrorCode)
+  name: ArduinoException(ErrorCode)
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException__ctor_SharpManager_ErrorCode_
+  commentId: M:SharpManager.ArduinoException.#ctor(SharpManager.ErrorCode)
+  name.vb: New(ErrorCode)
+  fullName: SharpManager.ArduinoException.ArduinoException(SharpManager.ErrorCode)
+  fullName.vb: SharpManager.ArduinoException.New(SharpManager.ErrorCode)
+  nameWithType: ArduinoException.ArduinoException(ErrorCode)
+  nameWithType.vb: ArduinoException.New(ErrorCode)
+- uid: SharpManager.ArduinoException.#ctor(System.Byte)
+  name: ArduinoException(byte)
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException__ctor_System_Byte_
+  commentId: M:SharpManager.ArduinoException.#ctor(System.Byte)
+  name.vb: New(Byte)
+  fullName: SharpManager.ArduinoException.ArduinoException(byte)
+  fullName.vb: SharpManager.ArduinoException.New(Byte)
+  nameWithType: ArduinoException.ArduinoException(byte)
+  nameWithType.vb: ArduinoException.New(Byte)
+- uid: SharpManager.ArduinoException.#ctor(System.String)
+  name: ArduinoException(string)
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException__ctor_System_String_
+  commentId: M:SharpManager.ArduinoException.#ctor(System.String)
+  name.vb: New(String)
+  fullName: SharpManager.ArduinoException.ArduinoException(string)
+  fullName.vb: SharpManager.ArduinoException.New(String)
+  nameWithType: ArduinoException.ArduinoException(string)
+  nameWithType.vb: ArduinoException.New(String)
+- uid: SharpManager.ArduinoException.#ctor(System.String,SharpManager.DataException)
+  name: ArduinoException(string, DataException)
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException__ctor_System_String_SharpManager_DataException_
+  commentId: M:SharpManager.ArduinoException.#ctor(System.String,SharpManager.DataException)
+  name.vb: New(String, DataException)
+  fullName: SharpManager.ArduinoException.ArduinoException(string, SharpManager.DataException)
+  fullName.vb: SharpManager.ArduinoException.New(String, SharpManager.DataException)
+  nameWithType: ArduinoException.ArduinoException(string, DataException)
+  nameWithType.vb: ArduinoException.New(String, DataException)
+- uid: SharpManager.ArduinoException.#ctor*
+  name: ArduinoException
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException__ctor_
+  commentId: Overload:SharpManager.ArduinoException.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: SharpManager.ArduinoException.ArduinoException
+  fullName.vb: SharpManager.ArduinoException.New
+  nameWithType: ArduinoException.ArduinoException
+  nameWithType.vb: ArduinoException.New
+- uid: SharpManager.ArduinoException.ErrorCode
+  name: ErrorCode
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException_ErrorCode
+  commentId: P:SharpManager.ArduinoException.ErrorCode
+  fullName: SharpManager.ArduinoException.ErrorCode
+  nameWithType: ArduinoException.ErrorCode
+- uid: SharpManager.ArduinoException.ErrorCode*
+  name: ErrorCode
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException_ErrorCode_
+  commentId: Overload:SharpManager.ArduinoException.ErrorCode
+  isSpec: "True"
+  fullName: SharpManager.ArduinoException.ErrorCode
+  nameWithType: ArduinoException.ErrorCode
+- uid: SharpManager.ArduinoException.Timeout
+  name: Timeout()
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException_Timeout
+  commentId: M:SharpManager.ArduinoException.Timeout
+  fullName: SharpManager.ArduinoException.Timeout()
+  nameWithType: ArduinoException.Timeout()
+- uid: SharpManager.ArduinoException.Timeout*
+  name: Timeout
+  href: api/SharpManager.ArduinoException.html#SharpManager_ArduinoException_Timeout_
+  commentId: Overload:SharpManager.ArduinoException.Timeout
+  isSpec: "True"
+  fullName: SharpManager.ArduinoException.Timeout
+  nameWithType: ArduinoException.Timeout
+- uid: SharpManager.ArduinoHardware
+  name: ArduinoHardware
+  href: api/SharpManager.ArduinoHardware.html
+  commentId: T:SharpManager.ArduinoHardware
+  fullName: SharpManager.ArduinoHardware
+  nameWithType: ArduinoHardware
+- uid: SharpManager.ArduinoHardware.Models
+  name: Models
+  href: api/SharpManager.ArduinoHardware.html#SharpManager_ArduinoHardware_Models
+  commentId: P:SharpManager.ArduinoHardware.Models
+  fullName: SharpManager.ArduinoHardware.Models
+  nameWithType: ArduinoHardware.Models
+- uid: SharpManager.ArduinoHardware.Models*
+  name: Models
+  href: api/SharpManager.ArduinoHardware.html#SharpManager_ArduinoHardware_Models_
+  commentId: Overload:SharpManager.ArduinoHardware.Models
+  isSpec: "True"
+  fullName: SharpManager.ArduinoHardware.Models
+  nameWithType: ArduinoHardware.Models
+- uid: SharpManager.ArduinoHardware.Name
+  name: Name
+  href: api/SharpManager.ArduinoHardware.html#SharpManager_ArduinoHardware_Name
+  commentId: P:SharpManager.ArduinoHardware.Name
+  fullName: SharpManager.ArduinoHardware.Name
+  nameWithType: ArduinoHardware.Name
+- uid: SharpManager.ArduinoHardware.Name*
+  name: Name
+  href: api/SharpManager.ArduinoHardware.html#SharpManager_ArduinoHardware_Name_
+  commentId: Overload:SharpManager.ArduinoHardware.Name
+  isSpec: "True"
+  fullName: SharpManager.ArduinoHardware.Name
+  nameWithType: ArduinoHardware.Name
+- uid: SharpManager.ArduinoHardware.UploadFirmware(System.String,SharpManager.IDebugTarget,System.IProgress{System.Double})
+  name: UploadFirmware(string, IDebugTarget, IProgress<double>)
+  href: api/SharpManager.ArduinoHardware.html#SharpManager_ArduinoHardware_UploadFirmware_System_String_SharpManager_IDebugTarget_System_IProgress_System_Double__
+  commentId: M:SharpManager.ArduinoHardware.UploadFirmware(System.String,SharpManager.IDebugTarget,System.IProgress{System.Double})
+  name.vb: UploadFirmware(String, IDebugTarget, IProgress(Of Double))
+  fullName: SharpManager.ArduinoHardware.UploadFirmware(string, SharpManager.IDebugTarget, System.IProgress<double>)
+  fullName.vb: SharpManager.ArduinoHardware.UploadFirmware(String, SharpManager.IDebugTarget, System.IProgress(Of Double))
+  nameWithType: ArduinoHardware.UploadFirmware(string, IDebugTarget, IProgress<double>)
+  nameWithType.vb: ArduinoHardware.UploadFirmware(String, IDebugTarget, IProgress(Of Double))
+- uid: SharpManager.ArduinoHardware.UploadFirmware*
+  name: UploadFirmware
+  href: api/SharpManager.ArduinoHardware.html#SharpManager_ArduinoHardware_UploadFirmware_
+  commentId: Overload:SharpManager.ArduinoHardware.UploadFirmware
+  isSpec: "True"
+  fullName: SharpManager.ArduinoHardware.UploadFirmware
+  nameWithType: ArduinoHardware.UploadFirmware
+- uid: SharpManager.ByteListExtensions
+  name: ByteListExtensions
+  href: api/SharpManager.ByteListExtensions.html
+  commentId: T:SharpManager.ByteListExtensions
+  fullName: SharpManager.ByteListExtensions
+  nameWithType: ByteListExtensions
+- uid: SharpManager.ByteListExtensions.Add(System.Collections.Generic.List{System.Byte},System.Int32)
+  name: Add(List<byte>, int)
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_Add_System_Collections_Generic_List_System_Byte__System_Int32_
+  commentId: M:SharpManager.ByteListExtensions.Add(System.Collections.Generic.List{System.Byte},System.Int32)
+  name.vb: Add(List(Of Byte), Integer)
+  fullName: SharpManager.ByteListExtensions.Add(System.Collections.Generic.List<byte>, int)
+  fullName.vb: SharpManager.ByteListExtensions.Add(System.Collections.Generic.List(Of Byte), Integer)
+  nameWithType: ByteListExtensions.Add(List<byte>, int)
+  nameWithType.vb: ByteListExtensions.Add(List(Of Byte), Integer)
+- uid: SharpManager.ByteListExtensions.Add*
+  name: Add
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_Add_
+  commentId: Overload:SharpManager.ByteListExtensions.Add
+  isSpec: "True"
+  fullName: SharpManager.ByteListExtensions.Add
+  nameWithType: ByteListExtensions.Add
+- uid: SharpManager.ByteListExtensions.AddBlock(System.Collections.Generic.List{System.Byte},System.Collections.Generic.IEnumerable{System.Byte})
+  name: AddBlock(List<byte>, IEnumerable<byte>)
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddBlock_System_Collections_Generic_List_System_Byte__System_Collections_Generic_IEnumerable_System_Byte__
+  commentId: M:SharpManager.ByteListExtensions.AddBlock(System.Collections.Generic.List{System.Byte},System.Collections.Generic.IEnumerable{System.Byte})
+  name.vb: AddBlock(List(Of Byte), IEnumerable(Of Byte))
+  fullName: SharpManager.ByteListExtensions.AddBlock(System.Collections.Generic.List<byte>, System.Collections.Generic.IEnumerable<byte>)
+  fullName.vb: SharpManager.ByteListExtensions.AddBlock(System.Collections.Generic.List(Of Byte), System.Collections.Generic.IEnumerable(Of Byte))
+  nameWithType: ByteListExtensions.AddBlock(List<byte>, IEnumerable<byte>)
+  nameWithType.vb: ByteListExtensions.AddBlock(List(Of Byte), IEnumerable(Of Byte))
+- uid: SharpManager.ByteListExtensions.AddBlock*
+  name: AddBlock
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddBlock_
+  commentId: Overload:SharpManager.ByteListExtensions.AddBlock
+  isSpec: "True"
+  fullName: SharpManager.ByteListExtensions.AddBlock
+  nameWithType: ByteListExtensions.AddBlock
+- uid: SharpManager.ByteListExtensions.AddChecksum(System.Collections.Generic.List{System.Byte},System.Collections.Generic.IEnumerable{System.Byte})
+  name: AddChecksum(List<byte>, IEnumerable<byte>?)
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddChecksum_System_Collections_Generic_List_System_Byte__System_Collections_Generic_IEnumerable_System_Byte__
+  commentId: M:SharpManager.ByteListExtensions.AddChecksum(System.Collections.Generic.List{System.Byte},System.Collections.Generic.IEnumerable{System.Byte})
+  name.vb: AddChecksum(List(Of Byte), IEnumerable(Of Byte))
+  fullName: SharpManager.ByteListExtensions.AddChecksum(System.Collections.Generic.List<byte>, System.Collections.Generic.IEnumerable<byte>?)
+  fullName.vb: SharpManager.ByteListExtensions.AddChecksum(System.Collections.Generic.List(Of Byte), System.Collections.Generic.IEnumerable(Of Byte))
+  nameWithType: ByteListExtensions.AddChecksum(List<byte>, IEnumerable<byte>?)
+  nameWithType.vb: ByteListExtensions.AddChecksum(List(Of Byte), IEnumerable(Of Byte))
+- uid: SharpManager.ByteListExtensions.AddChecksum*
+  name: AddChecksum
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddChecksum_
+  commentId: Overload:SharpManager.ByteListExtensions.AddChecksum
+  isSpec: "True"
+  fullName: SharpManager.ByteListExtensions.AddChecksum
+  nameWithType: ByteListExtensions.AddChecksum
+- uid: SharpManager.ByteListExtensions.AddFrame(System.Collections.Generic.List{System.Byte})
+  name: AddFrame(List<byte>)
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddFrame_System_Collections_Generic_List_System_Byte__
+  commentId: M:SharpManager.ByteListExtensions.AddFrame(System.Collections.Generic.List{System.Byte})
+  name.vb: AddFrame(List(Of Byte))
+  fullName: SharpManager.ByteListExtensions.AddFrame(System.Collections.Generic.List<byte>)
+  fullName.vb: SharpManager.ByteListExtensions.AddFrame(System.Collections.Generic.List(Of Byte))
+  nameWithType: ByteListExtensions.AddFrame(List<byte>)
+  nameWithType.vb: ByteListExtensions.AddFrame(List(Of Byte))
+- uid: SharpManager.ByteListExtensions.AddFrame*
+  name: AddFrame
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddFrame_
+  commentId: Overload:SharpManager.ByteListExtensions.AddFrame
+  isSpec: "True"
+  fullName: SharpManager.ByteListExtensions.AddFrame
+  nameWithType: ByteListExtensions.AddFrame
+- uid: SharpManager.ByteListExtensions.AddSize(System.Collections.Generic.List{System.Byte},System.Int32)
+  name: AddSize(List<byte>, int)
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddSize_System_Collections_Generic_List_System_Byte__System_Int32_
+  commentId: M:SharpManager.ByteListExtensions.AddSize(System.Collections.Generic.List{System.Byte},System.Int32)
+  name.vb: AddSize(List(Of Byte), Integer)
+  fullName: SharpManager.ByteListExtensions.AddSize(System.Collections.Generic.List<byte>, int)
+  fullName.vb: SharpManager.ByteListExtensions.AddSize(System.Collections.Generic.List(Of Byte), Integer)
+  nameWithType: ByteListExtensions.AddSize(List<byte>, int)
+  nameWithType.vb: ByteListExtensions.AddSize(List(Of Byte), Integer)
+- uid: SharpManager.ByteListExtensions.AddSize*
+  name: AddSize
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddSize_
+  commentId: Overload:SharpManager.ByteListExtensions.AddSize
+  isSpec: "True"
+  fullName: SharpManager.ByteListExtensions.AddSize
+  nameWithType: ByteListExtensions.AddSize
+- uid: SharpManager.ByteListExtensions.AddString(System.Collections.Generic.List{System.Byte},System.String)
+  name: AddString(List<byte>, string)
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddString_System_Collections_Generic_List_System_Byte__System_String_
+  commentId: M:SharpManager.ByteListExtensions.AddString(System.Collections.Generic.List{System.Byte},System.String)
+  name.vb: AddString(List(Of Byte), String)
+  fullName: SharpManager.ByteListExtensions.AddString(System.Collections.Generic.List<byte>, string)
+  fullName.vb: SharpManager.ByteListExtensions.AddString(System.Collections.Generic.List(Of Byte), String)
+  nameWithType: ByteListExtensions.AddString(List<byte>, string)
+  nameWithType.vb: ByteListExtensions.AddString(List(Of Byte), String)
+- uid: SharpManager.ByteListExtensions.AddString*
+  name: AddString
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_AddString_
+  commentId: Overload:SharpManager.ByteListExtensions.AddString
+  isSpec: "True"
+  fullName: SharpManager.ByteListExtensions.AddString
+  nameWithType: ByteListExtensions.AddString
+- uid: SharpManager.ByteListExtensions.ToFrame(System.Collections.Generic.List{System.Byte})
+  name: ToFrame(List<byte>)
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_ToFrame_System_Collections_Generic_List_System_Byte__
+  commentId: M:SharpManager.ByteListExtensions.ToFrame(System.Collections.Generic.List{System.Byte})
+  name.vb: ToFrame(List(Of Byte))
+  fullName: SharpManager.ByteListExtensions.ToFrame(System.Collections.Generic.List<byte>)
+  fullName.vb: SharpManager.ByteListExtensions.ToFrame(System.Collections.Generic.List(Of Byte))
+  nameWithType: ByteListExtensions.ToFrame(List<byte>)
+  nameWithType.vb: ByteListExtensions.ToFrame(List(Of Byte))
+- uid: SharpManager.ByteListExtensions.ToFrame*
+  name: ToFrame
+  href: api/SharpManager.ByteListExtensions.html#SharpManager_ByteListExtensions_ToFrame_
+  commentId: Overload:SharpManager.ByteListExtensions.ToFrame
+  isSpec: "True"
+  fullName: SharpManager.ByteListExtensions.ToFrame
+  nameWithType: ByteListExtensions.ToFrame
+- uid: SharpManager.ByteStreamExtensions
+  name: ByteStreamExtensions
+  href: api/SharpManager.ByteStreamExtensions.html
+  commentId: T:SharpManager.ByteStreamExtensions
+  fullName: SharpManager.ByteStreamExtensions
+  nameWithType: ByteStreamExtensions
+- uid: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte)
+  name: ExpectByteAsync(IReadByteStream, byte)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ExpectByteAsync_SharpManager_IReadByteStream_System_Byte_
+  commentId: M:SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte)
+  name.vb: ExpectByteAsync(IReadByteStream, Byte)
+  fullName: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, byte)
+  fullName.vb: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, Byte)
+  nameWithType: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, byte)
+  nameWithType.vb: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, Byte)
+- uid: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte,System.Int32)
+  name: ExpectByteAsync(IReadByteStream, byte, int)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ExpectByteAsync_SharpManager_IReadByteStream_System_Byte_System_Int32_
+  commentId: M:SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte,System.Int32)
+  name.vb: ExpectByteAsync(IReadByteStream, Byte, Integer)
+  fullName: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, byte, int)
+  fullName.vb: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, Byte, Integer)
+  nameWithType: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, byte, int)
+  nameWithType.vb: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, Byte, Integer)
+- uid: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte,System.Int32,System.String)
+  name: ExpectByteAsync(IReadByteStream, byte, int, string)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ExpectByteAsync_SharpManager_IReadByteStream_System_Byte_System_Int32_System_String_
+  commentId: M:SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte,System.Int32,System.String)
+  name.vb: ExpectByteAsync(IReadByteStream, Byte, Integer, String)
+  fullName: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, byte, int, string)
+  fullName.vb: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, Byte, Integer, String)
+  nameWithType: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, byte, int, string)
+  nameWithType.vb: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, Byte, Integer, String)
+- uid: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte,System.String)
+  name: ExpectByteAsync(IReadByteStream, byte, string)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ExpectByteAsync_SharpManager_IReadByteStream_System_Byte_System_String_
+  commentId: M:SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream,System.Byte,System.String)
+  name.vb: ExpectByteAsync(IReadByteStream, Byte, String)
+  fullName: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, byte, string)
+  fullName.vb: SharpManager.ByteStreamExtensions.ExpectByteAsync(SharpManager.IReadByteStream, Byte, String)
+  nameWithType: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, byte, string)
+  nameWithType.vb: ByteStreamExtensions.ExpectByteAsync(IReadByteStream, Byte, String)
+- uid: SharpManager.ByteStreamExtensions.ExpectByteAsync*
+  name: ExpectByteAsync
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ExpectByteAsync_
+  commentId: Overload:SharpManager.ByteStreamExtensions.ExpectByteAsync
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.ExpectByteAsync
+  nameWithType: ByteStreamExtensions.ExpectByteAsync
+- uid: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream)
+  name: ReadByte(IReadByteStream)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_
+  commentId: M:SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream)
+  fullName: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream)
+  nameWithType: ByteStreamExtensions.ReadByte(IReadByteStream)
+- uid: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name: ReadByte(IReadByteStream, int, CancellationToken)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_
+  commentId: M:SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name.vb: ReadByte(IReadByteStream, Integer, CancellationToken)
+  fullName: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream, int, System.Threading.CancellationToken)
+  fullName.vb: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream, Integer, System.Threading.CancellationToken)
+  nameWithType: ByteStreamExtensions.ReadByte(IReadByteStream, int, CancellationToken)
+  nameWithType.vb: ByteStreamExtensions.ReadByte(IReadByteStream, Integer, CancellationToken)
+- uid: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Threading.CancellationToken)
+  name: ReadByte(IReadByteStream, CancellationToken)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_System_Threading_CancellationToken_
+  commentId: M:SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Threading.CancellationToken)
+  fullName: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream, System.Threading.CancellationToken)
+  nameWithType: ByteStreamExtensions.ReadByte(IReadByteStream, CancellationToken)
+- uid: SharpManager.ByteStreamExtensions.ReadByte*
+  name: ReadByte
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_
+  commentId: Overload:SharpManager.ByteStreamExtensions.ReadByte
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.ReadByte
+  nameWithType: ByteStreamExtensions.ReadByte
+- uid: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream)
+  name: ReadByteAsync(IReadByteStream)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByteAsync_SharpManager_IReadByteStream_
+  commentId: M:SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream)
+  fullName: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream)
+  nameWithType: ByteStreamExtensions.ReadByteAsync(IReadByteStream)
+- uid: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream,System.Int32)
+  name: ReadByteAsync(IReadByteStream, int)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByteAsync_SharpManager_IReadByteStream_System_Int32_
+  commentId: M:SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream,System.Int32)
+  name.vb: ReadByteAsync(IReadByteStream, Integer)
+  fullName: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream, int)
+  fullName.vb: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream, Integer)
+  nameWithType: ByteStreamExtensions.ReadByteAsync(IReadByteStream, int)
+  nameWithType.vb: ByteStreamExtensions.ReadByteAsync(IReadByteStream, Integer)
+- uid: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name: ReadByteAsync(IReadByteStream, int, CancellationToken)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByteAsync_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_
+  commentId: M:SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name.vb: ReadByteAsync(IReadByteStream, Integer, CancellationToken)
+  fullName: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream, int, System.Threading.CancellationToken)
+  fullName.vb: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream, Integer, System.Threading.CancellationToken)
+  nameWithType: ByteStreamExtensions.ReadByteAsync(IReadByteStream, int, CancellationToken)
+  nameWithType.vb: ByteStreamExtensions.ReadByteAsync(IReadByteStream, Integer, CancellationToken)
+- uid: SharpManager.ByteStreamExtensions.ReadByteAsync*
+  name: ReadByteAsync
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByteAsync_
+  commentId: Overload:SharpManager.ByteStreamExtensions.ReadByteAsync
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.ReadByteAsync
+  nameWithType: ByteStreamExtensions.ReadByteAsync
+- uid: SharpManager.ByteStreamExtensions.ReadWordAsync(SharpManager.IReadByteStream,System.Threading.CancellationToken)
+  name: ReadWordAsync(IReadByteStream, CancellationToken)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadWordAsync_SharpManager_IReadByteStream_System_Threading_CancellationToken_
+  commentId: M:SharpManager.ByteStreamExtensions.ReadWordAsync(SharpManager.IReadByteStream,System.Threading.CancellationToken)
+  fullName: SharpManager.ByteStreamExtensions.ReadWordAsync(SharpManager.IReadByteStream, System.Threading.CancellationToken)
+  nameWithType: ByteStreamExtensions.ReadWordAsync(IReadByteStream, CancellationToken)
+- uid: SharpManager.ByteStreamExtensions.ReadWordAsync*
+  name: ReadWordAsync
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadWordAsync_
+  commentId: Overload:SharpManager.ByteStreamExtensions.ReadWordAsync
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.ReadWordAsync
+  nameWithType: ByteStreamExtensions.ReadWordAsync
+- uid: SharpManager.ByteStreamExtensions.SwapNibbles(System.Byte)
+  name: SwapNibbles(byte)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_SwapNibbles_System_Byte_
+  commentId: M:SharpManager.ByteStreamExtensions.SwapNibbles(System.Byte)
+  name.vb: SwapNibbles(Byte)
+  fullName: SharpManager.ByteStreamExtensions.SwapNibbles(byte)
+  fullName.vb: SharpManager.ByteStreamExtensions.SwapNibbles(Byte)
+  nameWithType: ByteStreamExtensions.SwapNibbles(byte)
+  nameWithType.vb: ByteStreamExtensions.SwapNibbles(Byte)
+- uid: SharpManager.ByteStreamExtensions.SwapNibbles*
+  name: SwapNibbles
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_SwapNibbles_
+  commentId: Overload:SharpManager.ByteStreamExtensions.SwapNibbles
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.SwapNibbles
+  nameWithType: ByteStreamExtensions.SwapNibbles
+- uid: SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name: TryReadByte(IReadByteStream, int, CancellationToken)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByte_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_
+  commentId: M:SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name.vb: TryReadByte(IReadByteStream, Integer, CancellationToken)
+  fullName: SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream, int, System.Threading.CancellationToken)
+  fullName.vb: SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream, Integer, System.Threading.CancellationToken)
+  nameWithType: ByteStreamExtensions.TryReadByte(IReadByteStream, int, CancellationToken)
+  nameWithType.vb: ByteStreamExtensions.TryReadByte(IReadByteStream, Integer, CancellationToken)
+- uid: SharpManager.ByteStreamExtensions.TryReadByte*
+  name: TryReadByte
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByte_
+  commentId: Overload:SharpManager.ByteStreamExtensions.TryReadByte
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.TryReadByte
+  nameWithType: ByteStreamExtensions.TryReadByte
+- uid: SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream,System.Int32)
+  name: TryReadByteAsync(IReadByteStream, int)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByteAsync_SharpManager_IReadByteStream_System_Int32_
+  commentId: M:SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream,System.Int32)
+  name.vb: TryReadByteAsync(IReadByteStream, Integer)
+  fullName: SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream, int)
+  fullName.vb: SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream, Integer)
+  nameWithType: ByteStreamExtensions.TryReadByteAsync(IReadByteStream, int)
+  nameWithType.vb: ByteStreamExtensions.TryReadByteAsync(IReadByteStream, Integer)
+- uid: SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name: TryReadByteAsync(IReadByteStream, int, CancellationToken)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByteAsync_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_
+  commentId: M:SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
+  name.vb: TryReadByteAsync(IReadByteStream, Integer, CancellationToken)
+  fullName: SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream, int, System.Threading.CancellationToken)
+  fullName.vb: SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream, Integer, System.Threading.CancellationToken)
+  nameWithType: ByteStreamExtensions.TryReadByteAsync(IReadByteStream, int, CancellationToken)
+  nameWithType.vb: ByteStreamExtensions.TryReadByteAsync(IReadByteStream, Integer, CancellationToken)
+- uid: SharpManager.ByteStreamExtensions.TryReadByteAsync*
+  name: TryReadByteAsync
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByteAsync_
+  commentId: Overload:SharpManager.ByteStreamExtensions.TryReadByteAsync
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.TryReadByteAsync
+  nameWithType: ByteStreamExtensions.TryReadByteAsync
+- uid: SharpManager.ByteStreamExtensions.WriteByte(SharpManager.IWriteByteStream,System.Int32)
+  name: WriteByte(IWriteByteStream, int)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_WriteByte_SharpManager_IWriteByteStream_System_Int32_
+  commentId: M:SharpManager.ByteStreamExtensions.WriteByte(SharpManager.IWriteByteStream,System.Int32)
+  name.vb: WriteByte(IWriteByteStream, Integer)
+  fullName: SharpManager.ByteStreamExtensions.WriteByte(SharpManager.IWriteByteStream, int)
+  fullName.vb: SharpManager.ByteStreamExtensions.WriteByte(SharpManager.IWriteByteStream, Integer)
+  nameWithType: ByteStreamExtensions.WriteByte(IWriteByteStream, int)
+  nameWithType.vb: ByteStreamExtensions.WriteByte(IWriteByteStream, Integer)
+- uid: SharpManager.ByteStreamExtensions.WriteByte*
+  name: WriteByte
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_WriteByte_
+  commentId: Overload:SharpManager.ByteStreamExtensions.WriteByte
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.WriteByte
+  nameWithType: ByteStreamExtensions.WriteByte
+- uid: SharpManager.ByteStreamExtensions.WriteKey(SharpManager.IWriteByteStream,System.Char)
+  name: WriteKey(IWriteByteStream, char)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_WriteKey_SharpManager_IWriteByteStream_System_Char_
+  commentId: M:SharpManager.ByteStreamExtensions.WriteKey(SharpManager.IWriteByteStream,System.Char)
+  name.vb: WriteKey(IWriteByteStream, Char)
+  fullName: SharpManager.ByteStreamExtensions.WriteKey(SharpManager.IWriteByteStream, char)
+  fullName.vb: SharpManager.ByteStreamExtensions.WriteKey(SharpManager.IWriteByteStream, Char)
+  nameWithType: ByteStreamExtensions.WriteKey(IWriteByteStream, char)
+  nameWithType.vb: ByteStreamExtensions.WriteKey(IWriteByteStream, Char)
+- uid: SharpManager.ByteStreamExtensions.WriteKey*
+  name: WriteKey
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_WriteKey_
+  commentId: Overload:SharpManager.ByteStreamExtensions.WriteKey
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.WriteKey
+  nameWithType: ByteStreamExtensions.WriteKey
+- uid: SharpManager.ByteStreamExtensions.WriteWord(SharpManager.IWriteByteStream,System.Int32)
+  name: WriteWord(IWriteByteStream, int)
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_WriteWord_SharpManager_IWriteByteStream_System_Int32_
+  commentId: M:SharpManager.ByteStreamExtensions.WriteWord(SharpManager.IWriteByteStream,System.Int32)
+  name.vb: WriteWord(IWriteByteStream, Integer)
+  fullName: SharpManager.ByteStreamExtensions.WriteWord(SharpManager.IWriteByteStream, int)
+  fullName.vb: SharpManager.ByteStreamExtensions.WriteWord(SharpManager.IWriteByteStream, Integer)
+  nameWithType: ByteStreamExtensions.WriteWord(IWriteByteStream, int)
+  nameWithType.vb: ByteStreamExtensions.WriteWord(IWriteByteStream, Integer)
+- uid: SharpManager.ByteStreamExtensions.WriteWord*
+  name: WriteWord
+  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_WriteWord_
+  commentId: Overload:SharpManager.ByteStreamExtensions.WriteWord
+  isSpec: "True"
+  fullName: SharpManager.ByteStreamExtensions.WriteWord
+  nameWithType: ByteStreamExtensions.WriteWord
+- uid: SharpManager.CE140F
+  name: CE140F
+  href: api/SharpManager.CE140F.html
+  commentId: T:SharpManager.CE140F
+  fullName: SharpManager.CE140F
+  nameWithType: CE140F
+- uid: SharpManager.CE140F.#ctor(SharpManager.IDebugTarget)
+  name: CE140F(IDebugTarget)
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F__ctor_SharpManager_IDebugTarget_
+  commentId: M:SharpManager.CE140F.#ctor(SharpManager.IDebugTarget)
+  name.vb: New(IDebugTarget)
+  fullName: SharpManager.CE140F.CE140F(SharpManager.IDebugTarget)
+  fullName.vb: SharpManager.CE140F.New(SharpManager.IDebugTarget)
+  nameWithType: CE140F.CE140F(IDebugTarget)
+  nameWithType.vb: CE140F.New(IDebugTarget)
+- uid: SharpManager.CE140F.#ctor*
+  name: CE140F
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F__ctor_
+  commentId: Overload:SharpManager.CE140F.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: SharpManager.CE140F.CE140F
+  fullName.vb: SharpManager.CE140F.New
+  nameWithType: CE140F.CE140F
+  nameWithType.vb: CE140F.New
+- uid: SharpManager.CE140F.DiskDirectory
+  name: DiskDirectory
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F_DiskDirectory
+  commentId: P:SharpManager.CE140F.DiskDirectory
+  fullName: SharpManager.CE140F.DiskDirectory
+  nameWithType: CE140F.DiskDirectory
+- uid: SharpManager.CE140F.DiskDirectory*
+  name: DiskDirectory
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F_DiskDirectory_
+  commentId: Overload:SharpManager.CE140F.DiskDirectory
+  isSpec: "True"
+  fullName: SharpManager.CE140F.DiskDirectory
+  nameWithType: CE140F.DiskDirectory
+- uid: SharpManager.CE140F.ProcessCommand(System.Byte[])
+  name: ProcessCommand(byte[])
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F_ProcessCommand_System_Byte___
+  commentId: M:SharpManager.CE140F.ProcessCommand(System.Byte[])
+  name.vb: ProcessCommand(Byte())
+  fullName: SharpManager.CE140F.ProcessCommand(byte[])
+  fullName.vb: SharpManager.CE140F.ProcessCommand(Byte())
+  nameWithType: CE140F.ProcessCommand(byte[])
+  nameWithType.vb: CE140F.ProcessCommand(Byte())
+- uid: SharpManager.CE140F.ProcessCommand*
+  name: ProcessCommand
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F_ProcessCommand_
+  commentId: Overload:SharpManager.CE140F.ProcessCommand
+  isSpec: "True"
+  fullName: SharpManager.CE140F.ProcessCommand
+  nameWithType: CE140F.ProcessCommand
+- uid: SharpManager.CE140F.Reset
+  name: Reset()
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F_Reset
+  commentId: M:SharpManager.CE140F.Reset
+  fullName: SharpManager.CE140F.Reset()
+  nameWithType: CE140F.Reset()
+- uid: SharpManager.CE140F.Reset*
+  name: Reset
+  href: api/SharpManager.CE140F.html#SharpManager_CE140F_Reset_
+  commentId: Overload:SharpManager.CE140F.Reset
+  isSpec: "True"
+  fullName: SharpManager.CE140F.Reset
+  nameWithType: CE140F.Reset
+- uid: SharpManager.Command
+  name: Command
+  href: api/SharpManager.Command.html
+  commentId: T:SharpManager.Command
+  fullName: SharpManager.Command
+  nameWithType: Command
+- uid: SharpManager.Command.Data
+  name: Data
+  href: api/SharpManager.Command.html#SharpManager_Command_Data
+  commentId: F:SharpManager.Command.Data
+  fullName: SharpManager.Command.Data
+  nameWithType: Command.Data
+- uid: SharpManager.Command.DeviceSelect
+  name: DeviceSelect
+  href: api/SharpManager.Command.html#SharpManager_Command_DeviceSelect
+  commentId: F:SharpManager.Command.DeviceSelect
+  fullName: SharpManager.Command.DeviceSelect
+  nameWithType: Command.DeviceSelect
+- uid: SharpManager.Command.Disk
+  name: Disk
+  href: api/SharpManager.Command.html#SharpManager_Command_Disk
+  commentId: F:SharpManager.Command.Disk
+  fullName: SharpManager.Command.Disk
+  nameWithType: Command.Disk
+- uid: SharpManager.Command.Init
+  name: Init
+  href: api/SharpManager.Command.html#SharpManager_Command_Init
+  commentId: F:SharpManager.Command.Init
+  fullName: SharpManager.Command.Init
+  nameWithType: Command.Init
+- uid: SharpManager.Command.LoadTape
+  name: LoadTape
+  href: api/SharpManager.Command.html#SharpManager_Command_LoadTape
+  commentId: F:SharpManager.Command.LoadTape
+  fullName: SharpManager.Command.LoadTape
+  nameWithType: Command.LoadTape
+- uid: SharpManager.Command.Ping
+  name: Ping
+  href: api/SharpManager.Command.html#SharpManager_Command_Ping
+  commentId: F:SharpManager.Command.Ping
+  fullName: SharpManager.Command.Ping
+  nameWithType: Command.Ping
+- uid: SharpManager.Command.Print
+  name: Print
+  href: api/SharpManager.Command.html#SharpManager_Command_Print
+  commentId: F:SharpManager.Command.Print
+  fullName: SharpManager.Command.Print
+  nameWithType: Command.Print
+- uid: SharpManager.Command.SaveTape
+  name: SaveTape
+  href: api/SharpManager.Command.html#SharpManager_Command_SaveTape
+  commentId: F:SharpManager.Command.SaveTape
+  fullName: SharpManager.Command.SaveTape
+  nameWithType: Command.SaveTape
+- uid: SharpManager.DataException
+  name: DataException
+  href: api/SharpManager.DataException.html
+  commentId: T:SharpManager.DataException
+  fullName: SharpManager.DataException
+  nameWithType: DataException
+- uid: SharpManager.DataException.#ctor(System.String)
+  name: DataException(string)
+  href: api/SharpManager.DataException.html#SharpManager_DataException__ctor_System_String_
+  commentId: M:SharpManager.DataException.#ctor(System.String)
+  name.vb: New(String)
+  fullName: SharpManager.DataException.DataException(string)
+  fullName.vb: SharpManager.DataException.New(String)
+  nameWithType: DataException.DataException(string)
+  nameWithType.vb: DataException.New(String)
+- uid: SharpManager.DataException.#ctor(System.String,SharpManager.DataException)
+  name: DataException(string, DataException)
+  href: api/SharpManager.DataException.html#SharpManager_DataException__ctor_System_String_SharpManager_DataException_
+  commentId: M:SharpManager.DataException.#ctor(System.String,SharpManager.DataException)
+  name.vb: New(String, DataException)
+  fullName: SharpManager.DataException.DataException(string, SharpManager.DataException)
+  fullName.vb: SharpManager.DataException.New(String, SharpManager.DataException)
+  nameWithType: DataException.DataException(string, DataException)
+  nameWithType.vb: DataException.New(String, DataException)
+- uid: SharpManager.DataException.#ctor*
+  name: DataException
+  href: api/SharpManager.DataException.html#SharpManager_DataException__ctor_
+  commentId: Overload:SharpManager.DataException.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: SharpManager.DataException.DataException
+  fullName.vb: SharpManager.DataException.New
+  nameWithType: DataException.DataException
+  nameWithType.vb: DataException.New
+- uid: SharpManager.DataException.Expect(System.Byte,System.Byte)
+  name: Expect(byte, byte)
+  href: api/SharpManager.DataException.html#SharpManager_DataException_Expect_System_Byte_System_Byte_
+  commentId: M:SharpManager.DataException.Expect(System.Byte,System.Byte)
+  name.vb: Expect(Byte, Byte)
+  fullName: SharpManager.DataException.Expect(byte, byte)
+  fullName.vb: SharpManager.DataException.Expect(Byte, Byte)
+  nameWithType: DataException.Expect(byte, byte)
+  nameWithType.vb: DataException.Expect(Byte, Byte)
+- uid: SharpManager.DataException.Expect(System.Byte,System.Byte,System.String)
+  name: Expect(byte, byte, string)
+  href: api/SharpManager.DataException.html#SharpManager_DataException_Expect_System_Byte_System_Byte_System_String_
+  commentId: M:SharpManager.DataException.Expect(System.Byte,System.Byte,System.String)
+  name.vb: Expect(Byte, Byte, String)
+  fullName: SharpManager.DataException.Expect(byte, byte, string)
+  fullName.vb: SharpManager.DataException.Expect(Byte, Byte, String)
+  nameWithType: DataException.Expect(byte, byte, string)
+  nameWithType.vb: DataException.Expect(Byte, Byte, String)
+- uid: SharpManager.DataException.Expect*
+  name: Expect
+  href: api/SharpManager.DataException.html#SharpManager_DataException_Expect_
+  commentId: Overload:SharpManager.DataException.Expect
+  isSpec: "True"
+  fullName: SharpManager.DataException.Expect
+  nameWithType: DataException.Expect
+- uid: SharpManager.DiskResponse
+  name: DiskResponse
+  href: api/SharpManager.DiskResponse.html
+  commentId: T:SharpManager.DiskResponse
+  fullName: SharpManager.DiskResponse
+  nameWithType: DiskResponse
+- uid: SharpManager.DiskResponse.#ctor(System.Byte[],System.Boolean)
+  name: DiskResponse(byte[], bool)
+  href: api/SharpManager.DiskResponse.html#SharpManager_DiskResponse__ctor_System_Byte___System_Boolean_
+  commentId: M:SharpManager.DiskResponse.#ctor(System.Byte[],System.Boolean)
+  name.vb: New(Byte(), Boolean)
+  fullName: SharpManager.DiskResponse.DiskResponse(byte[], bool)
+  fullName.vb: SharpManager.DiskResponse.New(Byte(), Boolean)
+  nameWithType: DiskResponse.DiskResponse(byte[], bool)
+  nameWithType.vb: DiskResponse.New(Byte(), Boolean)
+- uid: SharpManager.DiskResponse.#ctor*
+  name: DiskResponse
+  href: api/SharpManager.DiskResponse.html#SharpManager_DiskResponse__ctor_
+  commentId: Overload:SharpManager.DiskResponse.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: SharpManager.DiskResponse.DiskResponse
+  fullName.vb: SharpManager.DiskResponse.New
+  nameWithType: DiskResponse.DiskResponse
+  nameWithType.vb: DiskResponse.New
+- uid: SharpManager.DiskResponse.Capture
+  name: Capture
+  href: api/SharpManager.DiskResponse.html#SharpManager_DiskResponse_Capture
+  commentId: P:SharpManager.DiskResponse.Capture
+  fullName: SharpManager.DiskResponse.Capture
+  nameWithType: DiskResponse.Capture
+- uid: SharpManager.DiskResponse.Capture*
+  name: Capture
+  href: api/SharpManager.DiskResponse.html#SharpManager_DiskResponse_Capture_
+  commentId: Overload:SharpManager.DiskResponse.Capture
+  isSpec: "True"
+  fullName: SharpManager.DiskResponse.Capture
+  nameWithType: DiskResponse.Capture
+- uid: SharpManager.DiskResponse.Data
+  name: Data
+  href: api/SharpManager.DiskResponse.html#SharpManager_DiskResponse_Data
+  commentId: P:SharpManager.DiskResponse.Data
+  fullName: SharpManager.DiskResponse.Data
+  nameWithType: DiskResponse.Data
+- uid: SharpManager.DiskResponse.Data*
+  name: Data
+  href: api/SharpManager.DiskResponse.html#SharpManager_DiskResponse_Data_
+  commentId: Overload:SharpManager.DiskResponse.Data
+  isSpec: "True"
+  fullName: SharpManager.DiskResponse.Data
+  nameWithType: DiskResponse.Data
+- uid: SharpManager.ErrorCode
+  name: ErrorCode
+  href: api/SharpManager.ErrorCode.html
+  commentId: T:SharpManager.ErrorCode
+  fullName: SharpManager.ErrorCode
+  nameWithType: ErrorCode
+- uid: SharpManager.ErrorCode.Cancelled
+  name: Cancelled
+  href: api/SharpManager.ErrorCode.html#SharpManager_ErrorCode_Cancelled
+  commentId: F:SharpManager.ErrorCode.Cancelled
+  fullName: SharpManager.ErrorCode.Cancelled
+  nameWithType: ErrorCode.Cancelled
+- uid: SharpManager.ErrorCode.End
+  name: End
+  href: api/SharpManager.ErrorCode.html#SharpManager_ErrorCode_End
+  commentId: F:SharpManager.ErrorCode.End
+  fullName: SharpManager.ErrorCode.End
+  nameWithType: ErrorCode.End
+- uid: SharpManager.ErrorCode.Ok
+  name: Ok
+  href: api/SharpManager.ErrorCode.html#SharpManager_ErrorCode_Ok
+  commentId: F:SharpManager.ErrorCode.Ok
+  fullName: SharpManager.ErrorCode.Ok
+  nameWithType: ErrorCode.Ok
+- uid: SharpManager.ErrorCode.Overflow
+  name: Overflow
+  href: api/SharpManager.ErrorCode.html#SharpManager_ErrorCode_Overflow
+  commentId: F:SharpManager.ErrorCode.Overflow
+  fullName: SharpManager.ErrorCode.Overflow
+  nameWithType: ErrorCode.Overflow
+- uid: SharpManager.ErrorCode.SyncError
+  name: SyncError
+  href: api/SharpManager.ErrorCode.html#SharpManager_ErrorCode_SyncError
+  commentId: F:SharpManager.ErrorCode.SyncError
+  fullName: SharpManager.ErrorCode.SyncError
+  nameWithType: ErrorCode.SyncError
+- uid: SharpManager.ErrorCode.Timeout
+  name: Timeout
+  href: api/SharpManager.ErrorCode.html#SharpManager_ErrorCode_Timeout
+  commentId: F:SharpManager.ErrorCode.Timeout
+  fullName: SharpManager.ErrorCode.Timeout
+  nameWithType: ErrorCode.Timeout
+- uid: SharpManager.ErrorCode.Unexpected
+  name: Unexpected
+  href: api/SharpManager.ErrorCode.html#SharpManager_ErrorCode_Unexpected
+  commentId: F:SharpManager.ErrorCode.Unexpected
+  fullName: SharpManager.ErrorCode.Unexpected
+  nameWithType: ErrorCode.Unexpected
+- uid: SharpManager.IByteStream
+  name: IByteStream
+  href: api/SharpManager.IByteStream.html
+  commentId: T:SharpManager.IByteStream
+  fullName: SharpManager.IByteStream
+  nameWithType: IByteStream
+- uid: SharpManager.IDebugTarget
+  name: IDebugTarget
+  href: api/SharpManager.IDebugTarget.html
+  commentId: T:SharpManager.IDebugTarget
+  fullName: SharpManager.IDebugTarget
+  nameWithType: IDebugTarget
+- uid: SharpManager.IDebugTarget.DebugWrite(System.String)
+  name: DebugWrite(string)
+  href: api/SharpManager.IDebugTarget.html#SharpManager_IDebugTarget_DebugWrite_System_String_
+  commentId: M:SharpManager.IDebugTarget.DebugWrite(System.String)
+  name.vb: DebugWrite(String)
+  fullName: SharpManager.IDebugTarget.DebugWrite(string)
+  fullName.vb: SharpManager.IDebugTarget.DebugWrite(String)
+  nameWithType: IDebugTarget.DebugWrite(string)
+  nameWithType.vb: IDebugTarget.DebugWrite(String)
+- uid: SharpManager.IDebugTarget.DebugWrite*
+  name: DebugWrite
+  href: api/SharpManager.IDebugTarget.html#SharpManager_IDebugTarget_DebugWrite_
+  commentId: Overload:SharpManager.IDebugTarget.DebugWrite
+  isSpec: "True"
+  fullName: SharpManager.IDebugTarget.DebugWrite
+  nameWithType: IDebugTarget.DebugWrite
+- uid: SharpManager.IDebugTarget.DebugWriteLine
+  name: DebugWriteLine()
+  href: api/SharpManager.IDebugTarget.html#SharpManager_IDebugTarget_DebugWriteLine
+  commentId: M:SharpManager.IDebugTarget.DebugWriteLine
+  fullName: SharpManager.IDebugTarget.DebugWriteLine()
+  nameWithType: IDebugTarget.DebugWriteLine()
+- uid: SharpManager.IDebugTarget.DebugWriteLine(System.String)
+  name: DebugWriteLine(string)
+  href: api/SharpManager.IDebugTarget.html#SharpManager_IDebugTarget_DebugWriteLine_System_String_
+  commentId: M:SharpManager.IDebugTarget.DebugWriteLine(System.String)
+  name.vb: DebugWriteLine(String)
+  fullName: SharpManager.IDebugTarget.DebugWriteLine(string)
+  fullName.vb: SharpManager.IDebugTarget.DebugWriteLine(String)
+  nameWithType: IDebugTarget.DebugWriteLine(string)
+  nameWithType.vb: IDebugTarget.DebugWriteLine(String)
+- uid: SharpManager.IDebugTarget.DebugWriteLine*
+  name: DebugWriteLine
+  href: api/SharpManager.IDebugTarget.html#SharpManager_IDebugTarget_DebugWriteLine_
+  commentId: Overload:SharpManager.IDebugTarget.DebugWriteLine
+  isSpec: "True"
+  fullName: SharpManager.IDebugTarget.DebugWriteLine
+  nameWithType: IDebugTarget.DebugWriteLine
+- uid: SharpManager.IDebugTarget.Dump(System.Collections.Generic.IEnumerable{System.Byte})
+  name: Dump(IEnumerable<byte>)
+  href: api/SharpManager.IDebugTarget.html#SharpManager_IDebugTarget_Dump_System_Collections_Generic_IEnumerable_System_Byte__
+  commentId: M:SharpManager.IDebugTarget.Dump(System.Collections.Generic.IEnumerable{System.Byte})
+  name.vb: Dump(IEnumerable(Of Byte))
+  fullName: SharpManager.IDebugTarget.Dump(System.Collections.Generic.IEnumerable<byte>)
+  fullName.vb: SharpManager.IDebugTarget.Dump(System.Collections.Generic.IEnumerable(Of Byte))
+  nameWithType: IDebugTarget.Dump(IEnumerable<byte>)
+  nameWithType.vb: IDebugTarget.Dump(IEnumerable(Of Byte))
+- uid: SharpManager.IDebugTarget.Dump*
+  name: Dump
+  href: api/SharpManager.IDebugTarget.html#SharpManager_IDebugTarget_Dump_
+  commentId: Overload:SharpManager.IDebugTarget.Dump
+  isSpec: "True"
+  fullName: SharpManager.IDebugTarget.Dump
+  nameWithType: IDebugTarget.Dump
+- uid: SharpManager.IMessageTarget
+  name: IMessageTarget
+  href: api/SharpManager.IMessageTarget.html
+  commentId: T:SharpManager.IMessageTarget
+  fullName: SharpManager.IMessageTarget
+  nameWithType: IMessageTarget
+- uid: SharpManager.IMessageTarget.Write(System.String)
+  name: Write(string)
+  href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_Write_System_String_
+  commentId: M:SharpManager.IMessageTarget.Write(System.String)
+  name.vb: Write(String)
+  fullName: SharpManager.IMessageTarget.Write(string)
+  fullName.vb: SharpManager.IMessageTarget.Write(String)
+  nameWithType: IMessageTarget.Write(string)
+  nameWithType.vb: IMessageTarget.Write(String)
+- uid: SharpManager.IMessageTarget.Write*
+  name: Write
+  href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_Write_
+  commentId: Overload:SharpManager.IMessageTarget.Write
+  isSpec: "True"
+  fullName: SharpManager.IMessageTarget.Write
+  nameWithType: IMessageTarget.Write
+- uid: SharpManager.IMessageTarget.WriteLine
+  name: WriteLine()
+  href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_WriteLine
+  commentId: M:SharpManager.IMessageTarget.WriteLine
+  fullName: SharpManager.IMessageTarget.WriteLine()
+  nameWithType: IMessageTarget.WriteLine()
+- uid: SharpManager.IMessageTarget.WriteLine(System.String)
+  name: WriteLine(string)
+  href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_WriteLine_System_String_
+  commentId: M:SharpManager.IMessageTarget.WriteLine(System.String)
+  name.vb: WriteLine(String)
+  fullName: SharpManager.IMessageTarget.WriteLine(string)
+  fullName.vb: SharpManager.IMessageTarget.WriteLine(String)
+  nameWithType: IMessageTarget.WriteLine(string)
+  nameWithType.vb: IMessageTarget.WriteLine(String)
+- uid: SharpManager.IMessageTarget.WriteLine*
+  name: WriteLine
+  href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_WriteLine_
+  commentId: Overload:SharpManager.IMessageTarget.WriteLine
+  isSpec: "True"
+  fullName: SharpManager.IMessageTarget.WriteLine
+  nameWithType: IMessageTarget.WriteLine
+- uid: SharpManager.IReadByteStream
+  name: IReadByteStream
+  href: api/SharpManager.IReadByteStream.html
+  commentId: T:SharpManager.IReadByteStream
+  fullName: SharpManager.IReadByteStream
+  nameWithType: IReadByteStream
+- uid: SharpManager.IReadByteStream.DataAvailable
+  name: DataAvailable
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_DataAvailable
+  commentId: P:SharpManager.IReadByteStream.DataAvailable
+  fullName: SharpManager.IReadByteStream.DataAvailable
+  nameWithType: IReadByteStream.DataAvailable
+- uid: SharpManager.IReadByteStream.DataAvailable*
+  name: DataAvailable
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_DataAvailable_
+  commentId: Overload:SharpManager.IReadByteStream.DataAvailable
+  isSpec: "True"
+  fullName: SharpManager.IReadByteStream.DataAvailable
+  nameWithType: IReadByteStream.DataAvailable
+- uid: SharpManager.IReadByteStream.ReadByteAsync(System.Threading.CancellationToken)
+  name: ReadByteAsync(CancellationToken)
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_ReadByteAsync_System_Threading_CancellationToken_
+  commentId: M:SharpManager.IReadByteStream.ReadByteAsync(System.Threading.CancellationToken)
+  fullName: SharpManager.IReadByteStream.ReadByteAsync(System.Threading.CancellationToken)
+  nameWithType: IReadByteStream.ReadByteAsync(CancellationToken)
+- uid: SharpManager.IReadByteStream.ReadByteAsync*
+  name: ReadByteAsync
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_ReadByteAsync_
+  commentId: Overload:SharpManager.IReadByteStream.ReadByteAsync
+  isSpec: "True"
+  fullName: SharpManager.IReadByteStream.ReadByteAsync
+  nameWithType: IReadByteStream.ReadByteAsync
+- uid: SharpManager.IWriteByteStream
+  name: IWriteByteStream
+  href: api/SharpManager.IWriteByteStream.html
+  commentId: T:SharpManager.IWriteByteStream
+  fullName: SharpManager.IWriteByteStream
+  nameWithType: IWriteByteStream
+- uid: SharpManager.IWriteByteStream.WriteByte(System.Byte)
+  name: WriteByte(byte)
+  href: api/SharpManager.IWriteByteStream.html#SharpManager_IWriteByteStream_WriteByte_System_Byte_
+  commentId: M:SharpManager.IWriteByteStream.WriteByte(System.Byte)
+  name.vb: WriteByte(Byte)
+  fullName: SharpManager.IWriteByteStream.WriteByte(byte)
+  fullName.vb: SharpManager.IWriteByteStream.WriteByte(Byte)
+  nameWithType: IWriteByteStream.WriteByte(byte)
+  nameWithType.vb: IWriteByteStream.WriteByte(Byte)
+- uid: SharpManager.IWriteByteStream.WriteByte*
+  name: WriteByte
+  href: api/SharpManager.IWriteByteStream.html#SharpManager_IWriteByteStream_WriteByte_
+  commentId: Overload:SharpManager.IWriteByteStream.WriteByte
+  isSpec: "True"
+  fullName: SharpManager.IWriteByteStream.WriteByte
+  nameWithType: IWriteByteStream.WriteByte
+- uid: SharpManager.NotifyObject
+  name: NotifyObject
+  href: api/SharpManager.NotifyObject.html
+  commentId: T:SharpManager.NotifyObject
+  fullName: SharpManager.NotifyObject
+  nameWithType: NotifyObject
+- uid: SharpManager.NotifyObject.GetProperty*
+  name: GetProperty
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_GetProperty_
+  commentId: Overload:SharpManager.NotifyObject.GetProperty
+  isSpec: "True"
+  fullName: SharpManager.NotifyObject.GetProperty
+  nameWithType: NotifyObject.GetProperty
+- uid: SharpManager.NotifyObject.GetProperty``1(System.String)
+  name: GetProperty<T>(string?)
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_GetProperty__1_System_String_
+  commentId: M:SharpManager.NotifyObject.GetProperty``1(System.String)
+  name.vb: GetProperty(Of T)(String)
+  fullName: SharpManager.NotifyObject.GetProperty<T>(string?)
+  fullName.vb: SharpManager.NotifyObject.GetProperty(Of T)(String)
+  nameWithType: NotifyObject.GetProperty<T>(string?)
+  nameWithType.vb: NotifyObject.GetProperty(Of T)(String)
+- uid: SharpManager.NotifyObject.GetProperty``1(``0,System.String)
+  name: GetProperty<T>(T, string?)
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_GetProperty__1___0_System_String_
+  commentId: M:SharpManager.NotifyObject.GetProperty``1(``0,System.String)
+  name.vb: GetProperty(Of T)(T, String)
+  fullName: SharpManager.NotifyObject.GetProperty<T>(T, string?)
+  fullName.vb: SharpManager.NotifyObject.GetProperty(Of T)(T, String)
+  nameWithType: NotifyObject.GetProperty<T>(T, string?)
+  nameWithType.vb: NotifyObject.GetProperty(Of T)(T, String)
+- uid: SharpManager.NotifyObject.OnPropertyChanged(System.String)
+  name: OnPropertyChanged(string?)
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_OnPropertyChanged_System_String_
+  commentId: M:SharpManager.NotifyObject.OnPropertyChanged(System.String)
+  name.vb: OnPropertyChanged(String)
+  fullName: SharpManager.NotifyObject.OnPropertyChanged(string?)
+  fullName.vb: SharpManager.NotifyObject.OnPropertyChanged(String)
+  nameWithType: NotifyObject.OnPropertyChanged(string?)
+  nameWithType.vb: NotifyObject.OnPropertyChanged(String)
+- uid: SharpManager.NotifyObject.OnPropertyChanged*
+  name: OnPropertyChanged
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_OnPropertyChanged_
+  commentId: Overload:SharpManager.NotifyObject.OnPropertyChanged
+  isSpec: "True"
+  fullName: SharpManager.NotifyObject.OnPropertyChanged
+  nameWithType: NotifyObject.OnPropertyChanged
+- uid: SharpManager.NotifyObject.PropertyChanged
+  name: PropertyChanged
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_PropertyChanged
+  commentId: E:SharpManager.NotifyObject.PropertyChanged
+  fullName: SharpManager.NotifyObject.PropertyChanged
+  nameWithType: NotifyObject.PropertyChanged
+- uid: SharpManager.NotifyObject.SetProperty*
+  name: SetProperty
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_SetProperty_
+  commentId: Overload:SharpManager.NotifyObject.SetProperty
+  isSpec: "True"
+  fullName: SharpManager.NotifyObject.SetProperty
+  nameWithType: NotifyObject.SetProperty
+- uid: SharpManager.NotifyObject.SetProperty``1(``0,System.Action,System.String)
+  name: SetProperty<T>(T, Action, string?)
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_SetProperty__1___0_System_Action_System_String_
+  commentId: M:SharpManager.NotifyObject.SetProperty``1(``0,System.Action,System.String)
+  name.vb: SetProperty(Of T)(T, Action, String)
+  fullName: SharpManager.NotifyObject.SetProperty<T>(T, System.Action, string?)
+  fullName.vb: SharpManager.NotifyObject.SetProperty(Of T)(T, System.Action, String)
+  nameWithType: NotifyObject.SetProperty<T>(T, Action, string?)
+  nameWithType.vb: NotifyObject.SetProperty(Of T)(T, Action, String)
+- uid: SharpManager.NotifyObject.SetProperty``1(``0,System.String)
+  name: SetProperty<T>(T, string?)
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_SetProperty__1___0_System_String_
+  commentId: M:SharpManager.NotifyObject.SetProperty``1(``0,System.String)
+  name.vb: SetProperty(Of T)(T, String)
+  fullName: SharpManager.NotifyObject.SetProperty<T>(T, string?)
+  fullName.vb: SharpManager.NotifyObject.SetProperty(Of T)(T, String)
+  nameWithType: NotifyObject.SetProperty<T>(T, string?)
+  nameWithType.vb: NotifyObject.SetProperty(Of T)(T, String)
+- uid: SharpManager.NotifyObject.SetProperty``1(``0@,``0,System.String)
+  name: SetProperty<T>(ref T, T, string?)
+  href: api/SharpManager.NotifyObject.html#SharpManager_NotifyObject_SetProperty__1___0____0_System_String_
+  commentId: M:SharpManager.NotifyObject.SetProperty``1(``0@,``0,System.String)
+  name.vb: SetProperty(Of T)(T, T, String)
+  fullName: SharpManager.NotifyObject.SetProperty<T>(ref T, T, string?)
+  fullName.vb: SharpManager.NotifyObject.SetProperty(Of T)(T, T, String)
+  nameWithType: NotifyObject.SetProperty<T>(ref T, T, string?)
+  nameWithType.vb: NotifyObject.SetProperty(Of T)(T, T, String)
+- uid: SharpManager.SerialPortByteStream
+  name: SerialPortByteStream
+  href: api/SharpManager.SerialPortByteStream.html
+  commentId: T:SharpManager.SerialPortByteStream
+  fullName: SharpManager.SerialPortByteStream
+  nameWithType: SerialPortByteStream
+- uid: SharpManager.SerialPortByteStream.#ctor(System.IO.Ports.SerialPort)
+  name: SerialPortByteStream(SerialPort)
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream__ctor_System_IO_Ports_SerialPort_
+  commentId: M:SharpManager.SerialPortByteStream.#ctor(System.IO.Ports.SerialPort)
+  name.vb: New(SerialPort)
+  fullName: SharpManager.SerialPortByteStream.SerialPortByteStream(System.IO.Ports.SerialPort)
+  fullName.vb: SharpManager.SerialPortByteStream.New(System.IO.Ports.SerialPort)
+  nameWithType: SerialPortByteStream.SerialPortByteStream(SerialPort)
+  nameWithType.vb: SerialPortByteStream.New(SerialPort)
+- uid: SharpManager.SerialPortByteStream.#ctor*
+  name: SerialPortByteStream
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream__ctor_
+  commentId: Overload:SharpManager.SerialPortByteStream.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: SharpManager.SerialPortByteStream.SerialPortByteStream
+  fullName.vb: SharpManager.SerialPortByteStream.New
+  nameWithType: SerialPortByteStream.SerialPortByteStream
+  nameWithType.vb: SerialPortByteStream.New
+- uid: SharpManager.SerialPortByteStream.DataAvailable
+  name: DataAvailable
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_DataAvailable
+  commentId: P:SharpManager.SerialPortByteStream.DataAvailable
+  fullName: SharpManager.SerialPortByteStream.DataAvailable
+  nameWithType: SerialPortByteStream.DataAvailable
+- uid: SharpManager.SerialPortByteStream.DataAvailable*
+  name: DataAvailable
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_DataAvailable_
+  commentId: Overload:SharpManager.SerialPortByteStream.DataAvailable
+  isSpec: "True"
+  fullName: SharpManager.SerialPortByteStream.DataAvailable
+  nameWithType: SerialPortByteStream.DataAvailable
+- uid: SharpManager.SerialPortByteStream.Dispose
+  name: Dispose()
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_Dispose
+  commentId: M:SharpManager.SerialPortByteStream.Dispose
+  fullName: SharpManager.SerialPortByteStream.Dispose()
+  nameWithType: SerialPortByteStream.Dispose()
+- uid: SharpManager.SerialPortByteStream.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_Dispose_System_Boolean_
+  commentId: M:SharpManager.SerialPortByteStream.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: SharpManager.SerialPortByteStream.Dispose(bool)
+  fullName.vb: SharpManager.SerialPortByteStream.Dispose(Boolean)
+  nameWithType: SerialPortByteStream.Dispose(bool)
+  nameWithType.vb: SerialPortByteStream.Dispose(Boolean)
+- uid: SharpManager.SerialPortByteStream.Dispose*
+  name: Dispose
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_Dispose_
+  commentId: Overload:SharpManager.SerialPortByteStream.Dispose
+  isSpec: "True"
+  fullName: SharpManager.SerialPortByteStream.Dispose
+  nameWithType: SerialPortByteStream.Dispose
+- uid: SharpManager.SerialPortByteStream.ReadByteAsync(System.Threading.CancellationToken)
+  name: ReadByteAsync(CancellationToken)
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_ReadByteAsync_System_Threading_CancellationToken_
+  commentId: M:SharpManager.SerialPortByteStream.ReadByteAsync(System.Threading.CancellationToken)
+  fullName: SharpManager.SerialPortByteStream.ReadByteAsync(System.Threading.CancellationToken)
+  nameWithType: SerialPortByteStream.ReadByteAsync(CancellationToken)
+- uid: SharpManager.SerialPortByteStream.ReadByteAsync*
+  name: ReadByteAsync
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_ReadByteAsync_
+  commentId: Overload:SharpManager.SerialPortByteStream.ReadByteAsync
+  isSpec: "True"
+  fullName: SharpManager.SerialPortByteStream.ReadByteAsync
+  nameWithType: SerialPortByteStream.ReadByteAsync
+- uid: SharpManager.SerialPortByteStream.WriteByte(System.Byte)
+  name: WriteByte(byte)
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_WriteByte_System_Byte_
+  commentId: M:SharpManager.SerialPortByteStream.WriteByte(System.Byte)
+  name.vb: WriteByte(Byte)
+  fullName: SharpManager.SerialPortByteStream.WriteByte(byte)
+  fullName.vb: SharpManager.SerialPortByteStream.WriteByte(Byte)
+  nameWithType: SerialPortByteStream.WriteByte(byte)
+  nameWithType.vb: SerialPortByteStream.WriteByte(Byte)
+- uid: SharpManager.SerialPortByteStream.WriteByte*
+  name: WriteByte
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_WriteByte_
+  commentId: Overload:SharpManager.SerialPortByteStream.WriteByte
+  isSpec: "True"
+  fullName: SharpManager.SerialPortByteStream.WriteByte
+  nameWithType: SerialPortByteStream.WriteByte

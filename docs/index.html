@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Main | Sharp Manager </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Main | Sharp Manager ">
+      
+      <link rel="icon" href="images/SharpManagerIcon.png">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/codaris/SharpManager/blob/main/Desktop/Documentation/index.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+      <style>
+        .table { width: auto !important; }
+      </style>
+  </head>
+
+  <script type="module" src="./public/docfx.min.js"></script>
+
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="landing" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" src="images/SharpManagerLogo.png" alt="Sharp Manager" width="360" height="50" alt="Sharp Manager">
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p><img src="images/SharpManagerBanner.png" alt=""></p>
+<p><strong>Sharp Manager</strong> is an application for interfacing some vintage Sharp pocket computers with your Windows desktop PC.  It works together with an <a href="https://store.arduino.cc/pages/nano-family">Arduino</a> to connect the Sharp computer to a USB port on your computer.  With this hardware and software, Sharp Manager emulates a <a href="http://pocket.free.fr/html/sharp/ce-126p_e.html">CE-126P</a> cassette and printer interface and a sharp Sharp <a href="http://pocket.free.fr/html/sharp/ce-140f_e.html">CE-140F</a> floppy drive.  It has only been tested with a Sharp <a href="http://pocket.free.fr/html/sharp/pc-1401_e.html">PC-1401</a> and a <a href="http://pocket.free.fr/html/sharp/pc-1401_e.html">PC-1403</a> however the disk emulation should work on any device that supports the CE-140F.</p>
+<h2 id="requirements">Requirements</h2>
+<p>To use this software you will need the following:</p>
+<ul>
+<li>An Sharp Pocket Computer</li>
+<li>An Arduino (Arduino Nano)</li>
+<li><a href="http://pocket.free.fr/html/soft/pocket-tools_e.html">Sharp Pocket Tools</a> (Recommended)</li>
+<li>A PC running Windows 10+</li>
+</ul>
+<h2 id="features">Features</h2>
+<ul>
+<li>CE-126P Printer Emulator: Print from your pocket computer to your desktop</li>
+<li>CE-126P Cassette Emulator: Load .tap files into PC-1401 and PC-1403.</li>
+<li>CE-140F Floppy drive Emiulator: Treat a folder on your desktop as a floppy disk.</li>
+</ul>
+<p>Sharp Manager also supports uploading pre-compiled firmware to a number of different Arduino models.</p>
+<h2 id="download-and-install">Download and Install</h2>
+<p>You can download the latest release installer from here:</p>
+<ul>
+<li><a href="https://github.com/codaris/SharpManager/releases/download/v1.0.1/SharpManager.msi">Sharp Manager v1.0.1</a></li>
+</ul>
+<p>Download the above file and open it to install Sharp Manager on your computer.</p>
+<h2 id="arduino-connection-diagram">Arduino Connection Diagram</h2>
+<p><img src="images/SharpMangerNanoConnect.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Arduino Pin</th>
+<th style="text-align: center;">Direction</th>
+<th style="text-align: center;">Sharp Pin</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">GND</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">3</td>
+<td>Electrical Ground</td>
+</tr>
+<tr>
+<td style="text-align: center;">D2</td>
+<td style="text-align: center;">←</td>
+<td style="text-align: center;">4</td>
+<td>Busy</td>
+</tr>
+<tr>
+<td style="text-align: center;">D3</td>
+<td style="text-align: center;">←</td>
+<td style="text-align: center;">5</td>
+<td>Dout</td>
+</tr>
+<tr>
+<td style="text-align: center;">D4</td>
+<td style="text-align: center;">→</td>
+<td style="text-align: center;">6</td>
+<td>Xin</td>
+</tr>
+<tr>
+<td style="text-align: center;">D5</td>
+<td style="text-align: center;">←</td>
+<td style="text-align: center;">7</td>
+<td>Xout</td>
+</tr>
+<tr>
+<td style="text-align: center;">D6</td>
+<td style="text-align: center;">←</td>
+<td style="text-align: center;">8</td>
+<td>Din</td>
+</tr>
+<tr>
+<td style="text-align: center;">D7</td>
+<td style="text-align: center;">→</td>
+<td style="text-align: center;">9</td>
+<td>ACK</td>
+</tr>
+<tr>
+<td style="text-align: center;">D8</td>
+<td style="text-align: center;">←</td>
+<td style="text-align: center;">10</td>
+<td>SEL2</td>
+</tr>
+<tr>
+<td style="text-align: center;">D9</td>
+<td style="text-align: center;">←</td>
+<td style="text-align: center;">11</td>
+<td>SEL1</td>
+</tr>
+</tbody>
+</table>
+<p>All the pins that are output from the Sharp Pocket computer must be connected to ground with a pull down resistor.  My build uses
+480kΩ resistors but most values should work.</p>
+<h2 id="getting-help">Getting Help</h2>
+<p>You can get help with this application by using the <a href="https://github.com/codaris/SharpManager/issues">Issues</a> tab in this project.</p>
+<h2 id="building-the-project">Building the Project</h2>
+<p>This project consists of two parts, the <strong>Arduino Firmware</strong> that drives the connections to the Sharp Pocket Computer and the <strong>Sharp Manager</strong> desktop application that communicates with the Arduino over USB.</p>
+<h4 id="building-the-arduino-firmware">Building the Arduino Firmware</h4>
+<p>The Arduino firmware is located in the <a href="https://github.com/codaris/SharpManager/tree/main/Arduino">Arduino</a> directory of the project.  This can be built with the <a href="https://www.arduino.cc/en/software">Arduino IDE</a> and installed directly onto an Arduino.  For this project, I've chosen an Arduino Nano but most models of Arduino should work without issue.  You can edit the <a href="https://github.com/codaris/PofoManager/blob/main/Arduino/Sharp.h">Sharp.h</a> file to change the pin mapping if necessary.</p>
+<h4 id="building-sharpmanager">Building SharpManager</h4>
+<p>The desktop component is written in C# for .NET 6.0.  It can be compiled by the community (free) edition of <a href="https://visualstudio.microsoft.com/vs/community/">Visual Studio 2022</a>.  Simply open the main solution file in the <a href="https://github.com/codaris/PofoManager/tree/main/SharpManager">SharpManager</a> directory of the project and select <code>Build Solution</code>.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<ul>
+<li>Norbert Unterberg for reverse engineering the <a href="https://edgar-pue.tripod.com/sharp/files/bigpc/sharplink.html">tape protocol</a></li>
+<li>Fabio Fumi for his <a href="https://github.com/ffxx68/Sharp_ce140f_emul">Sharp CE-140F emulator for ST-Nucleo</a></li>
+<li>Everyone in the <a href="https://www.facebook.com/groups/sharppc/">The Sharp Pocket Computer Faceback group</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/codaris/SharpManager/blob/main/Desktop/Documentation/index.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Copyright (c) 2024 by Wayne Venables</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,734 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>File Transfer Protocol | Sharp Manager </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="File Transfer Protocol | Sharp Manager ">
+      
+      <link rel="icon" href="images/PofoManagerIcon.png">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/codaris/SharpManager/blob/main/Desktop/Documentation/protocol.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+      <style>
+        .table { width: auto !important; }
+      </style>
+  </head>
+
+  <script type="module" src="./public/docfx.min.js"></script>
+
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" src="images/PofoManagerLogo.png" alt="Sharp Manager" width="360" height="50" alt="Portfolio Desktop">
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="portfolio-file-transfer-protocol">Portfolio File Transfer Protocol</h1>
+
+<p>The <a href="http://www.pofowiki.de/doku.php?id=software:vorstellung:exchanges:transfolio">original documentation</a> for the Portfolio file transfer protocol was written by Klaus Peichl on 2006-02-05.  This document is mostly an English translation of that article with some extra details infered from the <a href="https://github.com/skudi/transfolio">Transfolio</a> source code.</p>
+<h2 id="introduction">Introduction</h2>
+<p>The Atari Portfolio contains an built-in data transfer program that can be started from the setup menu and allows for data exchange with a PC.  This requires the parallel port module for the Portfolio and a straight-through male-to-male parallel cable to connect them (no cross overs).  Only pins 2, 3, 12, 13, and ground are necessary for the communication.  If you cross the transmit and receive lines then two Portfolios can communicate directly with each other.</p>
+<p><img src="images/PofoPinout.png" alt=""></p>
+<p>The PC side requires software that can communicate with the Portfolio via the parallel port.  Software called <code>FT.COM</code> was provided on floppy disk that came with the parallel port module.  However, this software only works under DOS as it requires direct access to the parallel port.  For modern computers, a different solution is required.</p>
+<p>Although the connection to a PC is made through the parallel port, the Portfolio only makes use of 4 of the lines; this is because older PC parallel ports were unidirectional.  They were designed to send data to a printer with only a few control signals going back to the PC.  In order for the Portfolio to send data to a PC it uses two of those control signal lines: Paper End (<code>Pin 12</code>) and Select (<code>Pin 13</code>).  Communication from the PC to the Portfolio uses the lowest 2 data output lines (<code>Pin 2</code> and <code>Pin 3</code>).</p>
+<h2 id="transfer-of-a-byte">Transfer of a Byte</h2>
+<p>The data is clocked out one bit at a time.  From the perspective of the PC, <code>Pin 12</code> is the input clock and <code>Pin 13</code> is the input data.  <code>Pin 3</code> is the output clock and <code>Pin 2</code> is the output data.</p>
+<p>A byte is transferred serially, starting with the highest-value bit. The data line controlled by the transmitter is switched to low level (0V) for a zero bit and for a one-bit to high level (5V). The other data line is unused and remains at low level. The clock lines are initially both at high levels. For each of the eight bits, the transfer can be divided into four steps. The diagram below shows the level curve for the active data line and the two clock lines when the byte value is <code>117</code>. Since both falling and rising flanks of the clock lines are used for signaling, the clock lines per byte take the low state four times.</p>
+<p><img src="images/PofoTransfer.png" alt=""></p>
+<p>To read the byte use the following pseudocode:</p>
+<pre><code>Loop 4 times:
+    Wait for INPUT_CLOCK to go LOW
+    value = (value &lt;&lt; 1) | INPUT_DATA
+    Set OUTPUT_CLOCK to LOW
+    Wait for INPUT_CLOCK to go HIGH
+    value = (value &lt;&lt; 1) | INPUT_DATA
+    Set OUTPUT_CLOCK to HIGH
+</code></pre>
+<p>Sending a byte is done the same way.  It is recommended that you delay 50 microseconds between sending bytes.</p>
+<h2 id="synchronization">Synchronization</h2>
+<p>In order to communicate with the Portfolio, you need to synchronize the communication.  See the following pseudocode for how to synchronize:</p>
+<pre><code>Wait for INPUT_CLOCK to go HIGH
+While (value != 0x5A):
+    Wait for INPUT_CLOCK to go LOW
+    Set OUTPUT_CLOCK to LOW
+    Wait for INPUT_CLOCK to go HIGH
+    Set OUTPUT_CLOCK to HIGH
+    Read byte into value
+</code></pre>
+<p>A value of <code>0x5A</code> indicates that the Portfolio file server is listening.</p>
+<h2 id="data-blocks">Data Blocks</h2>
+<p>All data sending and receiving of data are done in blocks.  The Portfolio has a BIOS functions that any application can use to send and receive data this way.  These functions are used by the built in File Transfer Server.</p>
+<h3 id="sending-a-block">Sending a Block</h3>
+<p>To send a block if must first wait for the Portfolio to send a <code>0x5A</code> byte.  While idle in Server mode the Portfolio will continuously send a stream of bytes: <code>0x5A</code>, <code>0x69</code>, <code>0xA5</code>, <code>0x96</code>.  If you receive any other bytes then the server is not idle.</p>
+<p>A block starts with <code>0xA5</code>, followed by 16bit length, the data, and a checksum.  The receiver will send the checksum back to indicate a successful transmission:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Sender</th>
+<th style="text-align: center;">Receiver</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">0x5A</td>
+<td>Signals readiness to receive block</td>
+</tr>
+<tr>
+<td style="text-align: center;">0xA5</td>
+<td style="text-align: center;"></td>
+<td>Start of the data block</td>
+</tr>
+<tr>
+<td style="text-align: center;">n-Low</td>
+<td style="text-align: center;"></td>
+<td>Low-byte of block length in bytes</td>
+</tr>
+<tr>
+<td style="text-align: center;">n-High</td>
+<td style="text-align: center;"></td>
+<td>High-byte of block length in bytes</td>
+</tr>
+<tr>
+<td style="text-align: center;">Byte 1</td>
+<td style="text-align: center;"></td>
+<td>Data byte</td>
+</tr>
+<tr>
+<td style="text-align: center;">Byte 2</td>
+<td style="text-align: center;"></td>
+<td>Data byte</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;"></td>
+<td>Data byte</td>
+</tr>
+<tr>
+<td style="text-align: center;">Byte n</td>
+<td style="text-align: center;"></td>
+<td>Data byte</td>
+</tr>
+<tr>
+<td style="text-align: center;">Check</td>
+<td style="text-align: center;"></td>
+<td>Checksum</td>
+</tr>
+<tr>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">Check</td>
+<td>Confirmation of Checksum</td>
+</tr>
+</tbody>
+</table>
+<p>To calculate the checksum, excluding the start of block indicator (<code>0xA5</code>) subtract all the data bytes and length bytes from <code>0</code> using unsigned 8-bit subtraction.</p>
+<h3 id="receiving-a-block">Receiving a Block</h3>
+<p>Receiving a block is simply the reverse of sending the block.  Send the value <code>0x5A</code> to indicate that you want to receive a block from the Portfolio.  You will receive the <code>0xA5</code> to indicate the start of the block and the rest of the data as per the above.  You must send back the checksum to indicate that the block was successfully received.</p>
+<h2 id="control-protocol">Control Protocol</h2>
+<p>Files can be sent and received from the Portfolio, and directories listed, using the control protocol.  Each control protocol request is sent as blocks and responses returned as blocks.  Below is a list of control protocol requests and responses send as blocks.  Each request includes a buffer size; the Portfolio uses a default/maximum buffer size of 28,672 (<code>0x7000</code>) bytes but it may request a smaller buffer if there is unsufficient memory.  Responses should adhere to the buffer size requested.</p>
+<h3 id="request-directory-listing">Request Directory Listing</h3>
+<p>The simplest feature is to request directory listing to a specific search path. The corresponding command sequence consists of a function code, the maximum receive buffer size, and the search pattern long up to 79 characters. If the search pattern is shorter than 79 characters, it must be terminated with a zero byte and the rest of the 82-byte data block must be added.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x06</td>
+<td>Function code &quot;Request Directory Listing&quot;</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x70</td>
+<td>Buffer size high</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">...</td>
+<td>Search path string (e.g. C:<em>.</em>)</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>Search path (len bytes)</td>
+</tr>
+<tr>
+<td style="text-align: center;">3+len</td>
+<td style="text-align: center;">0x00</td>
+<td>Null terminator</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>Placeholder (content without meaning)</td>
+</tr>
+<tr>
+<td style="text-align: center;">81</td>
+<td style="text-align: center;">...</td>
+<td>Placeholder (content without meaning)</td>
+</tr>
+</tbody>
+</table>
+<p>The result block contains the number of files found and their names separated by zero bytes. Further information such as the file length or the creation date is not available.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">n-Low</td>
+<td>Low-byte of number of files</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">n-High</td>
+<td>High-byte of number of files</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">...</td>
+<td>File name 1</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">0x00</td>
+<td>Null terminator</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>File name 2</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">0x00</td>
+<td>Null terminator</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>File name n</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">0x00</td>
+<td>Null terminator</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">0x00</td>
+<td>End of data marker</td>
+</tr>
+</tbody>
+</table>
+<p>After the response has been sent, the portfolio is ready again and waiting for further commands.</p>
+<h3 id="request-file">Request File</h3>
+<p>You can request a file from the Portfolio by sending the full path and file name of the file you want to retrieve:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x02</td>
+<td>Function code &quot;Request File&quot;</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x70</td>
+<td>Buffer size high</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">...</td>
+<td>Path and file name (e.g. &quot;C:\TEST.TXT&quot;)</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>More path bytes</td>
+</tr>
+<tr>
+<td style="text-align: center;">3+len</td>
+<td style="text-align: center;">0x00</td>
+<td>Null terminator</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>Placeholder (content without meaning)</td>
+</tr>
+<tr>
+<td style="text-align: center;">81</td>
+<td style="text-align: center;">...</td>
+<td>Placeholder (content without meaning)</td>
+</tr>
+</tbody>
+</table>
+<p>If the file doesn't exist, the Portfolio responds with a file not found reponse:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x21</td>
+<td>Response code &quot;File not found&quot;</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x03</td>
+<td>Buffer size high</td>
+</tr>
+</tbody>
+</table>
+<p>If the file exists, the Portfolio responds with an 11-byte data block, which includes the file length:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x20</td>
+<td>Response code &quot;File found&quot;</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x70</td>
+<td>Buffer size high</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">t-Low</td>
+<td>File time (16 bit) in DOS format</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">t-High</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">d-Low</td>
+<td>File date (16 bit) in DOS format</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">d-High</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">n-LowLow</td>
+<td>File length (32 bit)</td>
+</tr>
+<tr>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">n-LowHigh</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">n-HighLow</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">n-HighHigh</td>
+<td>...</td>
+</tr>
+</tbody>
+</table>
+<p>The transfer of the file data in one or more data blocks follows directly afterwards. The number of data blocks required depends on the file size and the buffer size of the portfolio. The buffer size, in turn, depends on the Portfolio's memory and is typically about 28,672 bytes (<code>0x7000</code>).</p>
+<p>If all data blocks were received, the recipient completes the communication by the following data block:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x20</td>
+<td>Response code &quot;File found&quot; (OK)</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x03</td>
+<td>Buffer size high</td>
+</tr>
+</tbody>
+</table>
+<h3 id="send-file">Send file</h3>
+<p>When a file is transferred to the Portfolio, a data block is sent first that contains all the file meta-data:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x03</td>
+<td>Function code &quot;Send File&quot;</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x70</td>
+<td>Buffer size high</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">t-Low</td>
+<td>File time (16 bit) in DOS format</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">t-High</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">d-Low</td>
+<td>File date (16 bit) in DOS format</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">d-High</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">n-LowLow</td>
+<td>File length (32 bit)</td>
+</tr>
+<tr>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">n-LowHigh</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">n-HighLow</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">n-HighHigh</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">...</td>
+<td>Full path a file name (e.g. &quot;C:\TEST.TXT&quot;)</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">11+len</td>
+<td style="text-align: center;">0x00</td>
+<td>Null terminator</td>
+</tr>
+<tr>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td>Placeholder (content without meaning)</td>
+</tr>
+<tr>
+<td style="text-align: center;">89</td>
+<td style="text-align: center;">...</td>
+<td>Placeholder (content without meaning)</td>
+</tr>
+</tbody>
+</table>
+<p>If the file does not exist on the Portfolio, the server responds with the following block.  The block also contains the buffer size for the data blocks that follow:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x21</td>
+<td>Response code &quot;File not found&quot; (OK)</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x70</td>
+<td>Buffer size high</td>
+</tr>
+</tbody>
+</table>
+<p>If the file already exists on the Portfolio, the server responds with the following block:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x20</td>
+<td>Response code &quot;File found&quot; (Error)</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x70</td>
+<td>Buffer size high</td>
+</tr>
+</tbody>
+</table>
+<p>In this instance, you can signal that you want to overwrite the file by sending the following block:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x05</td>
+<td>Function code &quot;Overwrite file&quot;</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x70</td>
+<td>Buffer size high</td>
+</tr>
+</tbody>
+</table>
+<p>If the overwriting is not desired, the file transfer can be terminated with the following block:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x00</td>
+<td>Function code &quot;Overwrite file&quot;</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size low</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0x00</td>
+<td>Buffer size high</td>
+</tr>
+</tbody>
+</table>
+<p>If the transfer has not been canceled, the payload data can now be sent in one or more blocks. The maximum block length depends on the buffer size, which was transmitted in the server's last response.</p>
+<p>Once all data blocks have been successfully transferred, the server finally acknowledges again with a 3-Byte sequence:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Offset</th>
+<th style="text-align: center;">Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0x20</td>
+<td>Response code &quot;File found&quot; (Success)</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">...</td>
+<td>...</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">...</td>
+<td>...</td>
+</tr>
+</tbody>
+</table>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/codaris/SharpManager/blob/main/Desktop/Documentation/protocol.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Copyright (c) 2024 by Wayne Venables</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

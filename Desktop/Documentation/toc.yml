@@ -1,0 +1,7 @@
+- name: Home
+  href: index.html
+  homepage: index.md
+- name: API Documentation
+  href: api/
+- name: Github
+  href: https://github.com/codaris/SharpManager

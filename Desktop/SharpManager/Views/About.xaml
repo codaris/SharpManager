@@ -7,8 +7,7 @@
         mc:Ignorable="d"
         Title="About" Height="270" Width="586" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" SourceInitialized="Window_SourceInitialized" SizeToContent="WidthAndHeight">
     <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-        <!-- <Image HorizontalAlignment="Left" Height="149" Width="581" Source="/Resources/SharpManagerBanner.png" /> -->
-        <Frame Height="149" Width="581" />
+        <Image HorizontalAlignment="Left" Height="149" Width="581" Source="/Resources/SharpManagerBanner.png" />
         <TextBlock x:Name="AppTitle" FontSize="16" Margin="20,0,0,0">Sharp Manager</TextBlock>
         <TextBlock FontSize="16" Margin="20,0,0,0">Copyright (c) 2024</TextBlock>
         <TextBlock FontSize="16" Margin="20,0,0,0">Wayne Venables</TextBlock>
