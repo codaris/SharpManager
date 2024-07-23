@@ -46,6 +46,12 @@ Download the above file and open it to install Sharp Manager on your computer.
 All the pins that are output from the Sharp Pocket computer must be connected to ground with a pull down resistor.  My build uses
 480k&#8486; resistors but most values should work.  
 
+## Documentation
+
+Internal documentation for the project is available by clicking the link below:
+
+* [Sharp Manager Documentation](https://codaris.github.io/SharpManager/)
+
 ## Getting Help
 
 You can get help with this application by using the [Issues](https://github.com/codaris/SharpManager/issues) tab in this project.

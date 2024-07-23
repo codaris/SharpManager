@@ -50,6 +50,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -191,7 +199,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Sharp Manager"
         "ProductCode" = "8:{66104565-CB99-4606-879C-80EFAC0FDA5F}"
-        "PackageCode" = "8:{4D4619E8-84F5-44E0-B96D-D13BCEAE1C53}"
+        "PackageCode" = "8:{D15D6083-9520-4E44-B788-007E7FCD3850}"
         "UpgradeCode" = "8:{F6BB406D-3058-4DA7-A1D2-C9530E73E8EE}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -311,29 +319,29 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_2B5F0E65FFDF4E3F909165EC095481C2"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_7CD824D04DE44DEE8791A6455E14A164"
             {
-            "Name" = "8:SharpManager"
+            "Name" = "8:Sharp Manager"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:"
+            "Target" = "8:_BF77A426D9304715B2D31A819A25640E"
             "Folder" = "8:_66B4541D196F497D883881C200DB0AA5"
             "WorkingFolder" = "8:_110BB550A57441AF8AA04D9B62F7DBD8"
             "Icon" = "8:_FCFE11AB6E544411AC83D99866A601DD"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_A02B2354E4CD485396BE6C4453EA9F95"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8A81DA4042984104933B29372DBFC728"
             {
-            "Name" = "8:SharpManager"
+            "Name" = "8:Sharp Manager"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:"
+            "Target" = "8:_BF77A426D9304715B2D31A819A25640E"
             "Folder" = "8:_EA4631B61F264FA3999244BD6C84F98D"
             "WorkingFolder" = "8:_110BB550A57441AF8AA04D9B62F7DBD8"
             "Icon" = "8:_FCFE11AB6E544411AC83D99866A601DD"
@@ -740,7 +748,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BF77A426D9304715B2D31A819A25640E"
             {
-            "SourcePath" = "8:..\\SharpManager\\obj\\Debug\\net6.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\SharpManager\\obj\\Release\\net6.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_110BB550A57441AF8AA04D9B62F7DBD8"
