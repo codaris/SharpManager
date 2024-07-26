@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:SharpManager"
         mc:Ignorable="d"
         Title="Sharp Manager" Height="450" Width="800" 
-        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}" PreviewKeyDown="Window_PreviewKeyDown" Icon="/Resources/SharpPocketIcon.png">
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}" PreviewKeyDown="Window_PreviewKeyDown" Icon="/Resources/SharpManagerIcon.png">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

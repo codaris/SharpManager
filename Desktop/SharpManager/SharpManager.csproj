@@ -11,14 +11,20 @@
     <Product>SharpManager</Product>
     <Copyright>Copyright © 2024</Copyright>
     <Description>Floppy drive and tape drive emulator for Sharp pocket computers.</Description>
+    <StartupObject>SharpManager.App</StartupObject>
+    <ApplicationIcon>SharpManagerAppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\SharpManagerBanner.png" />
-    <None Remove="Resources\SharpPocket.ico" />
-    <None Remove="Resources\SharpPocketIcon.png" />
+    <None Remove="Resources\SharpManagerIcon.png" />
     <None Remove="Resources\Upload.png" />
+    <None Remove="SharpManagerAppIcon.ico" />
     <None Remove="Views\Calculator.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="SharpManagerAppIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,8 +40,7 @@
   <ItemGroup>
     <Resource Include="Resources\Calculator.png" />
     <Resource Include="Resources\SharpManagerBanner.png" />
-    <Resource Include="Resources\SharpPocket.ico" />
-    <Resource Include="Resources\SharpPocketIcon.png" />
+    <Resource Include="Resources\SharpManagerIcon.png" />
     <Resource Include="Resources\Upload.png" />
   </ItemGroup>
 

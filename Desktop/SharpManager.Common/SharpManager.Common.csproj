@@ -8,10 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Firmware\Leonardo.hex" />
+    <None Remove="Firmware\Mega1284.hex" />
+    <None Remove="Firmware\Mega2560.hex" />
+    <None Remove="Firmware\Micro.hex" />
+    <None Remove="Firmware\NanoR2.hex" />
     <None Remove="Firmware\NanoR3.hex" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Firmware\Leonardo.hex" />
+    <EmbeddedResource Include="Firmware\Mega1284.hex" />
+    <EmbeddedResource Include="Firmware\Mega2560.hex" />
+    <EmbeddedResource Include="Firmware\Micro.hex" />
+    <EmbeddedResource Include="Firmware\NanoR2.hex" />
     <EmbeddedResource Include="Firmware\NanoR3.hex" />
   </ItemGroup>
 
