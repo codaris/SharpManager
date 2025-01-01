@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,7 +35,12 @@ namespace SharpManager.Views
         /// <param name="e">The <see cref="RequestNavigateEventArgs"/> instance containing the event data.</param>
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            System.Diagnostics.Process.Start(e.Uri.ToString());
+            Process.Start(
+                new ProcessStartInfo(e.Uri.ToString())
+                {
+                    UseShellExecute = true
+                }
+            );
         }
 
         private void Window_SourceInitialized(object sender, EventArgs e)
