@@ -1,6 +1,6 @@
 ![](docs/images/SharpManagerBanner.png)
 
-**Sharp Manager** is an application for interfacing some vintage Sharp pocket computers with your Windows desktop PC.  It works together with an [Arduino](https://store.arduino.cc/pages/nano-family) to connect the Sharp computer to a USB port on your computer.  With this hardware and software, Sharp Manager emulates a [CE-126P](http://pocket.free.fr/html/sharp/ce-126p_e.html) cassette and printer interface and a sharp Sharp [CE-140F](http://pocket.free.fr/html/sharp/ce-140f_e.html) floppy drive.  It has only been tested with a Sharp [PC-1401](http://pocket.free.fr/html/sharp/pc-1401_e.html) and a [PC-1403](http://pocket.free.fr/html/sharp/pc-1401_e.html) however the disk emulation should work on any device that supports the CE-140F.
+**Sharp Manager** is an application for connecting some vintage Sharp pocket computers to your Windows desktop PC.  It works together with an [Arduino](https://store.arduino.cc/pages/nano-family) to connect the Sharp computer to a USB port on your desktop.  With this hardware and software, Sharp Manager emulates a [CE-126P](http://pocket.free.fr/html/sharp/ce-126p_e.html) cassette and printer interface and a Sharp [CE-140F](http://pocket.free.fr/html/sharp/ce-140f_e.html) floppy drive.  It has only been tested with a Sharp [PC-1401](http://pocket.free.fr/html/sharp/pc-1401_e.html) and a [PC-1403](http://pocket.free.fr/html/sharp/pc-1401_e.html) however the disk emulation should work on any device that supports the CE-140F.
 
 ## Requirements
 
