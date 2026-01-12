@@ -3,9 +3,21 @@
 #include "Sharp.h"
 #include "Tape.h"
 
+#ifndef SERIAL_RX_BUFFER_SIZE
+#error "SERIAL_RX_BUFFER_SIZE is not defined."
+#endif
 
-/** Physical button */
-const int BUTTON = 14;
+#if SERIAL_RX_BUFFER_SIZE < 64
+#error "Serial RX buffer is too small. Must be at least 64 bytes."
+#endif
+
+#ifndef SERIAL_TX_BUFFER_SIZE
+#error "SERIAL_TX_BUFFER_SIZE is not defined."
+#endif
+
+#if SERIAL_TX_BUFFER_SIZE < 64
+#error "Serial TX buffer is too small. Must be at least 64 bytes."
+#endif
 
 unsigned long ledMillis = 0;        // will store last time LED was updated
 const long ledInterval = 1000;      // LED blink interval
@@ -25,7 +37,6 @@ void setup()
     pinMode(SHARP_SEL2, INPUT);
     pinMode(SHARP_SEL1, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(BUTTON, INPUT_PULLUP);
 }
 
 

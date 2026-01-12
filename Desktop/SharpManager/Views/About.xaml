@@ -9,7 +9,7 @@
     <StackPanel Orientation="Vertical" Margin="0,0,0,10">
         <Image HorizontalAlignment="Left" Height="149" Width="581" Source="/Resources/SharpManagerBanner.png" />
         <TextBlock x:Name="AppTitle" FontSize="16" Margin="20,0,0,0">Sharp Manager</TextBlock>
-        <TextBlock FontSize="16" Margin="20,0,0,0">Copyright (c) 2024</TextBlock>
+        <TextBlock FontSize="16" Margin="20,0,0,0">Copyright (c) 2026</TextBlock>
         <TextBlock FontSize="16" Margin="20,0,0,0">Wayne Venables</TextBlock>
         <TextBlock FontSize="16" Margin="20,0,20,0"><Hyperlink NavigateUri="https://github.com/codaris/SharpManager" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/codaris/SharpManager</Hyperlink></TextBlock>
     </StackPanel>

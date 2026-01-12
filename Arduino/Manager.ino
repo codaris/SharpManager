@@ -19,7 +19,7 @@ namespace Manager
     };
 
     const byte VersionHigh = 1;                  // Version numbers
-    const byte VersionLow = 1;                  
+    const byte VersionLow = 2;                  
     
     const int BUFFER_SIZE = 64;         // The size of the serial and tape buffers
     byte serialBuffer[BUFFER_SIZE];     // Serial receive buffer
@@ -29,6 +29,9 @@ namespace Manager
     int outBufferCount = 0;             // The number of items in the output buffer
     int outBufferIndex = 0;             // The next byte to process in the output buffer
     int dataRemaining = 0;              // Number of bytes remaining in incoming frame
+	
+    const int TIMEOUT = 2000;           // 2 second timeout 
+
 
     /**
      * @brief Waits for a single byte to become available on the serial interface
@@ -39,7 +42,7 @@ namespace Manager
         unsigned long startTime = millis();
         while (Serial.available() == 0) {
             // Wait for a byte to become available or until the timeout
-            if ((millis() - startTime) > 1000) return ResultType::Timeout;
+            if ((millis() - startTime) > TIMEOUT) return ResultType::Timeout;
         }
         return Serial.read();
     }    
@@ -53,7 +56,7 @@ namespace Manager
         unsigned long startTime = millis();
         while (Serial.available() < 2) {
             // Wait for a byte to become available or until the timeout
-            if ((millis() - startTime) > 1000) return ResultType::Timeout;
+            if ((millis() - startTime) > TIMEOUT) return ResultType::Timeout;
         }
         return Serial.read() | (Serial.read() << 8);
     }
@@ -67,7 +70,7 @@ namespace Manager
         unsigned long startTime = millis();
         while (Serial.available() < 4) {
             // Wait for a byte to become available or until the timeout
-            if ((millis() - startTime) > 1000) return ResultType::Timeout;
+            if ((millis() - startTime) > TIMEOUT) return ResultType::Timeout;
         }
         return Serial.read() | (Serial.read() << 8) | (Serial.read() << 16) | (Serial.read() << 24);        
     }
@@ -345,7 +348,7 @@ namespace Manager
         Serial.write(VersionLow);
         Serial.write(SERIAL_RX_BUFFER_SIZE);
         Serial.write(Ascii::STX);
-        Serial.write("Sharp Anduino Driver ");
+        Serial.write("Sharp Arduino Driver ");
         Serial.print((int)VersionHigh);
         Serial.print(".");
         Serial.print((int)VersionLow);

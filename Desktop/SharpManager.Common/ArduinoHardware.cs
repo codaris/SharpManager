@@ -69,13 +69,12 @@ namespace SharpManager
         /// </summary>
         static ArduinoHardware()
         {
-            arduinoHardwareList.Add(new ArduinoHardware("Nano R3", ArduinoModel.NanoR3, "NanoR3"));
-            arduinoHardwareList.Add(new ArduinoHardware("Nano R3 (Old Bootloader)", ArduinoModel.NanoR3Old, "NanoR3"));
-            arduinoHardwareList.Add(new ArduinoHardware("Nano R2", ArduinoModel.NanoR2, "NanoR2"));
+            arduinoHardwareList.Add(new ArduinoHardware("Nano R3", ArduinoModel.NanoR3, "Nano"));
+            arduinoHardwareList.Add(new ArduinoHardware("Nano R3 (Old Bootloader)", ArduinoModel.NanoR3Old, "Nano"));
             arduinoHardwareList.Add(new ArduinoHardware("Mega 2560", ArduinoModel.Mega2560, "Mega2560"));
-            arduinoHardwareList.Add(new ArduinoHardware("Mega 1284", ArduinoModel.Mega1284, "Mega1284"));
             arduinoHardwareList.Add(new ArduinoHardware("Leonardo", ArduinoModel.Leonardo, "Leonardo"));
             arduinoHardwareList.Add(new ArduinoHardware("Micro", ArduinoModel.Micro, "Micro"));
+            arduinoHardwareList.Add(new ArduinoHardware("Uno", ArduinoModel.UnoR3, "Uno"));
         }
 
         /// <summary>

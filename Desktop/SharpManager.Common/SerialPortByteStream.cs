@@ -15,8 +15,14 @@ namespace SharpManager
         /// <summary>The send byte array</summary>
         private readonly byte[] sendByteArray = new byte[1];
 
-        /// <summary>The read task completion source</summary>
-        private TaskCompletionSource<bool>? readTaskCompletionSource = null;
+        /// <summary>The list of Data available waiters</summary>
+        private readonly List<TaskCompletionSource<bool>> waiters = new();
+
+        /// <summary>The synchronization object for this class</summary>
+        private readonly object syncRoot = new();
+
+        /// <summary>The data available flag</summary>
+        private bool? dataAvailable;
 
         /// <summary>The disposed value</summary>
         private bool disposedValue;
@@ -50,19 +56,76 @@ namespace SharpManager
         /// <param name="e">The <see cref="SerialDataReceivedEventArgs"/> instance containing the event data.</param>
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            lock (serialPort)
+            // Temporary list of waiters copied from inside the lock below
+            List<TaskCompletionSource<bool>> localWaiters;
+
+            lock (syncRoot)
             {
-                readTaskCompletionSource?.TrySetResult(true);
+                dataAvailable = true;
+                localWaiters = new List<TaskCompletionSource<bool>>(waiters);
+                waiters.Clear();
             }
+
+            // Complete waiters *outside* the lock to keep the critical section small.
+            foreach (var waiter in localWaiters) waiter.TrySetResult(true);
         }
 
         /// <summary>
-        /// Gets a value indicating whether data available.
+        /// Gets a value indicating whether data is available.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if [data available]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DataAvailable => serialPort.BytesToRead > 0;
+        public bool DataAvailable => dataAvailable ??= serialPort.BytesToRead > 0;
+
+        /// <summary>
+        /// Waits for data available.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public Task WaitForDataAvailable(CancellationToken cancellationToken = default)
+        {
+            // If data is available, return immediately
+            if (DataAvailable) return Task.CompletedTask;
+
+            // One TCS per waiter so each caller gets its own cancellation.
+            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            // We need the registration variable *outside* so we can dispose it later.
+            CancellationTokenRegistration ctr = default;
+
+            lock (syncRoot)
+            {
+                // Data might have become available while we were allocating the TCS.
+                if (DataAvailable) return Task.CompletedTask;
+
+                waiters.Add(tcs);
+
+                // Set up cancellation *after* we’re sure the waiter is in the list.
+                if (cancellationToken.CanBeCanceled)
+                {
+                    ctr = cancellationToken.Register(() =>
+                    {
+                        bool removed;
+                        lock (syncRoot)
+                        {
+                            removed = waiters.Remove(tcs);
+                        }
+                        // Only cancel if we really owned the waiter.
+                        if (removed) tcs.TrySetCanceled(cancellationToken);
+                    });
+                }
+            }
+
+            // Dispose the registration once the task completes in *any* way.
+            if (ctr.Token.CanBeCanceled)
+            {
+                tcs.Task.ContinueWith(
+                    _ => ctr.Dispose(),
+                    CancellationToken.None,
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default);
+            }
+
+            return tcs.Task;
+        }
 
         /// <summary>
         /// Reads the byte asynchronously.
@@ -70,15 +133,16 @@ namespace SharpManager
         /// <returns></returns>
         public async Task<byte> ReadByteAsync(CancellationToken cancellationToken)
         {
-            while (true)
+            // Wait for byte to be available
+            await WaitForDataAvailable(cancellationToken).ConfigureAwait(false);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            lock (syncRoot)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                lock (serialPort)
-                {
-                    if (serialPort.BytesToRead > 0) return (byte)serialPort.ReadByte();
-                    readTaskCompletionSource = new TaskCompletionSource<bool>();
-                }
-                await readTaskCompletionSource.Task;
+                var result = (byte)serialPort.ReadByte();
+                if (serialPort.BytesToRead == 0) dataAvailable = false;
+                return result;
             }
         }
 

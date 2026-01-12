@@ -72,7 +72,7 @@ namespace SharpManager
         private const int VersionHigh = 1;
 
         /// <summary>The low version value</summary>
-        private const int VersionLow = 1;
+        private const int VersionLow = 2;
 
         private enum FileFormat
         {
@@ -128,6 +128,7 @@ namespace SharpManager
             cancellationTokenSource = new();
             serialPort = new SerialPort(portName, 115200);
             serialPort.DtrEnable = false;
+            serialPort.ReadTimeout = 20;
             serialPort.Open();
             serialStream = new SerialPortByteStream(serialPort);
             IsConnected = true;
@@ -165,6 +166,9 @@ namespace SharpManager
         {
             while (serialStream != null)
             {
+                // Wait for data to be available
+                await serialStream.WaitForDataAvailable();
+
                 // If data is available and not processing a command, check incoming packet
                 if (commandCount == 0 && serialStream.DataAvailable)
                 {
@@ -176,7 +180,6 @@ namespace SharpManager
                     serialStream.WriteByte(Ascii.NAK);
                     serialStream.WriteByte((byte)ErrorCode.Unexpected);
                 }
-                await Task.Yield();
             }
         }
 

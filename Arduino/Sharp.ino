@@ -7,7 +7,7 @@ namespace Sharp
     const long IN_DATAREADY_TIMEOUT = 50000;
 
     /** Default wait timtout */
-    const int TIMEOUT = 10000;           // 1 second timeout
+    const int TIMEOUT = 10000;           // 10 second timeout
 
     /**
      * @brief Wait for the specified pin to go low

@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Wayne Venables</Authors>
     <Company>Codaris Computing</Company>
     <Product>SharpManager</Product>

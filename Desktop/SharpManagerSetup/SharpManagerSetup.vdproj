@@ -198,15 +198,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Sharp Manager"
-        "ProductCode" = "8:{66104565-CB99-4606-879C-80EFAC0FDA5F}"
-        "PackageCode" = "8:{D15D6083-9520-4E44-B788-007E7FCD3850}"
+        "ProductCode" = "8:{DA24C957-F7FF-4A9C-9FB2-B2A154BC82EE}"
+        "PackageCode" = "8:{1DA31D1C-3DDD-43C0-BE30-812A45F52BBC}"
         "UpgradeCode" = "8:{F6BB406D-3058-4DA7-A1D2-C9530E73E8EE}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.1"
+        "ProductVersion" = "8:1.0.2"
         "Manufacturer" = "8:Codaris Computing"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -748,7 +748,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BF77A426D9304715B2D31A819A25640E"
             {
-            "SourcePath" = "8:..\\SharpManager\\obj\\Release\\net6.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\SharpManager\\obj\\Debug\\net6.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_110BB550A57441AF8AA04D9B62F7DBD8"
