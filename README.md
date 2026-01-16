@@ -23,7 +23,7 @@ Sharp Manager also supports uploading pre-compiled firmware to a number of diffe
 
 You can download the latest release installer from here:
 
-* [Sharp Manager v1.0.1](https://github.com/codaris/SharpManager/releases/download/v1.0.1/SharpManager.msi)
+* [Sharp Manager v1.0.3](https://github.com/codaris/SharpManager/releases/download/v1.0.3/SharpManager.msi)
 
 Download the above file and open it to install Sharp Manager on your computer.
 
