@@ -117,12 +117,20 @@ namespace Manager
      * @param timeout Number of milliseconds to wait for byte from the buffer
      * @returns A byte from the buffer or an error code
     */
-    Result ReadBufferByte(int timeout = 0);
+    Result ReadByte(int timeout = 0);
 
     /**
      * @brief Fills serial buffer 
+     * @param timeout Timeout in milliseconds
+     * @returns Result code
     */
-    void FillBuffer();
+    Result FillBuffer(int timeout = 0);
+
+    /**
+     * @brief Reads a byte from the buffer if available
+     * @return A byte from the buffer or an error code
+    */
+    Result ReadBufferByte();
 
     /**
      * @brief Process incoming commands 

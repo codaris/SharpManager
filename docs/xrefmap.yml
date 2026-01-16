@@ -1256,6 +1256,19 @@ references:
   isSpec: "True"
   fullName: SharpManager.SerialPortByteStream.ReadByteAsync
   nameWithType: SerialPortByteStream.ReadByteAsync
+- uid: SharpManager.SerialPortByteStream.WaitForDataAvailable(System.Threading.CancellationToken)
+  name: WaitForDataAvailable(CancellationToken)
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_WaitForDataAvailable_System_Threading_CancellationToken_
+  commentId: M:SharpManager.SerialPortByteStream.WaitForDataAvailable(System.Threading.CancellationToken)
+  fullName: SharpManager.SerialPortByteStream.WaitForDataAvailable(System.Threading.CancellationToken)
+  nameWithType: SerialPortByteStream.WaitForDataAvailable(CancellationToken)
+- uid: SharpManager.SerialPortByteStream.WaitForDataAvailable*
+  name: WaitForDataAvailable
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_WaitForDataAvailable_
+  commentId: Overload:SharpManager.SerialPortByteStream.WaitForDataAvailable
+  isSpec: "True"
+  fullName: SharpManager.SerialPortByteStream.WaitForDataAvailable
+  nameWithType: SerialPortByteStream.WaitForDataAvailable
 - uid: SharpManager.SerialPortByteStream.WriteByte(System.Byte)
   name: WriteByte(byte)
   href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_WriteByte_System_Byte_

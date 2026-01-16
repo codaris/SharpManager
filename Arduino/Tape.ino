@@ -74,9 +74,6 @@ namespace Tape
         const int pulse8 = 125;  // μs, short pulse CSAVE/CLOAD (8 x pulse8 = HIGH)
         const int pulse4 = 250;  // μs, long  pulse CSAVE/CLOAD (4 x pulse4 = LOW)
 
-        // For every bit, attempt to read from the buffer
-        Manager::FillBuffer();
-
         // Pulse the bits
         if (bit) { // Bit = 1
             for (int z = 0; z < 8; z++) TapePulseOut(pulse8); // 8 short pulses = HIGH
@@ -200,7 +197,6 @@ namespace Tape
         return result;  
     }
 
-
     /**
      * @brief Loads data from the serial port to the pocket computer
      */
@@ -220,29 +216,47 @@ namespace Tape
         Manager::SendSuccess();
 
         // Has the tape prefix been sent
-        bool sentPrefix = false;
+        bool sentPrefix = false;        
 
-        while (true) 
+        while (true)
         {
-            auto data = Manager::ReadBufferByte();
-            if (data.IsDone()) break;
-            if (Manager::Error(data)) return;
+            auto result = Manager::FillBuffer(5000);
+            if (result.IsDone()) break;
+            if (Manager::Error(result)) return;
+            Result data(ResultType::Ok);
 
-            // Send the prefix if it isn't already sent
-            if (!sentPrefix) {
-                digitalWrite(LED_BUILTIN, HIGH);
-                // Send the prefix  
-                for (int i = 0; i < 250; i++) SendTapeBit(1);    
-                sentPrefix = true;
+            // Stop the interrupts while sending data
+            noInterrupts();
+            while (true) 
+            {
+                data = Manager::ReadBufferByte();
+                if (!data.HasValue()) break;
+
+                // Send the prefix if it isn't already sent
+                if (!sentPrefix) {
+                    digitalWrite(LED_BUILTIN, HIGH);
+                    // Send the prefix  
+                    for (int i = 0; i < 250; i++) SendTapeBit(1);    
+                    sentPrefix = true;
+                }
+                // Send a single byte to the pocket computer
+                SendTapeByte(data.Value(), headerCount > 0);
+                // Decrement the header count
+                if (headerCount > 0) headerCount--;
             }
-            // Send a single byte to the pocket computer
-            SendTapeByte(data.Value(), headerCount > 0);
-            // Decrement the header count
-            if (headerCount > 0) headerCount--;
+            // Start the interrupts again
+            interrupts();
+
+            // If error then return
+            if (!data.IsDone() && Manager::Error(data)) return;
+            // Acknowledge the data block and get next
+            Manager::SendSuccess();
         }
 
         // End with 2 stop bits
+        noInterrupts();
         for (int sb = 0; sb < 2; sb++) SendTapeBit(1);
+        interrupts();
         digitalWrite(LED_BUILTIN, LOW);      
     }
 

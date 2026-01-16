@@ -19,7 +19,7 @@ namespace Manager
     };
 
     const byte VersionHigh = 1;                  // Version numbers
-    const byte VersionLow = 2;                  
+    const byte VersionLow = 3;                  
     
     const int BUFFER_SIZE = 64;         // The size of the serial and tape buffers
     byte serialBuffer[BUFFER_SIZE];     // Serial receive buffer
@@ -257,12 +257,62 @@ namespace Manager
         dataRemaining = totalSize;
     }
 
+    /** 
+     * @brief Fills serial buffer
+     * @param timeout Timeout in milliseconds
+     * @return Result of the fill operation
+    */
+    Result FillBuffer(int timeout = 0)
+    {
+        unsigned long startTime = millis();
+        
+        // If no data remaining, return end
+        if (dataRemaining <= 0) {
+            if (outBufferIndex < outBufferCount) return ResultType::Ok;
+            return ResultType::End;
+        }
+
+        // Fill serialBuffer until full
+        while (serialBufferIndex < serialBufferCount)
+        {
+            while (Serial.available() > 0) serialBuffer[serialBufferIndex++] = Serial.read();
+            delayMicroseconds(10); 
+            if (timeout > 0 && (millis() - startTime) > timeout) return ResultType::Timeout;
+        }
+
+        // Copy into outBuffer
+        dataRemaining -= serialBufferCount;
+        memcpy(outBuffer, serialBuffer, serialBufferCount);
+
+        outBufferCount = serialBufferCount;
+        outBufferIndex = 0;
+
+        serialBufferCount = min(BUFFER_SIZE, dataRemaining);
+        serialBufferIndex = 0;
+
+        // Acknowledge the serial buffer
+        return ResultType::Ok;        
+    }
+
+    /**
+     * @brief Reads a byte from the buffer if available
+     * @return A byte from the buffer or an error code
+    */
+    Result ReadBufferByte()
+    {
+        // Return value from the buffer if available
+        if (outBufferIndex < outBufferCount) return outBuffer[outBufferIndex++];
+        // Otherwise, send that buffer is empty
+        return ResultType::End;
+    }
+
+
     /**
      * @brief Reads a byte from the buffer, fills the buffer as necessary.
      * @param timeout Number of milliseconds to wait for byte from the buffer
      * @returns A byte from the buffer or an error code
     */
-    Result ReadBufferByte(int timeout = 0)
+    Result ReadByte(int timeout = 0)
     {
         unsigned long startTime = millis();
         while (true)
@@ -299,16 +349,6 @@ namespace Manager
     }
 
     /**
-     * @brief Fills serial buffer 
-    */
-    void FillBuffer()
-    {
-        while (Serial.available() > 0 && serialBufferIndex < serialBufferCount) {
-            serialBuffer[serialBufferIndex++] = Serial.read();
-        }        
-    }
-
-    /**
      * @brief Process length-prefixed data packet
      * @param sendFunction  The function to call with the buffered data
      * @return True if succesful, false on error
@@ -328,7 +368,7 @@ namespace Manager
 
         while (true) 
         {
-            Result data = ReadBufferByte();
+            Result data = ReadByte();
             if (data.IsDone()) break;
             if (Manager::Error(data)) return false;
             if (Manager::Error(sendFunction(data))) return false;

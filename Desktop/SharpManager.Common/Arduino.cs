@@ -72,7 +72,10 @@ namespace SharpManager
         private const int VersionHigh = 1;
 
         /// <summary>The low version value</summary>
-        private const int VersionLow = 2;
+        private const int VersionLow = 3;
+
+        /// <summary>The default read timeout</summary>
+        private const int ReadTimeout = 5000;
 
         private enum FileFormat
         {
@@ -346,12 +349,13 @@ namespace SharpManager
         /// <summary>
         /// Reads and parses the response.
         /// </summary>
+        /// <param name="timeout">ACK Timeout value</param>
         /// <exception cref="System.InvalidOperationException">Not Connected</exception>
         /// <exception cref="System.Exception">Transmission Error {errorCode}</exception>
-        private async Task ReadResponse()
+        private async Task ReadResponse(int timeout = ReadTimeout)
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
-            var response = await serialStream.ReadByteAsync(5000).ConfigureAwait(false);    // Wait for response
+            var response = await serialStream.ReadByteAsync(timeout).ConfigureAwait(false);    // Wait for response
             if (response == Ascii.ACK) return;
             if (response == Ascii.NAK) throw new ArduinoException(await serialStream.ReadByteAsync(1000).ConfigureAwait(false));
             throw new ArduinoException($"Unexpected response received 0x{response:X2}");
@@ -499,7 +503,7 @@ namespace SharpManager
         /// </summary>
         /// <param name="data">The data.</param>
         /// <exception cref="SharpManager.ArduinoException">Arduino is not connected</exception>
-        private async Task SendBuffer(byte[] data)
+        private async Task SendBuffer(byte[] data, int timeout = ReadTimeout)
         {
             if (serialStream == null) throw new ArduinoException("Arduino is not connected");
             int offset = 0;
@@ -510,7 +514,7 @@ namespace SharpManager
                 messageTarget.DebugWriteLine($"Sending {size} bytes:");
                 messageTarget.Dump(new ArraySegment<byte>(data, offset, size));
                 for (int i = 0; i < size; i++) serialStream.WriteByte(data[offset++]);
-                await ReadResponse().ConfigureAwait(false);
+                await ReadResponse(timeout).ConfigureAwait(false);
             }
         }
 

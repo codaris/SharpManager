@@ -69,7 +69,7 @@ namespace SharpManager
                 ErrorCode.SyncError => "Synchronization error",
                 ErrorCode.Unexpected => "Unexpected command received",
                 ErrorCode.Overflow => "Buffer overflow occurred",
-                _ => $"Unexpected error code 0x{errorCode:X2}",
+                _ => $"Unexpected error code 0x{(int)errorCode:X2}",
             };
         }
 
