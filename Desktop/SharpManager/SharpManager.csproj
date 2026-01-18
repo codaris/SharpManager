@@ -5,11 +5,11 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <Version>1.0.2</Version>
+    <Version>1.0.4</Version>
     <Authors>Wayne Venables</Authors>
     <Company>Codaris Computing</Company>
     <Product>SharpManager</Product>
-    <Copyright>Copyright © 2024</Copyright>
+    <Copyright>Copyright © 2026</Copyright>
     <Description>Floppy drive and tape drive emulator for Sharp pocket computers.</Description>
     <StartupObject>SharpManager.App</StartupObject>
     <ApplicationIcon>SharpManagerAppIcon.ico</ApplicationIcon>

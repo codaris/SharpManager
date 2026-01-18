@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -66,6 +67,7 @@ namespace SharpManager.Views
                 {
                     if (exception is TaskCanceledException) continue;
                     MessageBox.Show(this, e.Exception.Message, "An error occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+                    if (viewModel.ShowDebug) ((IMessageTarget)this).WriteLine(exception.ToString());
                 }
             });
         }
@@ -82,6 +84,7 @@ namespace SharpManager.Views
             Dispatcher.InvokeAsync(() =>
             {
                 MessageBox.Show(this, e.Exception.Message, "An error occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (viewModel.ShowDebug) ((IMessageTarget)this).WriteLine(e.Exception.ToString());
             });
         }
 
@@ -232,6 +235,20 @@ namespace SharpManager.Views
         }
 
         /// <summary>
+        /// Shows the specified exception
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        void IMessageTarget.ShowException(Exception exception)
+        {
+            if (exception is TaskCanceledException) return;
+            Dispatcher.InvokeAsync(() =>
+            {
+                MessageBox.Show(this, exception.Message, "An error occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (viewModel.ShowDebug) ((IMessageTarget)this).WriteLine(exception.ToString());
+            });
+        }
+
+        /// <summary>
         /// Handles the Click event of the About control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -252,6 +269,8 @@ namespace SharpManager.Views
         {
             UploadFirmware.ShowDialog(this, viewModel);
         }
+
+
     }
 }
  

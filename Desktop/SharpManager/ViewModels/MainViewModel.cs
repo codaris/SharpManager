@@ -194,5 +194,14 @@ namespace SharpManager.ViewModels
         {
             messageTarget.Write(message);
         }
+
+        /// <summary>
+        /// Shows the specified exception.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        void IMessageTarget.ShowException(Exception exception)
+        {
+            messageTarget.ShowException(exception);
+        }
     }
 }

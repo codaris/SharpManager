@@ -11,13 +11,20 @@ namespace SharpManager
     public interface IReadByteStream
     {
         /// <summary>
-        /// Gets a value indicating whether data available.
+        /// Waits for data to be available.
         /// </summary>
-        bool DataAvailable { get; }
+        /// <param name="ct">The ct.</param>
+        /// <returns></returns>
+        Task WaitForDataAvailable(CancellationToken ct = default);
 
         /// <summary>
         /// Reads a byte from the stream
         /// </summary>
-        Task<byte> ReadByteAsync(CancellationToken cancellationToken);
+        Task<byte> ReadByteAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Clears the receive buffer.
+        /// </summary>
+        void ClearReceiveBuffer();
     }
 }
