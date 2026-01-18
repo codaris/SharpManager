@@ -15,6 +15,12 @@ namespace SharpManager
         void Write(string message);
 
         /// <summary>
+        /// Handles the exception.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        void ShowException(Exception exception);
+
+        /// <summary>
         /// Write the specified message with newline.
         /// </summary>
         /// <param name="message">The message.</param>
