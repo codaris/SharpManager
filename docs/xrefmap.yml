@@ -309,6 +309,70 @@ references:
   isSpec: "True"
   fullName: SharpManager.ArduinoHardware.UploadFirmware
   nameWithType: ArduinoHardware.UploadFirmware
+- uid: SharpManager.AsyncSuspendGate
+  name: AsyncSuspendGate
+  href: api/SharpManager.AsyncSuspendGate.html
+  commentId: T:SharpManager.AsyncSuspendGate
+  fullName: SharpManager.AsyncSuspendGate
+  nameWithType: AsyncSuspendGate
+- uid: SharpManager.AsyncSuspendGate.#ctor
+  name: AsyncSuspendGate()
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate__ctor
+  commentId: M:SharpManager.AsyncSuspendGate.#ctor
+  name.vb: New()
+  fullName: SharpManager.AsyncSuspendGate.AsyncSuspendGate()
+  fullName.vb: SharpManager.AsyncSuspendGate.New()
+  nameWithType: AsyncSuspendGate.AsyncSuspendGate()
+  nameWithType.vb: AsyncSuspendGate.New()
+- uid: SharpManager.AsyncSuspendGate.#ctor*
+  name: AsyncSuspendGate
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate__ctor_
+  commentId: Overload:SharpManager.AsyncSuspendGate.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: SharpManager.AsyncSuspendGate.AsyncSuspendGate
+  fullName.vb: SharpManager.AsyncSuspendGate.New
+  nameWithType: AsyncSuspendGate.AsyncSuspendGate
+  nameWithType.vb: AsyncSuspendGate.New
+- uid: SharpManager.AsyncSuspendGate.IsSuspended
+  name: IsSuspended
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate_IsSuspended
+  commentId: P:SharpManager.AsyncSuspendGate.IsSuspended
+  fullName: SharpManager.AsyncSuspendGate.IsSuspended
+  nameWithType: AsyncSuspendGate.IsSuspended
+- uid: SharpManager.AsyncSuspendGate.IsSuspended*
+  name: IsSuspended
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate_IsSuspended_
+  commentId: Overload:SharpManager.AsyncSuspendGate.IsSuspended
+  isSpec: "True"
+  fullName: SharpManager.AsyncSuspendGate.IsSuspended
+  nameWithType: AsyncSuspendGate.IsSuspended
+- uid: SharpManager.AsyncSuspendGate.Suspend
+  name: Suspend()
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate_Suspend
+  commentId: M:SharpManager.AsyncSuspendGate.Suspend
+  fullName: SharpManager.AsyncSuspendGate.Suspend()
+  nameWithType: AsyncSuspendGate.Suspend()
+- uid: SharpManager.AsyncSuspendGate.Suspend*
+  name: Suspend
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate_Suspend_
+  commentId: Overload:SharpManager.AsyncSuspendGate.Suspend
+  isSpec: "True"
+  fullName: SharpManager.AsyncSuspendGate.Suspend
+  nameWithType: AsyncSuspendGate.Suspend
+- uid: SharpManager.AsyncSuspendGate.WaitUntilResumedAsync(System.Threading.CancellationToken)
+  name: WaitUntilResumedAsync(CancellationToken)
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate_WaitUntilResumedAsync_System_Threading_CancellationToken_
+  commentId: M:SharpManager.AsyncSuspendGate.WaitUntilResumedAsync(System.Threading.CancellationToken)
+  fullName: SharpManager.AsyncSuspendGate.WaitUntilResumedAsync(System.Threading.CancellationToken)
+  nameWithType: AsyncSuspendGate.WaitUntilResumedAsync(CancellationToken)
+- uid: SharpManager.AsyncSuspendGate.WaitUntilResumedAsync*
+  name: WaitUntilResumedAsync
+  href: api/SharpManager.AsyncSuspendGate.html#SharpManager_AsyncSuspendGate_WaitUntilResumedAsync_
+  commentId: Overload:SharpManager.AsyncSuspendGate.WaitUntilResumedAsync
+  isSpec: "True"
+  fullName: SharpManager.AsyncSuspendGate.WaitUntilResumedAsync
+  nameWithType: AsyncSuspendGate.WaitUntilResumedAsync
 - uid: SharpManager.ByteListExtensions
   name: ByteListExtensions
   href: api/SharpManager.ByteListExtensions.html
@@ -476,34 +540,6 @@ references:
   isSpec: "True"
   fullName: SharpManager.ByteStreamExtensions.ExpectByteAsync
   nameWithType: ByteStreamExtensions.ExpectByteAsync
-- uid: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream)
-  name: ReadByte(IReadByteStream)
-  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_
-  commentId: M:SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream)
-  fullName: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream)
-  nameWithType: ByteStreamExtensions.ReadByte(IReadByteStream)
-- uid: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
-  name: ReadByte(IReadByteStream, int, CancellationToken)
-  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_
-  commentId: M:SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
-  name.vb: ReadByte(IReadByteStream, Integer, CancellationToken)
-  fullName: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream, int, System.Threading.CancellationToken)
-  fullName.vb: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream, Integer, System.Threading.CancellationToken)
-  nameWithType: ByteStreamExtensions.ReadByte(IReadByteStream, int, CancellationToken)
-  nameWithType.vb: ByteStreamExtensions.ReadByte(IReadByteStream, Integer, CancellationToken)
-- uid: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Threading.CancellationToken)
-  name: ReadByte(IReadByteStream, CancellationToken)
-  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_System_Threading_CancellationToken_
-  commentId: M:SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream,System.Threading.CancellationToken)
-  fullName: SharpManager.ByteStreamExtensions.ReadByte(SharpManager.IReadByteStream, System.Threading.CancellationToken)
-  nameWithType: ByteStreamExtensions.ReadByte(IReadByteStream, CancellationToken)
-- uid: SharpManager.ByteStreamExtensions.ReadByte*
-  name: ReadByte
-  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_
-  commentId: Overload:SharpManager.ByteStreamExtensions.ReadByte
-  isSpec: "True"
-  fullName: SharpManager.ByteStreamExtensions.ReadByte
-  nameWithType: ByteStreamExtensions.ReadByte
 - uid: SharpManager.ByteStreamExtensions.ReadByteAsync(SharpManager.IReadByteStream)
   name: ReadByteAsync(IReadByteStream)
   href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByteAsync_SharpManager_IReadByteStream_
@@ -564,22 +600,6 @@ references:
   isSpec: "True"
   fullName: SharpManager.ByteStreamExtensions.SwapNibbles
   nameWithType: ByteStreamExtensions.SwapNibbles
-- uid: SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
-  name: TryReadByte(IReadByteStream, int, CancellationToken)
-  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByte_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_
-  commentId: M:SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream,System.Int32,System.Threading.CancellationToken)
-  name.vb: TryReadByte(IReadByteStream, Integer, CancellationToken)
-  fullName: SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream, int, System.Threading.CancellationToken)
-  fullName.vb: SharpManager.ByteStreamExtensions.TryReadByte(SharpManager.IReadByteStream, Integer, System.Threading.CancellationToken)
-  nameWithType: ByteStreamExtensions.TryReadByte(IReadByteStream, int, CancellationToken)
-  nameWithType.vb: ByteStreamExtensions.TryReadByte(IReadByteStream, Integer, CancellationToken)
-- uid: SharpManager.ByteStreamExtensions.TryReadByte*
-  name: TryReadByte
-  href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByte_
-  commentId: Overload:SharpManager.ByteStreamExtensions.TryReadByte
-  isSpec: "True"
-  fullName: SharpManager.ByteStreamExtensions.TryReadByte
-  nameWithType: ByteStreamExtensions.TryReadByte
 - uid: SharpManager.ByteStreamExtensions.TryReadByteAsync(SharpManager.IReadByteStream,System.Int32)
   name: TryReadByteAsync(IReadByteStream, int)
   href: api/SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByteAsync_SharpManager_IReadByteStream_System_Int32_
@@ -1004,6 +1024,19 @@ references:
   commentId: T:SharpManager.IMessageTarget
   fullName: SharpManager.IMessageTarget
   nameWithType: IMessageTarget
+- uid: SharpManager.IMessageTarget.ShowException(System.Exception)
+  name: ShowException(Exception)
+  href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_ShowException_System_Exception_
+  commentId: M:SharpManager.IMessageTarget.ShowException(System.Exception)
+  fullName: SharpManager.IMessageTarget.ShowException(System.Exception)
+  nameWithType: IMessageTarget.ShowException(Exception)
+- uid: SharpManager.IMessageTarget.ShowException*
+  name: ShowException
+  href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_ShowException_
+  commentId: Overload:SharpManager.IMessageTarget.ShowException
+  isSpec: "True"
+  fullName: SharpManager.IMessageTarget.ShowException
+  nameWithType: IMessageTarget.ShowException
 - uid: SharpManager.IMessageTarget.Write(System.String)
   name: Write(string)
   href: api/SharpManager.IMessageTarget.html#SharpManager_IMessageTarget_Write_System_String_
@@ -1048,19 +1081,19 @@ references:
   commentId: T:SharpManager.IReadByteStream
   fullName: SharpManager.IReadByteStream
   nameWithType: IReadByteStream
-- uid: SharpManager.IReadByteStream.DataAvailable
-  name: DataAvailable
-  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_DataAvailable
-  commentId: P:SharpManager.IReadByteStream.DataAvailable
-  fullName: SharpManager.IReadByteStream.DataAvailable
-  nameWithType: IReadByteStream.DataAvailable
-- uid: SharpManager.IReadByteStream.DataAvailable*
-  name: DataAvailable
-  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_DataAvailable_
-  commentId: Overload:SharpManager.IReadByteStream.DataAvailable
+- uid: SharpManager.IReadByteStream.ClearReceiveBuffer
+  name: ClearReceiveBuffer()
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_ClearReceiveBuffer
+  commentId: M:SharpManager.IReadByteStream.ClearReceiveBuffer
+  fullName: SharpManager.IReadByteStream.ClearReceiveBuffer()
+  nameWithType: IReadByteStream.ClearReceiveBuffer()
+- uid: SharpManager.IReadByteStream.ClearReceiveBuffer*
+  name: ClearReceiveBuffer
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_ClearReceiveBuffer_
+  commentId: Overload:SharpManager.IReadByteStream.ClearReceiveBuffer
   isSpec: "True"
-  fullName: SharpManager.IReadByteStream.DataAvailable
-  nameWithType: IReadByteStream.DataAvailable
+  fullName: SharpManager.IReadByteStream.ClearReceiveBuffer
+  nameWithType: IReadByteStream.ClearReceiveBuffer
 - uid: SharpManager.IReadByteStream.ReadByteAsync(System.Threading.CancellationToken)
   name: ReadByteAsync(CancellationToken)
   href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_ReadByteAsync_System_Threading_CancellationToken_
@@ -1074,6 +1107,19 @@ references:
   isSpec: "True"
   fullName: SharpManager.IReadByteStream.ReadByteAsync
   nameWithType: IReadByteStream.ReadByteAsync
+- uid: SharpManager.IReadByteStream.WaitForDataAvailable(System.Threading.CancellationToken)
+  name: WaitForDataAvailable(CancellationToken)
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_WaitForDataAvailable_System_Threading_CancellationToken_
+  commentId: M:SharpManager.IReadByteStream.WaitForDataAvailable(System.Threading.CancellationToken)
+  fullName: SharpManager.IReadByteStream.WaitForDataAvailable(System.Threading.CancellationToken)
+  nameWithType: IReadByteStream.WaitForDataAvailable(CancellationToken)
+- uid: SharpManager.IReadByteStream.WaitForDataAvailable*
+  name: WaitForDataAvailable
+  href: api/SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_WaitForDataAvailable_
+  commentId: Overload:SharpManager.IReadByteStream.WaitForDataAvailable
+  isSpec: "True"
+  fullName: SharpManager.IReadByteStream.WaitForDataAvailable
+  nameWithType: IReadByteStream.WaitForDataAvailable
 - uid: SharpManager.IWriteByteStream
   name: IWriteByteStream
   href: api/SharpManager.IWriteByteStream.html
@@ -1189,15 +1235,15 @@ references:
   commentId: T:SharpManager.SerialPortByteStream
   fullName: SharpManager.SerialPortByteStream
   nameWithType: SerialPortByteStream
-- uid: SharpManager.SerialPortByteStream.#ctor(System.IO.Ports.SerialPort)
-  name: SerialPortByteStream(SerialPort)
-  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream__ctor_System_IO_Ports_SerialPort_
-  commentId: M:SharpManager.SerialPortByteStream.#ctor(System.IO.Ports.SerialPort)
-  name.vb: New(SerialPort)
-  fullName: SharpManager.SerialPortByteStream.SerialPortByteStream(System.IO.Ports.SerialPort)
-  fullName.vb: SharpManager.SerialPortByteStream.New(System.IO.Ports.SerialPort)
-  nameWithType: SerialPortByteStream.SerialPortByteStream(SerialPort)
-  nameWithType.vb: SerialPortByteStream.New(SerialPort)
+- uid: SharpManager.SerialPortByteStream.#ctor(System.IO.Ports.SerialPort,System.Action{System.Byte})
+  name: SerialPortByteStream(SerialPort, Action<byte>?)
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream__ctor_System_IO_Ports_SerialPort_System_Action_System_Byte__
+  commentId: M:SharpManager.SerialPortByteStream.#ctor(System.IO.Ports.SerialPort,System.Action{System.Byte})
+  name.vb: New(SerialPort, Action(Of Byte))
+  fullName: SharpManager.SerialPortByteStream.SerialPortByteStream(System.IO.Ports.SerialPort, System.Action<byte>?)
+  fullName.vb: SharpManager.SerialPortByteStream.New(System.IO.Ports.SerialPort, System.Action(Of Byte))
+  nameWithType: SerialPortByteStream.SerialPortByteStream(SerialPort, Action<byte>?)
+  nameWithType.vb: SerialPortByteStream.New(SerialPort, Action(Of Byte))
 - uid: SharpManager.SerialPortByteStream.#ctor*
   name: SerialPortByteStream
   href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream__ctor_
@@ -1208,34 +1254,25 @@ references:
   fullName.vb: SharpManager.SerialPortByteStream.New
   nameWithType: SerialPortByteStream.SerialPortByteStream
   nameWithType.vb: SerialPortByteStream.New
-- uid: SharpManager.SerialPortByteStream.DataAvailable
-  name: DataAvailable
-  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_DataAvailable
-  commentId: P:SharpManager.SerialPortByteStream.DataAvailable
-  fullName: SharpManager.SerialPortByteStream.DataAvailable
-  nameWithType: SerialPortByteStream.DataAvailable
-- uid: SharpManager.SerialPortByteStream.DataAvailable*
-  name: DataAvailable
-  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_DataAvailable_
-  commentId: Overload:SharpManager.SerialPortByteStream.DataAvailable
+- uid: SharpManager.SerialPortByteStream.ClearReceiveBuffer
+  name: ClearReceiveBuffer()
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_ClearReceiveBuffer
+  commentId: M:SharpManager.SerialPortByteStream.ClearReceiveBuffer
+  fullName: SharpManager.SerialPortByteStream.ClearReceiveBuffer()
+  nameWithType: SerialPortByteStream.ClearReceiveBuffer()
+- uid: SharpManager.SerialPortByteStream.ClearReceiveBuffer*
+  name: ClearReceiveBuffer
+  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_ClearReceiveBuffer_
+  commentId: Overload:SharpManager.SerialPortByteStream.ClearReceiveBuffer
   isSpec: "True"
-  fullName: SharpManager.SerialPortByteStream.DataAvailable
-  nameWithType: SerialPortByteStream.DataAvailable
+  fullName: SharpManager.SerialPortByteStream.ClearReceiveBuffer
+  nameWithType: SerialPortByteStream.ClearReceiveBuffer
 - uid: SharpManager.SerialPortByteStream.Dispose
   name: Dispose()
   href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_Dispose
   commentId: M:SharpManager.SerialPortByteStream.Dispose
   fullName: SharpManager.SerialPortByteStream.Dispose()
   nameWithType: SerialPortByteStream.Dispose()
-- uid: SharpManager.SerialPortByteStream.Dispose(System.Boolean)
-  name: Dispose(bool)
-  href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_Dispose_System_Boolean_
-  commentId: M:SharpManager.SerialPortByteStream.Dispose(System.Boolean)
-  name.vb: Dispose(Boolean)
-  fullName: SharpManager.SerialPortByteStream.Dispose(bool)
-  fullName.vb: SharpManager.SerialPortByteStream.Dispose(Boolean)
-  nameWithType: SerialPortByteStream.Dispose(bool)
-  nameWithType.vb: SerialPortByteStream.Dispose(Boolean)
 - uid: SharpManager.SerialPortByteStream.Dispose*
   name: Dispose
   href: api/SharpManager.SerialPortByteStream.html#SharpManager_SerialPortByteStream_Dispose_

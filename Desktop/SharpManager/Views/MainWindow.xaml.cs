@@ -16,7 +16,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 using SharpManager.ViewModels;
 
@@ -143,13 +142,15 @@ namespace SharpManager.Views
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void SelectDiskFolder_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
-            dialog.InitialDirectory = viewModel.DiskDirectory;
-            var result = dialog.ShowDialog();
-            if (result == CommonFileDialogResult.Ok)
+            var dialog = new OpenFolderDialog
             {
-                viewModel.DiskDirectory = dialog.FileName;
+                Title = "Select Disk Folder",
+                InitialDirectory = viewModel.DiskDirectory
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                viewModel.DiskDirectory = dialog.FolderName;
             }
         }
 

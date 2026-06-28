@@ -116,10 +116,13 @@ Interface IByteStream  <a class="header-action link-secondary" title="View sourc
     <dt>Inherited Members</dt>
     <dd>
     <div>
-      <a class="xref" href="SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_DataAvailable">IReadByteStream.DataAvailable</a>
+      <a class="xref" href="SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_WaitForDataAvailable_System_Threading_CancellationToken_">IReadByteStream.WaitForDataAvailable(CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_ReadByteAsync_System_Threading_CancellationToken_">IReadByteStream.ReadByteAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="SharpManager.IReadByteStream.html#SharpManager_IReadByteStream_ClearReceiveBuffer">IReadByteStream.ClearReceiveBuffer()</a>
     </div>
     <div>
       <a class="xref" href="SharpManager.IWriteByteStream.html#SharpManager_IWriteByteStream_WriteByte_System_Byte_">IWriteByteStream.WriteByte(byte)</a>
@@ -142,15 +145,6 @@ Interface IByteStream  <a class="header-action link-secondary" title="View sourc
       <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ExpectByteAsync_SharpManager_IReadByteStream_System_Byte_System_String_">ByteStreamExtensions.ExpectByteAsync(IReadByteStream, byte, string)</a>
   </div>
   <div>
-      <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_">ByteStreamExtensions.ReadByte(IReadByteStream)</a>
-  </div>
-  <div>
-      <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_">ByteStreamExtensions.ReadByte(IReadByteStream, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByte_SharpManager_IReadByteStream_System_Threading_CancellationToken_">ByteStreamExtensions.ReadByte(IReadByteStream, CancellationToken)</a>
-  </div>
-  <div>
       <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadByteAsync_SharpManager_IReadByteStream_">ByteStreamExtensions.ReadByteAsync(IReadByteStream)</a>
   </div>
   <div>
@@ -161,9 +155,6 @@ Interface IByteStream  <a class="header-action link-secondary" title="View sourc
   </div>
   <div>
       <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_ReadWordAsync_SharpManager_IReadByteStream_System_Threading_CancellationToken_">ByteStreamExtensions.ReadWordAsync(IReadByteStream, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByte_SharpManager_IReadByteStream_System_Int32_System_Threading_CancellationToken_">ByteStreamExtensions.TryReadByte(IReadByteStream, int, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="SharpManager.ByteStreamExtensions.html#SharpManager_ByteStreamExtensions_TryReadByteAsync_SharpManager_IReadByteStream_System_Int32_">ByteStreamExtensions.TryReadByteAsync(IReadByteStream, int)</a>

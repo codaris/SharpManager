@@ -66,7 +66,7 @@ The Arduino firmware is located in the [Arduino](https://github.com/codaris/Shar
 
 #### Building SharpManager
 
-The desktop component is written in C# for .NET 6.0.  It can be compiled by the community (free) edition of [Visual Studio 2022](https://visualstudio.microsoft.com/vs/community/).  Simply open the main solution file in the [SharpManager](https://github.com/codaris/PofoManager/tree/main/SharpManager) directory of the project and select `Build Solution`.
+The desktop component is written in C# for .NET 10.0.  It can be compiled by the community (free) edition of [Visual Studio 2026](https://visualstudio.microsoft.com/vs/community/).  Simply open the main solution file in the [SharpManager](https://github.com/codaris/PofoManager/tree/main/SharpManager) directory of the project and select `Build Solution`.
 
 ## Acknowledgements
 

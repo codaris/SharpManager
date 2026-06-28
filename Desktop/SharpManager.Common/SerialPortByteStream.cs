@@ -28,12 +28,14 @@ namespace SharpManager
         /// <summary>The disposed value</summary>
         private bool disposed;
 
+        /// <summary>Action for logging a single received byte</summary>
         private Action<byte>? byteLog = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerialPortByteStream"/> class.
         /// </summary>
         /// <param name="serialPort">The serial port.</param>
+        /// <param name="byteLog">Action for logging a single received byte</param>
         public SerialPortByteStream(SerialPort serialPort, Action<byte>? byteLog = null)
         {
             this.serialPort = serialPort;

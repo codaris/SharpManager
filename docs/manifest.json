@@ -42,6 +42,16 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/SharpManager.AsyncSuspendGate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SharpManager.AsyncSuspendGate.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/SharpManager.ByteListExtensions.yml",
       "output": {
         ".html": {
