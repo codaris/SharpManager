@@ -64,7 +64,9 @@ void loop()
                 Manager::SendDeviceSelect(deviceCode);
                 // if (device == 0x10) SendRawData();
                 if (deviceCode == 0x41) Sharp::ProcessDiskCommand();
-            }
+            } else {
+                Manager::SendDeviceSelect(deviceCode);
+			}
         }
     }
 
